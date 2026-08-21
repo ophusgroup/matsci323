@@ -1,0 +1,30 @@
+# MyST configuration for the MATSCI 323 course site.
+# See: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: matsci323
+  title: MATSCI 323
+  description: >
+    Course website for MATSCI 323.
+  keywords:
+    - materials science
+    - course
+  github: https://github.com/ophusgroup/matsci323
+  exclude:
+    - README.md
+  toc:
+    - file: index.md
+site:
+  template: book-theme
+  title: MATSCI 323
+  options:
+    # Custom theming — see ./style.css
+    style: ./style.css
+    logo_text: MATSCI 323
+    folders: true
+    outline_maxdepth: 2
+    hide_footer_links: true
+  # Top-bar links; the flat search box is injected to the right of these.
+  nav:
+    - title: Stanford MSE
+      url: https://mse.stanford.edu/
