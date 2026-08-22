@@ -1,10 +1,9 @@
-"""Patch the downloaded book-theme template: keep top-level TOC sections
-expanded, and replace the dialog-based search with a flat top-bar input.
+"""Patch the downloaded book-theme template: replace the dialog-based
+search with a flat top-bar input.
 
-The stock theme opens a sidebar section only while it contains the
-active page (and re-collapses it on navigation), and its search opens a
-modal dialog. There are no template options for
-either, so we patch the compiled bundles in _build/templates. Run after
+The stock theme's search opens a modal dialog, and there is no template
+option to change it, so we patch the compiled bundles in _build/templates
+to inject a flat search input into the top bar. Run after
 the template has been downloaded (any `myst build` or `myst start` does
 that), and re-run whenever _build is cleared:
 
@@ -22,11 +21,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 THEME = os.path.normpath(
     os.path.join(HERE, "..", "_build", "templates", "site", "myst", "book-theme")
 )
-
-TARGETS = [
-    os.path.join(THEME, "build", "index.js"),
-    os.path.join(THEME, "public", "build", "_shared", "chunk-RUUCG5OS.js"),
-]
 
 # Flat top-bar search runtime (replaces the theme's dialog search).
 # Injected into the server-rendered HTML. The search index path is
@@ -202,31 +196,6 @@ INLINER_MARK = (
 INLINER = INLINER_MARK + _RUNTIME
 
 
-# Matches the collapsible-section state hook in both the server and client
-# bundles (minified variable names differ between them):
-#   [s,o]=X.useState(r); useEffect(()=>{n.state==="idle"&&o(r)},[n.state]);
-#   let a=fn(e,i,t); return !i.children ...
-PATTERN = re.compile(
-    r'\[(\w),(\w)\]=([\w$]+(?:\.default)?)\.useState\((\w)\);'
-    r'\(0,([\w$]+)\.useEffect\)\(\(\)=>\{(\w)\.state==="idle"&&\2\(\4\)\},'
-    r'\[\6\.state\]\);let (\w)=[\w$]+\(([^)]*)\);return!(\w)\.c'
-)
-
-
-def patched(src):
-    def repl(m):
-        s, o, hook, active, eff, nav, let_var, fn_args, heading = m.groups()
-        keep_open = f'({heading}.level===1||{active})'
-        return (
-            f'[{s},{o}]={hook}.useState({keep_open});'
-            f'(0,{eff}.useEffect)(()=>{{{nav}.state==="idle"&&{o}({keep_open})}},'
-            f'[{nav}.state]);let {let_var}='
-            + m.group(0).split(f'let {let_var}=', 1)[1]
-        )
-
-    return PATTERN.subn(repl, src)
-
-
 def main():
     if not os.path.isdir(THEME):
         sys.exit("book-theme template not found; run `myst build` first")
@@ -299,19 +268,6 @@ def main():
                 f.write(s)
         print("renamed entry.client + manifest (cache bust)")
 
-    for path in TARGETS:
-        with open(path) as f:
-            src = f.read()
-        if ".level===1||" in src:
-            print(f"already patched: {os.path.relpath(path, THEME)}")
-            continue
-        out, n = patched(src)
-        if n == 0:
-            sys.exit(f"pattern not found in {path}; theme version changed?")
-        with open(path, "w") as f:
-            f.write(out)
-        total += n
-        print(f"patched {os.path.relpath(path, THEME)} ({n} site)")
     print(f"done ({total} replacements)")
 
 

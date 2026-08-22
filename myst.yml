@@ -5,15 +5,130 @@ project:
   id: matsci323
   title: MATSCI 323
   description: >
-    Course website for MATSCI 323.
+    Thin film and interface characterization: the physics and practice of
+    the analytical techniques used to measure the composition, structure,
+    and morphology of surfaces and thin films.
   keywords:
-    - materials science
-    - course
+    - thin films
+    - surface analysis
+    - materials characterization
+    - metrology
+    - electron microscopy
+    - x-ray diffraction
+    - spectroscopy
   github: https://github.com/ophusgroup/matsci323
   exclude:
     - README.md
+  abbreviations:
+    AES: Auger electron spectroscopy
+    AFM: atomic force microscopy
+    ALD: atomic layer deposition
+    APT: atom probe tomography
+    ARPES: angle-resolved photoemission spectroscopy
+    ATR: attenuated total reflection
+    BSE: backscattered electrons
+    CBED: convergent beam electron diffraction
+    c-AFM: conductive atomic force microscopy
+    EBSD: electron backscatter diffraction
+    EDS: energy dispersive X-ray spectroscopy
+    EELS: electron energy loss spectroscopy
+    ELNES: energy-loss near-edge structure
+    EPMA: electron probe microanalysis
+    ERD: elastic recoil detection
+    EXAFS: extended X-ray absorption fine structure
+    FIB: focused ion beam
+    GDMS: glow discharge mass spectrometry
+    GD-OES: glow discharge optical emission spectroscopy
+    GISAXS: grazing-incidence small-angle X-ray scattering
+    GIWAXS: grazing-incidence wide-angle X-ray scattering
+    GIXRD: grazing-incidence X-ray diffraction
+    HAADF: high-angle annular dark field
+    HAXPES: hard X-ray photoelectron spectroscopy
+    IMFP: inelastic mean free path
+    KPFM: Kelvin probe force microscopy
+    LEED: low-energy electron diffraction
+    LEEM: low-energy electron microscopy
+    LEIS: low-energy ion scattering
+    MBE: molecular beam epitaxy
+    MEIS: medium-energy ion scattering
+    MFM: magnetic force microscopy
+    NRA: nuclear reaction analysis
+    PEEM: photoemission electron microscopy
+    PFM: piezoresponse force microscopy
+    PIXE: particle-induced X-ray emission
+    PL: photoluminescence
+    PSD: power spectral density
+    QCM: quartz crystal microbalance
+    RBS: Rutherford backscattering spectrometry
+    RHEED: reflection high-energy electron diffraction
+    RSM: reciprocal space map
+    SE: secondary electrons
+    SEM: scanning electron microscopy
+    SERS: surface-enhanced Raman spectroscopy
+    SIMS: secondary ion mass spectrometry
+    SNOM: scanning near-field optical microscopy
+    SPM: scanning probe microscopy
+    STEM: scanning transmission electron microscopy
+    STM: scanning tunneling microscopy
+    STS: scanning tunneling spectroscopy
+    TEM: transmission electron microscopy
+    TERS: tip-enhanced Raman spectroscopy
+    TKD: transmission Kikuchi diffraction
+    ToF-SIMS: time-of-flight secondary ion mass spectrometry
+    TPD: temperature-programmed desorption
+    TXRF: total reflection X-ray fluorescence
+    UHV: ultrahigh vacuum
+    UPS: ultraviolet photoelectron spectroscopy
+    WDS: wavelength dispersive X-ray spectroscopy
+    XANES: X-ray absorption near-edge structure
+    XPS: X-ray photoelectron spectroscopy
+    XRD: X-ray diffraction
+    XRF: X-ray fluorescence
+    XRR: X-ray reflectivity
   toc:
     - file: index.md
+    - file: outline.md
+    - title: 1. Surfaces and Vacuum
+      children:
+        - file: modules/surfaces/properties.md
+        - file: modules/surfaces/vacuum.md
+    - title: 2. X-ray and Optical Metrology
+      children:
+        - file: modules/photons/xrd.md
+        - file: modules/photons/xrr.md
+        - file: modules/photons/optical.md
+    - title: 3. Ion Beams and Mass Spectrometry
+      children:
+        - file: modules/ions/ion-solid.md
+        - file: modules/ions/rbs.md
+        - file: modules/ions/sims.md
+        - file: modules/ions/apt.md
+    - title: 4. Electron Spectroscopies
+      children:
+        - file: modules/espec/electron-solid.md
+        - file: modules/espec/xps.md
+        - file: modules/espec/quantification.md
+    - title: 5. SEM, EBSD, and FIB
+      children:
+        - file: modules/sem/sem.md
+        - file: modules/sem/ebsd-fib.md
+    - title: 6. Electron Diffraction and STEM
+      children:
+        - file: modules/stem/leed-rheed.md
+        - file: modules/stem/stem-imaging.md
+        - file: modules/stem/analytical-stem.md
+    - title: 7. Scanning Probe Microscopy
+      children:
+        - file: modules/spm/afm.md
+        - file: modules/spm/spm-modes.md
+    - file: synthesis.md
+    - title: Appendices
+      children:
+        - file: appendix/channeling.md
+        - file: appendix/near-field.md
+        - file: appendix/simulation-tools.md
+        - file: appendix/technique-list.md
+    - file: references.md
 site:
   template: book-theme
   title: MATSCI 323
@@ -24,7 +139,10 @@ site:
     folders: true
     outline_maxdepth: 2
     hide_footer_links: true
-  # Top-bar links; the flat search box is injected to the right of these.
   nav:
+    - title: COLab
+      url: https://colab.stanford.edu/
+    - title: nano@stanford
+      url: https://nanolabs.stanford.edu/
     - title: Stanford MSE
       url: https://mse.stanford.edu/

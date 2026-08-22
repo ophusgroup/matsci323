@@ -138,13 +138,6 @@ html.dark .myst-primary-sidebar-toc .dark\:text-blue-200 {
 .myst-toc > a.myst-toc-item[title="MATSCI 323"] {
   display: none;
 }
-/* book-theme replays a height:0 -> full expand animation on every
-   `data-state=open`; the sections start open, so kill the animation
-   and make any real toggle instant. */
-.myst-primary-sidebar-toc .collapsible-content {
-  animation: none !important;
-}
-
 /* ---------- Hide the article-style frontmatter strip ---------- */
 .myst-fm-block-header,
 .myst-fm-block-date-doi,
