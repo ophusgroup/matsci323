@@ -27,10 +27,14 @@ The measurements APT owns outright are three-dimensional and chemical at once: t
 
 The counterweights: throughput is low (one needle per few hours, and needles fracture), the analyzed volume is minuscule so statistics demand multiple tips, and quantification near interfaces carries the reconstruction caveats above. APT complements rather than replaces SIMS: SIMS profiles a millimeter-scale area with ppb sensitivity in one dimension, APT maps a hundred-nanometer volume with ppm sensitivity in three.
 
-% TODO: figures: (a) schematic of tip, pulsing, and detector; (b) an example mass
-% spectrum; (c) a published reconstruction of a multilayer or grain boundary
-% (request permission, or generate from an open dataset). This page especially
-% needs a figure of the FIB needle-preparation sequence, shared with the FIB page.
+The animation below runs the whole idea. The needle contains a multilayer (gold-colored heavy solute bands in a purple matrix) plus one solute cluster. Field evaporation removes atoms from the apex, the evaporation front recedes and widens into the shank, and each detected atom is placed into the reconstruction on the right. Watch what survives and what degrades: the layers and the cluster stay sharp in depth, because depth comes from arrival order; lateral positions blur by a few atom spacings from trajectory aberrations; and the missing atoms are invisible, but not neutral, since the matrix is lost more often than the solute and the measured composition shifts accordingly. Compare the true and measured solute fractions in the panel as the run proceeds.
+
+:::{anywidget} ../../widgets/apt-evaporate.js
+:::
+
+% TODO: figures still wanted: (b) an example mass spectrum; (c) a published
+% reconstruction of a real multilayer or grain boundary; (d) the FIB
+% needle-preparation sequence, shared with the FIB page.
 
 ## References and further reading
 

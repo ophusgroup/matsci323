@@ -41,8 +41,10 @@ Stopping ends in a range. Ions implanted at energy $E_0$ come to rest in an appr
 % and nuclear stopping vs energy for He and Ar in Si (compute from SRIM tables);
 % (d) implantation profile with Rp and straggle labeled.
 
-% TODO: candidate interactive widget: kinematic factor calculator plus a stopping/
-% range explorer. This replaces the SRIM homework exercises from earlier years.
+The simulator below is a working TRIM-style calculation running in the page: binary collisions with the universal ZBL potential, electronic stopping, and full collision cascades. Watch the character of the trajectories change with the physics: a light, fast ion (He at high energy) travels in a nearly straight line losing energy to electrons, then scatters violently only near the end of its range, while a heavy, slow ion (As, Ga) rattles through dense nuclear collisions from the moment it enters. The right panel accumulates the implantation depth profile with its projected range and straggle, and the vacancy estimate connects directly to the sputtering and damage discussion ahead. Ranges here agree with SRIM at the tens-of-percent level; use SRIM itself for quantitative work.
+
+:::{anywidget} ../../widgets/ion-range.js
+:::
 
 ## References and further reading
 

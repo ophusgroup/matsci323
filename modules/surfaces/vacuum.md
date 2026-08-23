@@ -28,7 +28,10 @@ $$
 t_{\mathrm{ML}} \approx \frac{3 \times 10^{-6}}{P}\ \text{seconds, with } P \text{ in Torr}.
 $$
 
-At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are.
+At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are. The calculator below carries the full arithmetic across the pressure range; sliding from atmosphere to UHV, fourteen orders of magnitude, is the fastest way to internalize why vacuum hardware dominates surface analysis.
+
+:::{anywidget} ../../widgets/vacuum-calc.js
+:::
 
 ## Pumps
 

@@ -8,6 +8,11 @@ A surface is periodic in two dimensions only. Its reciprocal "lattice" is theref
 
 Surface structures are named by how their two-dimensional mesh relates to the substrate net, using Wood's notation: Si(111) 7x7 for the famous reconstruction, c(2x2) for a centered overlayer, and so on. Any periodicity larger than the substrate's produces additional, more closely spaced rods, so superstructures announce themselves as extra spots.
 
+The construction below makes the geometry explicit. In LEED mode the Ewald circle crosses the rods steeply at every energy, so diffraction never turns off, and raising the energy shrinks the pattern by pulling more rods inside the circle. Switch to RHEED mode and the enormous circle grazes the rods at a shallow angle: the highlighted chords, where the circle passes through rods of finite width, stretch into the streaks of a real RHEED pattern. The rod width is set by the inverse of the ordered domain size, so sharper crystals give sharper features in both geometries. Finally, toggle to a 3D crystal and watch the beams vanish: with reciprocal points instead of rods, an arbitrary energy and angle intersects almost nothing, which is why bulk diffraction requires scanning the angle.
+
+:::{anywidget} ../../widgets/ewald.js
+:::
+
 ## LEED
 
 LEED fires electrons of 20 to 300 eV at normal incidence and displays the elastically backscattered beams on a hemispherical fluorescent screen. At these energies the [IMFP](../espec/electron-solid.md) sits at its minimum, so the pattern comes from the top few atomic layers: LEED is the surface counterpart of a single-crystal X-ray photograph. Reading the pattern is immediate: the spot geometry gives the surface mesh and its symmetry, extra spots reveal reconstructions or ordered adsorbate overlayers, and spot sharpness measures the ordered domain size. A sharp, low-background pattern is the accepted certificate of a clean, well-ordered surface, which is why a LEED image opens so many surface science papers.
@@ -28,9 +33,10 @@ Three readings make RHEED the growth technique it is:
 - **Reconstruction**: fractional-order streaks track surface reconstructions, which in MBE practice calibrate temperature and flux conditions.
 - **Intensity oscillations**: in layer-by-layer growth the specular intensity oscillates with exactly one period per monolayer, as the surface cycles between smooth (complete layer) and rough (half layer). Counting oscillations counts monolayers, giving absolute growth rate calibration to a fraction of a monolayer, the standard by which MBE shutters are timed.
 
-% TODO: figure: RHEED geometry, streak vs spot patterns, and an oscillation trace
-% with the monolayer cartoon. The oscillation figure is a strong candidate for a
-% simple animation on this page.
+The simulation below grows a film one atom at a time while computing the kinematic specular intensity. With ample surface diffusion, the film completes each layer before starting the next and the intensity rings like a bell, one period per monolayer: this is the oscillation an MBE operator counts to calibrate growth. Drag the diffusion slider to zero and the same deposition flux produces a roughening surface and dying oscillations. The damping of real RHEED oscillations is exactly this physics, and reads as a live report on the growth mode.
+
+:::{anywidget} ../../widgets/rheed-growth.js
+:::
 
 ## References and further reading
 

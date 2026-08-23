@@ -23,9 +23,10 @@ The techniques of this course form a toolbox, and the professional skill this co
 | AFM | Topography and roughness | Surface | 1 to 10 nm | sub-angstrom heights | No |
 | Functional SPM | Local properties: conduction, work function, domains | Surface | 10 to 50 nm | mode dependent | Usually no |
 
-% TODO: this table wants to become a sortable/filterable widget, and possibly a
-% two-axis chart (lateral resolution vs sampling depth, bubble size = sensitivity).
-% Both are good candidates for the interactive build-out phase.
+The same landscape as a map: each technique plotted by its lateral resolution and the depth it samples per measurement, colored by probe family. Hover any point for the question that technique answers best. The empty upper-left corner is worth contemplating: nothing offers atomic lateral resolution while sampling deep volumes, which is why buried-interface problems always end in sample preparation.
+
+:::{anywidget} ./widgets/technique-map.js
+:::
 
 ## Decision principles
 

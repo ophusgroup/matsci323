@@ -27,8 +27,13 @@ The signature strength is heavy-on-light: a submonolayer of Hf on silicon stands
 % examples worth redrawing; his hand-drawn spectrum-buildup figures are the best
 % part of the old deck.
 
-% TODO: homework tie-in: Colab notebook that simulates spectra for a user-defined
-% layer stack, then asks students to fit an unknown.
+The simulator below applies all three rules to a stack you define. The kinematic factors and the $Z^2/E^2$ cross sections are exact; the stopping powers are approximate tabulated values, so treat depth scales as semi-quantitative. Reproduce the classic cases: a heavy marker layer (Au) standing isolated above a light substrate, the box width growing with film thickness, layer signals shifting down in energy as you bury them, and the hopeless overlap of two neighboring heavy elements.
+
+:::{anywidget} ../../widgets/rbs-spectrum.js
+:::
+
+% TODO: homework tie-in: Colab notebook version of this simulator that asks
+% students to fit an unknown spectrum quantitatively.
 
 ## Instrumentation
 

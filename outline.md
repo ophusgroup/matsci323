@@ -21,11 +21,11 @@ MATSCI 323 is a 3 unit lecture course. We meet twice weekly for 80 minute lectur
 
 ## Grading
 
-Grading is based on three components, weighted equally:
+Grading is based on three components:
 
-- **Homework** (1/3). One problem set per module, six sets in total. Several assignments include a computational component in Python, run through Google Colab so that no local software installation is required.
-- **Midterm** (1/3). Covers modules 1 through 4.
-- **Final project** (1/3). Described below.
+- **Homework** (35%). One problem set per module, seven sets at 5% each. Several assignments include a computational component in Python, run through Google Colab so that no local software installation is required.
+- **Midterm** (30%). Covers modules 1 through 4, where the quantitative machinery of the course lives.
+- **Final project** (35%). Described below. The project is the culminating assessment of the course; there is no separate final exam, and project presentations are delivered during the final-exam period.
 
 % TODO: confirm the midterm format (in-class versus take-home) and coverage
 % once the week-by-week schedule is fixed.
@@ -34,7 +34,7 @@ Grading is based on three components, weighted equally:
 
 Each student individually prepares two deliverables on a characterization technique not directly covered in this course:
 
-1. **A technique page**, roughly two pages of prose with figures and citations, written in the style of this course website. The page should cover the physics behind the measurement, the analytical environment and instrumentation, the sensitivity and detection limits, the types of samples that can be studied, representative example data, and a closing assessment of the technique's strengths and limitations.
+1. **A technique page**, roughly three pages including figures and citations, written in the style of this course website. The page should cover the physics behind the measurement, the analytical environment and instrumentation, the sensitivity and detection limits, the types of samples that can be studied, representative example data, and a closing assessment of the technique's strengths and limitations.
 2. **A five minute presentation** summarizing the technique for the class, delivered during the final sessions of the quarter.
 
 A curated list of suggested techniques is given in the [technique list appendix](appendix/technique-list.md). Deep dives into an advanced aspect of a covered technique are also welcome, for example electron ptychography, cryogenic FIB and electron microscopy, or in situ and operando measurements; propose these directly. Strong technique pages may be published, with the author's permission, as student-contributed appendices to this site.

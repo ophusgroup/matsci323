@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>surface-energy widget test</title>
+<style>
+  body { margin: 0; padding: 2rem; font-family: system-ui, sans-serif;
+         background: #fff; transition: background 0.2s; }
+  html.dark body { background: #1c1917; color: #eee; }
+  .frame { max-width: 860px; margin: 0 auto; }
+  #toggle { margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <button id="toggle">toggle dark</button>
+  <div id="mount"></div>
+</div>
+<script type="module">
+  import widget from "./widgets/surface-energy.js";
+  const model = { get: () => undefined };
+  widget.render({ model, el: document.getElementById("mount") });
+  document.getElementById("toggle").onclick = () =>
+    document.documentElement.classList.toggle("dark");
+</script>
+</body>
+</html>

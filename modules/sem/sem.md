@@ -22,10 +22,14 @@ The two workhorse signals were introduced with the [electron-solid physics](../e
 
 The **interaction volume** ties everything together. The beam spreads into a pear-shaped region whose size scales roughly as $E^{1.7}/\rho$, from tens of nanometers at 1 kV to several micrometers at 30 kV. Signals escape from different fractions of it: SE from the top few nanometers, BSE from a substantial fraction, X-rays from nearly all of it. Beam voltage is therefore the most important knob on the instrument. For thin films the modern trend to low-voltage imaging (below about 2 kV) is decisive: it confines the interaction volume to the film rather than the substrate, reveals true surface structure, and controls charging on insulators by balancing electron input against emission.
 
-% TODO: figures: (a) interaction volume schematic at 2, 10, 30 kV with signal
-% escape depths (CASINO Monte Carlo makes nice versions; good Colab exercise);
-% (b) same-region SE vs BSE image pair; (c) low- vs high-kV comparison on a thin
-% film. Mark's 2025 SEM lecture has instrument photos worth keeping.
+The simulation below computes real electron trajectories with the standard single-scattering Monte Carlo model (screened Rutherford elastic scattering plus Bethe energy loss). Backscattered trajectories are highlighted, and the backscatter yield $\eta$ accumulates live. The two experiments to run: sweep the beam energy on silicon and watch the interaction volume grow as roughly $E^{1.7}$, then hold the energy fixed and step through the targets to watch the volume shrink and the backscatter fraction climb with atomic number. Both trends are the daily working intuition of SEM operation.
+
+:::{anywidget} ../../widgets/sem-mc.js
+:::
+
+% TODO: figures still wanted: (b) same-region SE vs BSE image pair; (c) low- vs
+% high-kV comparison on a thin film. Mark's 2025 SEM lecture has instrument
+% photos worth keeping.
 
 ## Energy dispersive X-ray spectroscopy
 

@@ -29,10 +29,14 @@ Step height measurement is the other precision use: an AFM across a masked or et
 
 Every AFM image is the convolution of surface and tip. A dull or contaminated tip broadens every feature by its own radius, and features sharper than the tip image the tip instead of the sample (visible as repeated identical shapes). Feedback ringing, thermal drift, scanner bow, and line-to-line offsets all masquerade as topography; flattening and plane-fit corrections are necessary but can also erase real long-wavelength structure. The discipline is simple and non-negotiable: know the tip condition, image the same area twice (rotated once), and treat any feature at the resolution limit with suspicion.
 
-% TODO: figures: (a) force-distance curve annotated with imaging-mode operating
-% points; (b) beam-deflection schematic; (c) a roughness PSD from real film data
-% (good Colab exercise: compute the PSD from a provided height map); (d) a
-% tip-convolution cartoon with a real doubled-tip artifact image.
+The demonstration below scans a spherical tip across known test structures and shows the measured trace against the truth. Sweep the tip radius on the particles preset and watch every feature broaden as roughly $2\sqrt{rR}$ while heights stay correct; try the trench to see the opposite artifact, a hole the tip cannot enter; and enable the double tip to generate the ghost-image doubling that fools beginners. The roughness readout quantifies the damage: the measured $R_q$ is always at or below the true value, because the tip is a low-pass filter.
+
+:::{anywidget} ../../widgets/afm-tip.js
+:::
+
+% TODO: figures still wanted: (a) force-distance curve annotated with imaging-mode
+% operating points; (b) beam-deflection schematic; (c) a roughness PSD from real
+% film data (good Colab exercise).
 
 ## References and further reading
 

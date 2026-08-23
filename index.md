@@ -25,9 +25,8 @@ Department of Materials Science and Engineering
 Nearly every technology we build depends on thin films and the interfaces between them. Semiconductor devices, batteries, solar cells, displays, hard coatings, and quantum devices all succeed or fail based on the composition, structure, and morphology of layers that may be only a few atoms thick. This course is an in-depth study of the analytical techniques we use to measure these materials.
 :::
 
-% TODO: hero image for the landing page. Candidate: a montage of a film cross-section
-% measured by several techniques (XRR curve, XPS spectrum, STEM image, APT reconstruction
-% of the same nominal stack). We should make this figure ourselves.
+:::{anywidget} ./widgets/hero-techniques.js
+:::
 
 ## What this course covers
 
@@ -53,4 +52,4 @@ See the [course outline](outline.md) for the module structure, grading, and the 
 
 ## Acknowledgements
 
-This course is adapted from MATSCI 323, Thin Film and Interface Microanalysis, developed and taught at Stanford for over two decades by Mark Brongersma. The course structure and much of the treatment of ion beam analysis and electron spectroscopy build on his original course notes, and his framing of surface analysis as a puzzle to be solved with the right combination of tools survives throughout this site.
+This course is adapted from MATSCI 323, Thin Film and Interface Microanalysis, developed and taught at Stanford for over two decades by Professor [Mark Brongersma](https://brongersma.stanford.edu/). The course structure and much of the treatment of ion beam analysis and electron spectroscopy build on his original course notes, and his framing of surface analysis as a puzzle to be solved with the right combination of tools survives throughout this site.

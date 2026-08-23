@@ -29,8 +29,10 @@ so a 50 nm film measured with Cu K$\alpha$ radiation shows fringes about 0.09 de
 % thickness and roughness, annotated with critical angle and fringe period.
 % We can compute these ourselves (Parratt) which also feeds the homework.
 
-% TODO: candidate interactive widget: live Parratt calculator with sliders for
-% thickness, density, and roughness of a two-layer stack. Strong homework tie-in.
+The calculator below computes the exact Parratt reflectivity of a film on silicon as you adjust the stack. Work through the fitting logic one parameter at a time: thickness sets the fringe period, density sets the critical angle and the fringe contrast against the substrate, surface roughness accelerates the overall decay, and interface roughness damps the fringes without changing their period. These four signatures are exactly what an XRR fitting program is disentangling, and seeing them separately is most of the skill of reading a reflectivity curve.
+
+:::{anywidget} ../../widgets/xrr-explorer.js
+:::
 
 ## GISAXS and GIWAXS
 

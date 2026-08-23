@@ -37,5 +37,7 @@ repository **Settings → Pages → Source → GitHub Actions**.
 - `index.md`: landing page
 - `myst.yml`: site config, navigation, and table of contents
 - `assets/`: images and figures
+- `widgets/`: interactive demos (anywidget ES modules, embedded with local paths)
+- `test-*.html`: standalone widget test pages for development
 - `style.css`: theme overrides for the MyST book-theme
 - `scripts/patch_theme.py`: theme patch (flat top-bar search)

@@ -14,9 +14,10 @@ $$
 
 where $\theta$ is the emission angle from the surface normal. About 95% of detected signal originates within $3\lambda\cos\theta$ of the surface, a few nanometers at most. The angular factor is free depth resolution: tilting the detector toward grazing emission shrinks the sampled depth, the basis of angle-resolved XPS. Predictive formulas (Tanuma, Powell, and Penn's TPP-2M) give $\lambda$ for any material, and the distinction between the IMFP and the slightly shorter effective attenuation length (which folds in elastic scattering) matters for careful thickness work.
 
-% TODO: figure: the universal curve with the techniques of this course marked on
-% it (XPS, AES, LEED energy ranges), plus the exponential escape-depth schematic.
-% This is the single most important figure of the module.
+The interactive figure below is the most important one in this module. The left panel is the universal curve with the working energy ranges of LEED and XPS marked; the right panel converts the selected energy and emission angle into the numbers an analyst actually uses: the IMFP, the 95% sampling depth, and the attenuation of a substrate signal by an overlayer. Note how tilting toward grazing emission shrinks the sampling depth with no change to the instrument at all, which is the entire basis of angle-resolved XPS.
+
+:::{anywidget} ../../widgets/imfp-escape.js
+:::
 
 ## The energy loss spectrum
 
