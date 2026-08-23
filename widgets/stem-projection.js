@@ -2,10 +2,11 @@
 // AnyWidget: projection in (S)TEM. A film with a buried interface is viewed
 // two ways: cross-section (beam in the film plane, through a lamella of
 // finite thickness) and plan view (beam along the film normal, through the
-// whole stack). Buttons select the interface type; sliders set the roughness
-// amplitude and the lamella thickness. The cross-section panel reports the
-// apparent interface width, which for a rough interface is set by the
-// roughness projected through the lamella, not by the chemistry.
+// whole stack). Buttons select the interface geometry; sliders set the
+// roughness/tilt amplitude, the lamella thickness, and the chemical mixing
+// width. The cross-section panel reports the apparent interface width, which
+// mixes geometric projection (roughness through the lamella) with true
+// chemistry (intermixing) into one number the image cannot separate.
 //
 //   :::{anywidget} ../../widgets/stem-projection.js
 //   :::
@@ -18,9 +19,11 @@ function makeNoise() {
   let seed = 12345;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i < 14; i++) {
-    const kk = 1 + Math.floor(rnd() * 5);
+    // fine along x (visible wiggle), slow along y so the projected blur keeps
+    // growing over the whole lamella-thickness range instead of saturating
+    const kk = 2 + Math.floor(rnd() * 6);
     kx.push(kk * (rnd() < 0.5 ? 1 : -1));
-    ky.push(1 + Math.floor(rnd() * 5));
+    ky.push(1 + Math.floor(rnd() * 3));
     amps.push(1 / Math.sqrt(kx[i] * kx[i] + ky[i] * ky[i]));
     ph.push(rnd() * 6.28);
   }
@@ -38,20 +41,16 @@ const noise = makeNoise();
 
 // interface height (in z fraction) at lateral position (x, y in 0..1)
 function zInt(kind, x, y, amp) {
-  if (kind === "Sharp") return ZINT;
-  if (kind === "Diffuse") return ZINT;
   if (kind === "Rough") return ZINT + amp * noise(x, y);
   if (kind === "Inclined") return ZINT + amp * (y - 0.5) * 1.6;
   return ZINT;
 }
-// composition at (x, y, z): 1 below the interface, 0 above; Diffuse grades
-function comp(kind, x, y, z, amp) {
+// composition at (x, y, z): 1 below the interface, 0 above, graded across
+// the chemical mixing width regardless of the interface geometry
+function comp(kind, x, y, z, amp, mix) {
   const zi = zInt(kind, x, y, amp);
-  if (kind === "Diffuse") {
-    const wdif = Math.max(amp, 0.003);
-    return 1 / (1 + Math.exp((z - zi) / (wdif / 2)));
-  }
-  return z < zi ? 1 : 0;
+  if (mix < 0.004) return z < zi ? 1 : 0;
+  return 1 / (1 + Math.exp((z - zi) / (mix / 2)));
 }
 
 function render({ model, el }) {
@@ -62,7 +61,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-top { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
 .${uid} .w-top button { border:1px solid var(--w-border); border-radius:6px;
   background:var(--w-panel); color:var(--w-fg); padding:4px 12px; cursor:pointer; font-size:13px; }
@@ -80,13 +79,14 @@ function render({ model, el }) {
 <div class="w-top"></div>
 <div class="w-row">
   <div class="w-col"><canvas class="w-schem" height="290"></canvas>
-    <label>interface roughness / width / tilt <span class="w-val w-ampv"></span>
+    <label>roughness / tilt amplitude <span class="w-val w-ampv"></span>
       <input class="w-amp" type="range" min="0" max="0.16" step="0.005" value="0.06"></label></div>
   <div class="w-col"><canvas class="w-xs" height="290"></canvas>
     <label>lamella thickness (cross-section) <span class="w-val w-tv"></span>
       <input class="w-t" type="range" min="0.02" max="0.6" step="0.02" value="0.25"></label></div>
   <div class="w-col"><canvas class="w-pv" height="290"></canvas>
-    <label style="visibility:hidden">spacer<input type="range"></label></div>
+    <label>chemical mixing width <span class="w-val w-mixv"></span>
+      <input class="w-mix" type="range" min="0" max="0.12" step="0.004" value="0"></label></div>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
@@ -96,7 +96,7 @@ function render({ model, el }) {
 
   const top = root.querySelector(".w-top");
   let kind = "Rough";
-  for (const k of ["Sharp", "Diffuse", "Rough", "Inclined"]) {
+  for (const k of ["Sharp", "Rough", "Inclined"]) {
     const b = document.createElement("button");
     b.textContent = k;
     if (k === kind) b.classList.add("on");
@@ -109,6 +109,7 @@ function render({ model, el }) {
   }
   const cvS = root.querySelector(".w-schem"), cvX = root.querySelector(".w-xs"), cvP = root.querySelector(".w-pv");
   const inAmp = root.querySelector(".w-amp"), inT = root.querySelector(".w-t");
+  const inMix = root.querySelector(".w-mix");
 
   function dark() { return document.documentElement.classList.contains("dark"); }
   function syncTheme() { root.classList.toggle("w-dark", dark()); draw(); }
@@ -118,7 +119,7 @@ function render({ model, el }) {
   function draw() {
     const dpr = window.devicePixelRatio || 1;
     const isD = dark();
-    const amp = +inAmp.value, tLam = +inT.value;
+    const amp = +inAmp.value, tLam = +inT.value, mix = +inMix.value;
     // ---------- schematic: oblique view of the film block with beams ----------
     {
       const w = cvS.clientWidth || 200, h = 290;
@@ -152,8 +153,18 @@ function render({ model, el }) {
       g.fillStyle = isD ? "#3a3430" : "#e2dcd4";
       g.beginPath(); g.moveTo(bx + bw, by); g.lineTo(bx + bw + ox, by + oy);
       g.lineTo(bx + bw + ox, by + oy + bh); g.lineTo(bx + bw, by + bh); g.closePath(); g.fill();
+      // lamella slab on the top face: the slice the cross-section beam
+      // projects through; its width tracks the thickness slider
+      const f1 = 0.5 - tLam / 2, f2 = 0.5 + tLam / 2;
+      g.fillStyle = isD ? "rgba(255,63,63,0.35)" : "rgba(204,0,0,0.25)";
+      g.beginPath();
+      g.moveTo(bx + f1 * ox, by + f1 * oy);
+      g.lineTo(bx + bw + f1 * ox, by + f1 * oy);
+      g.lineTo(bx + bw + f2 * ox, by + f2 * oy);
+      g.lineTo(bx + f2 * ox, by + f2 * oy);
+      g.closePath(); g.fill();
       // beams
-      const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+      const acc = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
       g.strokeStyle = acc; g.lineWidth = 2;
       // plan-view beam: down through the top face
       g.beginPath(); g.moveTo(bx + bw * 0.75 + ox / 2, 12);
@@ -166,6 +177,8 @@ function render({ model, el }) {
       g.fillText("cross-section beam", 6, by + oy + bh * 0.5 - 32);
       g.fillText("film A / film B interface", bx, by + bh + 20);
       g.fillText("sample", 6, 16);
+      g.fillStyle = acc;
+      g.fillText("lamella", w - g.measureText("lamella").width - 4, by + oy * 0.5 + 2);
     }
     // ---------- cross-section image: project along y through the lamella ----------
     {
@@ -176,30 +189,38 @@ function render({ model, el }) {
       g.fillStyle = "#0b0a0a"; g.fillRect(0, 0, w, h);
       const imH = h - 90, x0 = 8, y0 = 26, imW = w - 16;
       const prof = new Float64Array(NZ);
+      const vals = new Float64Array(NZ * NX);
       for (let iz = 0; iz < NZ; iz++) {
         for (let ix = 0; ix < NX; ix++) {
           let s = 0;
           for (let iy = 0; iy < NYS; iy++)
-            s += comp(kind, ix / NX, 0.5 + (iy / NYS - 0.5) * tLam, 1 - iz / NZ, amp);
+            s += comp(kind, ix / NX, 0.5 + (iy / NYS - 0.5) * tLam, 1 - iz / NZ, amp, mix);
           s /= NYS;
+          vals[iz * NX + ix] = s;
           const v = Math.round(40 + 190 * s);
           g.fillStyle = `rgb(${v},${Math.round(v * 0.92)},${Math.round(v * 0.85)})`;
           g.fillRect(x0 + ix / NX * imW, y0 + iz / NZ * imH, imW / NX + 0.5, imH / NZ + 0.5);
           prof[iz] += s / NX;
         }
       }
-      // apparent width from the laterally averaged profile (10% to 90%)
-      let z10 = -1, z90 = -1;
-      for (let iz = 0; iz < NZ; iz++) {
-        if (z10 < 0 && prof[iz] > 0.1) z10 = iz / NZ;
-        if (z90 < 0 && prof[iz] > 0.9) z90 = iz / NZ;
+      // apparent width the way it is measured in practice: a 10-90 line
+      // profile across the interface at each x, averaged over x
+      let wid = 0, nw = 0;
+      for (let ix = 0; ix < NX; ix += 2) {
+        let z10 = -1, z90 = -1;
+        for (let iz = 0; iz < NZ; iz++) {
+          const s = vals[iz * NX + ix];
+          if (z10 < 0 && s > 0.1) z10 = iz / NZ;
+          if (z90 < 0 && s > 0.9) z90 = iz / NZ;
+        }
+        if (z10 >= 0 && z90 >= 0) { wid += Math.abs(z90 - z10); nw++; }
       }
-      const wid = (z10 >= 0 && z90 >= 0) ? Math.abs(z90 - z10) : 0;
+      wid = nw ? wid / nw : 0;
       g.fillStyle = "#ddd"; g.font = "13px system-ui";
       g.fillText("cross-section image (beam into page)", 8, 16);
       g.fillText("apparent interface width: " + (wid * 100).toFixed(1) + " (a.u.)", 8, h - 64);
       // profile trace
-      g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(255,120,140)"; g.lineWidth = 1.6;
+      g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(255,120,140)"; g.lineWidth = 1.6;
       g.beginPath();
       for (let iz = 0; iz < NZ; iz++) {
         const px = x0 + prof[iz] * (imW - 4), py = h - 54 + iz / NZ * 44 - 44 + 44;
@@ -219,10 +240,9 @@ function render({ model, el }) {
       const NP = 84;
       for (let iy = 0; iy < NP; iy++) {
         for (let ix = 0; ix < NP; ix++) {
-          // projected composition = interface height at (x, y)
-          let zi;
-          if (kind === "Diffuse") zi = ZINT;   // graded but flat: uniform projection
-          else zi = zInt(kind, ix / NP, iy / NP, amp);
+          // projected composition = interface height at (x, y); the mixing
+          // width drops out of a full-stack projection
+          const zi = zInt(kind, ix / NP, iy / NP, amp);
           const v = Math.round(40 + 190 * Math.min(1, Math.max(0, zi)));
           g.fillStyle = `rgb(${v},${Math.round(v * 0.92)},${Math.round(v * 0.85)})`;
           g.fillRect(x0 + ix / NP * im, y0 + iy / NP * im, im / NP + 0.5, im / NP + 0.5);
@@ -230,13 +250,14 @@ function render({ model, el }) {
       }
       g.fillStyle = "#ddd"; g.font = "13px system-ui";
       g.fillText("plan-view image (beam into page)", 8, 16);
-      if (kind === "Sharp" || kind === "Diffuse")
-        g.fillText("flat interface: no contrast at all", x0 + 4, y0 + im + 18);
+      if (kind === "Sharp")
+        g.fillText("flat interface: no contrast, even mixed", x0 + 4, y0 + im + 18);
     }
     root.querySelector(".w-ampv").textContent = (amp * 100).toFixed(1) + " (a.u.)";
     root.querySelector(".w-tv").textContent = (tLam * 100).toFixed(0) + " (a.u.)";
+    root.querySelector(".w-mixv").textContent = (mix * 100).toFixed(1) + " (a.u.)";
   }
-  for (const i of [inAmp, inT]) i.addEventListener("input", draw);
+  for (const i of [inAmp, inT, inMix]) i.addEventListener("input", draw);
   new ResizeObserver(draw).observe(cvX);
   syncTheme();
   return () => obs.disconnect();

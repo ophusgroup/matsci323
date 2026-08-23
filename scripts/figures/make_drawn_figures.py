@@ -96,7 +96,7 @@ labels_y = {-0.78: None}
 ly = y0 - 0.14
 for i, (name, a0, a1, c, rl) in enumerate(det):
     ax.text(-1.38, ly - i*0.115, name, fontsize=10.5, color=c)
-ax.text(0.02, 0.98, "converged probe", fontsize=11, color=st.BLUE)
+ax.text(0.07, 0.80, "converged probe", fontsize=11, color=st.BLUE)
 ax.set_title("detector collection angles select the contrast", fontsize=12)
 st.save(fig, "stem-detectors.svg"); plt.close(fig)
 

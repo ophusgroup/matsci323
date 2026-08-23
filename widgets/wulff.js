@@ -44,7 +44,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-top { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
 .${uid} .w-top button { border:1px solid var(--w-border); border-radius:6px;
   background:var(--w-panel); color:var(--w-fg); padding:4px 12px; cursor:pointer; font-size:13px; }
@@ -104,7 +104,7 @@ function render({ model, el }) {
   function draw() {
     const dpr = window.devicePixelRatio || 1;
     const isD = dark();
-    const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+    const acc = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     const a4 = +inA4.value, a6 = +inA6.value;
     const gam = gammaFn(a4, a6);
     const shape = wulffShape(gam, 720);
@@ -128,7 +128,7 @@ function render({ model, el }) {
       g.stroke(); g.setLineDash([]);
       // Wulff shape
       g.strokeStyle = acc; g.lineWidth = 2.2;
-      g.fillStyle = isD ? "rgba(255,80,90,0.13)" : "rgba(204,0,0,0.08)";
+      g.fillStyle = isD ? "rgba(255,63,63,0.13)" : "rgba(204,0,0,0.08)";
       g.beginPath();
       shape.forEach((p, i) => {
         const px = cx + p[0] * S, py = cy - p[1] * S;
@@ -158,7 +158,7 @@ function render({ model, el }) {
         const py = cy - p[1] * S;
         poly.push([cx + p[0] * S, Math.min(py, subY)]);
       });
-      g.fillStyle = isD ? "rgba(255,80,90,0.25)" : "rgba(204,0,0,0.16)";
+      g.fillStyle = isD ? "rgba(255,63,63,0.25)" : "rgba(204,0,0,0.16)";
       g.strokeStyle = acc; g.lineWidth = 2.2;
       g.beginPath();
       poly.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]));

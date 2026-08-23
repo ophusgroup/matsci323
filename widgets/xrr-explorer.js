@@ -77,7 +77,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); --w-grid:#eee; font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); --w-grid:#333; }
+  --w-accent:rgb(255,63,63); --w-grid:#333; }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; }
@@ -166,7 +166,7 @@ function render({ model, el }) {
     g.save(); g.translate(12, mT + ph / 2 + 30); g.rotate(-Math.PI / 2);
     g.fillText("reflectivity", 0, 0); g.restore();
     // curve
-    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+    g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     g.lineWidth = 1.6; g.beginPath();
     let started = false;
     for (let i = 1; i <= 700; i++) {
@@ -199,7 +199,7 @@ function render({ model, el }) {
       // substrate and film
       q.fillStyle = isD ? "#3d3a38" : "#cfcbc5";
       q.fillRect(8, surfY + filmPx, sw - 16, 268 - surfY - filmPx);
-      q.fillStyle = isD ? "rgba(255,80,90,0.30)" : "rgba(204,0,0,0.18)";
+      q.fillStyle = isD ? "rgba(255,63,63,0.30)" : "rgba(204,0,0,0.18)";
       q.fillRect(8, surfY, sw - 16, filmPx);
       // rough interfaces
       q.strokeStyle = isD ? "#eee" : "#333"; q.lineWidth = 1.2;
@@ -207,7 +207,7 @@ function render({ model, el }) {
       wig(surfY + filmPx, Math.min(5, 0.6 + s2 * 2.2), 2);
       // rays: surface reflection plus one internal bounce (the fringe pair)
       const rayA = 0.40, run = surfY - 26;
-      q.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; q.lineWidth = 1.6;
+      q.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; q.lineWidth = 1.6;
       q.beginPath(); q.moveTo(cx - run / Math.tan(rayA) * 0.55, 26);
       q.lineTo(cx, surfY); q.lineTo(cx + run / Math.tan(rayA) * 0.55, 26); q.stroke();
       q.globalAlpha = 0.65;

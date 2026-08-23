@@ -43,7 +43,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
@@ -106,7 +106,7 @@ function render({ model, el }) {
     // regime bands, labels at the bottom of each band
     const bands = [[2.9, -3, "rough vacuum", 0.05], [-3, -8, "high vacuum", 0.10], [-8, -12, "UHV", 0.16]];
     for (const [a, b, name, al] of bands) {
-      g.fillStyle = isD ? `rgba(255,80,90,${al})` : `rgba(204,0,0,${al * 0.7})`;
+      g.fillStyle = isD ? `rgba(255,63,63,${al})` : `rgba(204,0,0,${al * 0.7})`;
       g.fillRect(X(b), mT, X(a) - X(b), h - mT - mB);
       g.fillStyle = isD ? "#ccc" : "#555"; g.font = "12px system-ui";
       g.fillText(name, X(b) + 5, h - mB - 7);
@@ -133,7 +133,7 @@ function render({ model, el }) {
       g.fillText(lab, 5, Y(lt) + 4);
     g.fillText("pressure (Torr)", mL + (w - mL - mR) / 2 - 45, h - 4);
     // monolayer-time line
-    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; g.lineWidth = 2;
+    g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; g.lineWidth = 2;
     g.beginPath();
     for (let l = -12; l <= 2.9; l += 0.1) {
       const t = props(Math.pow(10, l), TK).tml;
@@ -143,7 +143,7 @@ function render({ model, el }) {
     }
     g.stroke();
     // marker
-    g.fillStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+    g.fillStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     g.beginPath(); g.arc(X(lp), Y(Math.min(ltMax, Math.max(ltMin, Math.log10(tml)))), 6, 0, 6.3); g.fill();
     root.querySelector(".w-pv").textContent = pT.toExponential(1) + " Torr";
     root.querySelector(".w-tv").textContent = TK + " K";

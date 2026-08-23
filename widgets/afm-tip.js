@@ -106,7 +106,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; cursor:crosshair; }
 .${uid} .w-controls { display:flex; gap:10px; align-items:center; margin-top:8px;
@@ -202,7 +202,7 @@ function render({ model, el }) {
     g.lineTo(w - mR2, yBase); g.lineTo(mL, yBase); g.closePath();
     g.fillStyle = isD ? "#3a3735" : "#dad6d0"; g.fill();
     // measured trace
-    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; g.lineWidth = 2;
+    g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; g.lineWidth = 2;
     g.beginPath();
     for (let i = 0; i < NX; i++) i ? g.lineTo(X(i), Y(m[i])) : g.moveTo(X(i), Y(m[i]));
     g.stroke();

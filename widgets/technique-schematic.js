@@ -98,7 +98,8 @@ const SCHEMS = {
       arrow(Xt[0], Xt[1] + 2, Xt[0], Xt[1] + 24, C.el, 1.4);
       box(Xt[0] - 16, H[1] + 26, 32, 13);
       label("detector", Xt[0] - 18, H[1] + 54);
-      label("hemispherical analyzer", H[0] - r2 - 4, H[1] - r2 - 10);
+      label("hemispherical", H[0] - 42, H[1] - 26);
+      label("analyzer", H[0] - 27, H[1] - 10);
       label("photoelectrons", P[0] + 46, P[1] - 14, C.el);
     } },
   sims: { cap: "<b>SIMS.</b> A keV primary ion beam sputters the surface; secondary ions are extracted into a mass spectrometer.",
@@ -151,7 +152,7 @@ const SCHEMS = {
       box(w * 0.80, 164, 30, 17);
       label("EDS", w * 0.82, 158);
       arrow(cx + 6, 206, w * 0.80, 176, C.acc, 1.2);
-      label("X-rays", cx + 52, 202, C.acc);
+      label("X-rays", w * 0.60, 184, C.acc);
     } },
   stem: { cap: "<b>STEM.</b> The condensers and objective focus a sub-angstrom probe on a thin sample; annular detectors catch the scattered cone and the spectrometer disperses the axial beam.",
     draw(g, w, h, C) {
@@ -372,7 +373,7 @@ function render({ model, el }) {
     const isD = dark();
     const C = {
       bg: isD ? "#221f1e" : "#ffffff", fg: isD ? "#e8e6e3" : "#222",
-      muted: isD ? "#8a8784" : "#888", acc: isD ? "rgb(255,80,90)" : "rgb(204,0,0)",
+      muted: isD ? "#8a8784" : "#888", acc: isD ? "rgb(255,63,63)" : "rgb(204,0,0)",
       el: isD ? "#7aa2e8" : "#3a62b8", metal: isD ? "#3d3a38" : "#cfcbc5",
       panel: isD ? "#2c2927" : "#f2efe9",
     };

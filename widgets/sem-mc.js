@@ -63,18 +63,17 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 280px; min-width:250px; }
-.${uid} .w-ctl { width:210px; display:flex; flex-direction:column; gap:8px; font-size:13px;
-  color:var(--w-muted); }
-.${uid} .w-box { background:var(--w-panel); border:1px solid var(--w-border); border-radius:6px;
-  padding:6px 8px; display:flex; flex-direction:column; gap:3px; }
-.${uid} .w-box b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
-.${uid} select, .${uid} input[type=range] { width:100%; accent-color:var(--w-accent); }
+.${uid} .w-bar { display:flex; gap:14px; align-items:center; margin-top:8px; font-size:13px;
+  color:var(--w-muted); flex-wrap:wrap; }
+.${uid} .w-bar label { display:flex; align-items:center; gap:6px; }
+.${uid} .w-bar b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
+.${uid} input[type=range] { width:110px; accent-color:var(--w-accent); }
 .${uid} select { background:var(--w-panel); color:var(--w-fg); border:1px solid var(--w-border);
-  border-radius:5px; padding:2px; }
+  border-radius:5px; padding:2px 4px; }
 .${uid} button { border:1px solid var(--w-border); border-radius:6px; background:var(--w-panel);
   color:var(--w-fg); padding:4px 10px; cursor:pointer; font-size:13px; }
 `;
@@ -84,25 +83,20 @@ function render({ model, el }) {
 <div class="w-wrap">
   <div class="w-plot"><canvas class="w-traj" height="360"></canvas></div>
   <div class="w-plot"><canvas class="w-hist" height="360"></canvas></div>
-  <div class="w-ctl">
-    <div class="w-box"><span>target</span>
-      <select class="w-mat">${Object.keys(MATS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></div>
-    <div class="w-box"><span>beam energy <b class="w-ev"></b></span>
-      <input class="w-E" type="range" min="1" max="30" step="0.5" value="15"></div>
-    <div class="w-box"><span>trajectories to run <b class="w-nv"></b></span>
-      <input class="w-N" type="range" min="2" max="4.3" step="0.05" value="3"></div>
-    <div class="w-box">
-      <span>completed <b class="w-nt">0</b></span>
-      <span>backscattered <b class="w-bse">&ndash;</b></span>
-      <span>K-O range <b class="w-ko"></b></span>
-      <span>deepest so far <b class="w-md">&ndash;</b></span>
-    </div>
-    <div class="w-box" style="font-size:12px; line-height:1.5">
-      <span><span style="color:#d04040">&#9644;</span> backscattered trajectory</span>
-      <span><span style="color:#4060c0">&#9644;</span> absorbed trajectory</span>
-      <span>right panel: deposited energy density</span></div>
-    <button class="w-go">Restart</button>
-  </div>
+</div>
+<div class="w-bar">
+  <label>target <select class="w-mat">${Object.keys(MATS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+  <label>beam energy <input class="w-E" type="range" min="1" max="30" step="0.5" value="15"><b class="w-ev"></b></label>
+  <label>trajectories <input class="w-N" type="range" min="2" max="4.3" step="0.05" value="3"><b class="w-nv"></b></label>
+  <button class="w-go">Restart</button>
+</div>
+<div class="w-bar">
+  <span>completed <b class="w-nt">0</b></span>
+  <span>backscattered <b class="w-bse">&ndash;</b></span>
+  <span>K-O range <b class="w-ko"></b></span>
+  <span>deepest so far <b class="w-md">&ndash;</b></span>
+  <span><span style="color:#d04040">&#9644;</span> backscattered</span>
+  <span><span style="color:#4060c0">&#9644;</span> absorbed</span>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
@@ -195,7 +189,7 @@ function render({ model, el }) {
           const v = hist[gz * HG + gx];
           if (!v) continue;
           const a = Math.log1p(v) / Math.log1p(mx);
-          g.fillStyle = isD ? `rgba(255,80,90,${(0.9 * a).toFixed(3)})`
+          g.fillStyle = isD ? `rgba(255,63,63,${(0.9 * a).toFixed(3)})`
                             : `rgba(204,0,0,${(0.85 * a).toFixed(3)})`;
           g.fillRect(w / 2 + (gx / HG - 0.5) * (w / 1.1), zTop + gz * ch, cw + 0.5, ch + 0.5);
         }
@@ -207,7 +201,7 @@ function render({ model, el }) {
     g.fillText("deposited energy (log color scale)", 10, 16);
   }
   function drawTraj(g, t, X, Y) {
-    g.strokeStyle = t.bse ? (dark() ? "rgba(255,80,90,0.85)" : "rgba(204,0,0,0.8)")
+    g.strokeStyle = t.bse ? (dark() ? "rgba(255,63,63,0.85)" : "rgba(204,0,0,0.8)")
                           : (dark() ? "rgba(160,190,255,0.28)" : "rgba(40,70,160,0.22)");
     g.lineWidth = 1;
     g.beginPath();

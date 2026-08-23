@@ -11,8 +11,8 @@
   --msc-accent-soft: rgba(204, 0, 0, 0.12);
 }
 html.dark {
-  --msc-accent: rgb(255, 80, 90);
-  --msc-accent-soft: rgba(255, 80, 90, 0.18);
+  --msc-accent: rgb(255, 63, 63);
+  --msc-accent-soft: rgba(255, 63, 63, 0.18);
 }
 
 /* ---------- Site title (upper-left) ---------- */
@@ -310,19 +310,17 @@ div.article.footer.myst-primary-sidebar-footer {
 }
 /* hide the external-link arrow icon */
 .myst-primary-sidebar-footer p a svg {
-  display: none;
+  display: none !important;
 }
 .myst-primary-sidebar-footer p a {
   display: block;
   width: 130px;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  white-space: nowrap;
   text-decoration: none;
-  color: inherit;
-  opacity: 0.75;
-  /* stretch the single line to exactly the logo width */
-  text-align: justify;
-  text-align-last: justify;
+  color: inherit !important;
+  opacity: 0.8;
 }
 /* make the logo + text block one click target */
 .myst-primary-sidebar-footer p a::before {

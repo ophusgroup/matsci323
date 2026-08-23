@@ -54,10 +54,15 @@ function buildTip(kind) {
 function frontRadius(zf) {
   return zf < R0 ? R0 : R0 + (zf - R0) * CONE;
 }
+// evaporation-front radius of curvature: much wider than the shank radius so
+// the front is one gentle arc spanning the whole tip, with no flat shoulders
+function frontCurveR(zf) {
+  return 2.6 * frontRadius(Math.max(zf, 2));
+}
 // evaporation coordinate: distance along the tip axis of the curved front
 // passing through this atom; atoms with the smallest u are most exposed
 function evapU(a, zf) {
-  const R = frontRadius(Math.max(zf, 2));
+  const R = frontCurveR(zf);
   return a.z - Math.max(0, R - Math.sqrt(Math.max(0, R * R - a.x * a.x)));
 }
 function gauss() {
@@ -96,7 +101,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-row { display:flex; gap:10px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 260px; min-width:240px; }
@@ -117,10 +122,12 @@ function render({ model, el }) {
   <div class="w-plot"><canvas class="w-tip" height="330"></canvas></div>
   <div class="w-plot"><canvas class="w-rec" height="330"></canvas></div>
 </div>
-<div class="w-controls w-samples"></div>
 <div class="w-controls">
+  <span class="w-samples" style="display:contents"></span>
   <button class="w-play">&#10074;&#10074; Pause</button>
   <label>time <input class="w-time" type="range" min="0" max="1" step="1" value="0"></label>
+</div>
+<div class="w-controls">
   <label>efficiency <input class="w-eff" type="range" min="0.2" max="1" step="0.05" value="0.6"><span class="w-stat w-effv"></span></label>
   <label>xy error <input class="w-sx" type="range" min="0" max="4" step="0.1" value="1.5"><span class="w-stat w-sxv"></span></label>
   <label>z error <input class="w-sz" type="range" min="0" max="1" step="0.05" value="0.15"><span class="w-stat w-szv"></span></label>
@@ -221,17 +228,23 @@ function render({ model, el }) {
       g.fillStyle = a.b ? "#e0a832" : (isD ? "#7a6ea8" : "#8a80b8");
       g.beginPath(); g.arc(X(a.x), Y(a.z), sc * 0.45, 0, 6.3); g.fill();
     }
-    // curved evaporation front, drawn out to the full local tip width
+    // curved evaporation front: one wide arc, drawn only until it meets the
+    // tip silhouette so there are no flat shoulders
     if (t < events.length) {
       const zf = t ? events[t - 1].zf : 0;
-      const R = frontRadius(Math.max(zf, 2));
-      const W = frontRadius(zf + R) + 0.6;
-      g.strokeStyle = isD ? "rgba(255,80,90,0.9)" : "rgba(204,0,0,0.8)";
+      const R = frontCurveR(zf);
+      let W = 0.25;
+      while (W < R - 0.25) {
+        const dz = R - Math.sqrt(R * R - W * W);
+        if (frontRadius(zf + dz) < W) break;
+        W += 0.25;
+      }
+      g.strokeStyle = isD ? "rgba(255,63,63,0.9)" : "rgba(204,0,0,0.8)";
       g.lineWidth = 1.5; g.setLineDash([4, 3]);
       g.beginPath();
       let started = false;
       for (let x = -W; x <= W; x += 0.25) {
-        const dz = Math.min(R, R - Math.sqrt(Math.max(0, R * R - x * x)));
+        const dz = R - Math.sqrt(Math.max(0, R * R - x * x));
         const px = X(x), py = Y(zf + dz);
         started ? g.lineTo(px, py) : g.moveTo(px, py);
         started = true;

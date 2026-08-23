@@ -446,7 +446,7 @@ function render({ model, el }) {
   --se-border:#d8d5d0; --se-accent:rgb(204,0,0); --se-sim:#ffffff;
   font-family:system-ui,sans-serif; color:var(--se-fg); display:block; margin-bottom:30px; }
 .${uid}.se-dark { --se-bg:#191817; --se-panel:#221f1e; --se-fg:#eee;
-  --se-muted:#999; --se-border:#3a3735; --se-accent:rgb(255,80,90); --se-sim:#000000; }
+  --se-muted:#999; --se-border:#3a3735; --se-accent:rgb(255,63,63); --se-sim:#000000; }
 .${uid} .se-wrap { display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; }
 .${uid} .se-presets { display:flex; flex-direction:column; gap:4px; min-width:98px; }
 .${uid} .se-presets button { font-size:13px; padding:5px 8px; text-align:left;
@@ -615,7 +615,7 @@ function render({ model, el }) {
       plotHi = dHi > plotHi ? dHi : plotHi + 0.002 * (dHi - plotHi);
       const y0 = 16, y1 = ph - 14;
       const Y = v => y1 - ((v - plotLo) / (plotHi - plotLo)) * (y1 - y0);
-      q.strokeStyle = isDark ? "rgb(255,80,90)" : "rgb(204,0,0)";
+      q.strokeStyle = isDark ? "rgb(255,63,63)" : "rgb(204,0,0)";
       q.lineWidth = 1.5;
       q.beginPath();
       for (let i = 0; i < hist.length; i++) {

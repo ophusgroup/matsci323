@@ -43,7 +43,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
 .${uid} .w-controls { display:flex; gap:14px; align-items:center; margin-top:8px;
@@ -55,7 +55,7 @@ function render({ model, el }) {
   const root = document.createElement("div");
   root.className = uid;
   root.innerHTML = `
-<canvas height="320"></canvas>
+<canvas height="250"></canvas>
 <div class="w-controls">
   <label>current setpoint <input class="w-I" type="range" min="-3" max="-0.5" step="0.05" value="-1.6"><span class="w-stat w-Iv"></span></label>
   <label>work function <input class="w-phi" type="range" min="1" max="6" step="0.1" value="4.5"><span class="w-stat w-pv"></span></label>
@@ -81,7 +81,7 @@ function render({ model, el }) {
 
   function draw() {
     const dpr = window.devicePixelRatio || 1;
-    const w = cv.clientWidth || 500, h = 320;
+    const w = cv.clientWidth || 500, h = 250;
     cv.width = w * dpr; cv.height = h * dpr;
     const g = cv.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -91,7 +91,7 @@ function render({ model, el }) {
     const setI = Math.pow(10, +inI.value);
     const XA = 120;                                       // Angstroms shown
     const mL = 10, scale = (w - 20) / XA;
-    const yAtoms = h - 60;
+    const yAtoms = h - 52;
     const X = xa => mL + xa * scale;
     const Z = za => yAtoms - za * scale * 2.2;
     // surface atoms
@@ -114,7 +114,7 @@ function render({ model, el }) {
     g.closePath(); g.fill();
     g.beginPath(); g.arc(tx, ty, 5, 0, 6.3); g.fill();
     // tunneling arrows across the gap, density follows the current
-    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+    g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     g.lineWidth = 1.4;
     const nArrows = 1 + Math.round(2 * (Math.log10(setI) + 3.2));
     for (let k = 0; k < Math.max(1, nArrows); k++) {
@@ -122,12 +122,12 @@ function render({ model, el }) {
       g.beginPath(); g.moveTo(tx + ox, ty + 6); g.lineTo(tx + ox, Z(0) - 8); g.stroke();
     }
     // recorded trace (the STM topograph)
-    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; g.lineWidth = 2;
+    g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; g.lineWidth = 2;
     g.beginPath();
     let started = false;
     const keys = [...trace.keys()].sort((a, b) => a - b);
     for (const kx of keys) {
-      const px = X(kx), py = Z(trace.get(kx)) - 90;
+      const px = X(kx), py = yAtoms - 64 - trace.get(kx) * scale * 4.4;
       started ? g.lineTo(px, py) : g.moveTo(px, py);
       started = true;
     }
@@ -141,7 +141,7 @@ function render({ model, el }) {
   function tick() {
     if (visible) {
       const w = cv.clientWidth || 500;
-      scanX = (scanX + w / 700) % w;
+      scanX = (scanX + w / 500) % w;
       draw();
     }
     raf = requestAnimationFrame(tick);

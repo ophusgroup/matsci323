@@ -69,7 +69,7 @@ for el, (M, Zt, n, eps) in ELEM.items():
 axp.set_xlabel("detected energy (keV)")
 axp.set_ylabel("yield (arb.)")
 axp.set_xlim(300, 2000); axp.set_ylim(0, 1.15)
-axp.text(1870, 0.55, "Au\n(width = 60 nm)", ha="center", fontsize=10)
+axp.text(1925, 0.55, "Au\n(width =\n60 nm)", ha="center", fontsize=10)
 axp.text(1300, 0.75, "Cu\n(shifted below $K_{Cu}E_0$\nby the Au overlayer)", ha="center", fontsize=10)
 axp.text(700, 0.55, "Si substrate\n(continuum)", ha="center", fontsize=10)
 st.save(fig, "rbs-formation.svg"); plt.close(fig)
@@ -130,16 +130,23 @@ def Fts(d):
     return -H*R/(6*d**2) * (1 - (z0/d)**6)   # attractive + steep repulsion
 k = 0.6                                       # N/m soft contact lever
 zc = np.linspace(12e-9, -1.2e-9, 900)         # cantilever base position
+dgrid = np.linspace(0.06e-9, 15e-9, 40000)
 def sweep(zs):
-    ds, Fs = [], []
-    d = zs[0]
+    # quasi-static balance d = z + F(d)/k, solved exactly by locating the
+    # sign changes of g(d) = d - z - F(d)/k and following the branch closest
+    # to the previous solution; branch disappearance IS snap-in / pull-off
+    ds = []
+    dprev = zs[0]
+    Fg = Fts(dgrid)/k
     for z in zs:
-        # solve d = z + F(d)/k by damped iteration (quasi-static balance)
-        for _ in range(400):
-            dn = z + Fts(d)/k
-            d += 0.25*(dn - d)
-        ds.append(d); Fs.append(Fts(d))
-    return np.array(ds), np.array(Fs)
+        g = dgrid - z - Fg
+        s = np.where(np.diff(np.sign(g)) != 0)[0]
+        if len(s):
+            roots = dgrid[s]
+            dprev = roots[np.argmin(np.abs(roots - dprev))]
+        ds.append(dprev)
+    ds = np.array(ds)
+    return ds, Fts(ds)
 dA, FA = sweep(zc)
 dR, FR = sweep(zc[::-1])
 fig, ax = plt.subplots(figsize=(6.4, 4.3))
@@ -150,11 +157,11 @@ ax.set_xlabel("cantilever base position (nm)  →  approaching")
 ax.set_ylabel("force on tip (nN)")
 ax.invert_xaxis()
 ax.legend(loc="lower left")
-ax.annotate("snap-in\n(gradient exceeds k)", xy=(1.4, -0.35), xytext=(6.5, -1.15),
+ax.annotate("snap-in\n(gradient exceeds k)", xy=(2.0, -0.55), xytext=(6.5, -1.15),
             fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("pull-off = adhesion", xy=(2.6, -2.1), xytext=(8.5, -2.3),
+ax.annotate("pull-off = adhesion", xy=(4.4, -2.45), xytext=(7.6, -2.75),
             fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.8, 1.6), xytext=(9.5, 1.4),
+ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.75, 0.75), xytext=(9.5, 1.5),
             fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 ax.set_ylim(-3, 2.6)
 st.save(fig, "force-curve.svg"); plt.close(fig)
@@ -166,14 +173,13 @@ def g(x, mu, s): return np.exp(-0.5*((x-mu)/s)**2)
 tl = 0.5                                     # t / lambda
 
 def model(E):
-    """Loss spectrum in eV, monochromated (ZLP FWHM ~ 8 meV)."""
-    s = np.zeros_like(E)
-    # ZLP + plasmon multiples (Poisson in t/lambda)
-    for n in range(0, 6):
+    """Loss spectrum in eV, monochromated (ZLP FWHM ~ 8 meV), one global scale
+    so the three panels join continuously across the axis breaks."""
+    s = g(E, 0.0, 0.0034)                      # ZLP, amplitude 1
+    # plasmon multiples (Poisson in t/lambda), amplitudes relative to the ZLP
+    for n in range(1, 6):
         Pn = np.exp(-tl)*tl**n/__import__("math").factorial(n)
-        wid = 0.0034 if n == 0 else 1.2 + 2.2*n
-        s += Pn * g(E, 16.7*n, wid) * (1 if n else 0.0034/1.2*350)
-    s /= s.max()
+        s += Pn * g(E, 16.7*n, 1.2 + 2.2*n)
     # phonon losses on the ZLP tail (tens of meV; drawn at 20 and 38 meV)
     s += 1.2e-2*g(E, 0.020, 0.004) + 7e-3*g(E, 0.038, 0.005)
     # core edge (Si L) + ELNES + power-law background

@@ -18,7 +18,8 @@ for theta, c in [(90, st.GOLD), (120, st.GREEN), (150, st.BLUE), (170, st.ACCENT
     ax.plot(M2, K(M2, theta), color=c, lw=2, label=f"θ = {theta}°")
 for el, m in [("C", 12), ("O", 16), ("Si", 28), ("Fe", 56), ("Ag", 108), ("Au", 197)]:
     ax.axvline(m, color=st.GRAY, alpha=0.25, lw=0.8)
-    ax.text(m, 1.015, el, ha="center", fontsize=10)
+    dx = {"C": -2.5, "O": 2.5}.get(el, 0)      # keep the close C/O labels apart
+    ax.text(m + dx, 1.015, el, ha="center", fontsize=10)
 ax.set_xlabel("target mass $M_2$ (u)")
 ax.set_ylabel("kinematic factor $K$")
 ax.set_ylim(0, 1.06); ax.set_xlim(0, 220)

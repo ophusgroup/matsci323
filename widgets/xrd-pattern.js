@@ -102,7 +102,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-row { display:flex; gap:10px; flex-wrap:wrap; }
 .${uid} .w-plot { flex:2 1 380px; min-width:320px; }
 .${uid} .w-side { flex:1 1 200px; min-width:190px; display:flex; flex-direction:column; gap:6px; }
@@ -147,7 +147,7 @@ function render({ model, el }) {
   function draw() {
     const dpr = window.devicePixelRatio || 1;
     const isD = dark();
-    const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
+    const acc = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     const refl = reflections(selM.value);
     const T = +inTex.value;
     const grainNm = Math.pow(10, +inGs.value);          // 3 to 200 nm

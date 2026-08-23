@@ -172,7 +172,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(255,80,90); }
+  --w-accent:rgb(255,63,63); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 280px; min-width:250px; }
@@ -273,7 +273,7 @@ function render({ model, el }) {
     const X = xx => sx + xx / viewX * (w - sx - 10);
     const Y = yy => h / 2 + yy / viewX * (w - sx - 10);
     for (const seg of c.segs) {
-      g.strokeStyle = seg.primary ? (isD ? "rgba(255,80,90,0.9)" : "rgba(204,0,0,0.85)")
+      g.strokeStyle = seg.primary ? (isD ? "rgba(255,63,63,0.9)" : "rgba(204,0,0,0.85)")
                                   : (isD ? "rgba(150,180,255,0.35)" : "rgba(40,70,180,0.30)");
       g.lineWidth = seg.primary ? 1.6 : 1;
       g.beginPath();
@@ -309,7 +309,7 @@ function render({ model, el }) {
     const mL = 10, mB2 = 34, mT2 = 26;
     for (let i = 0; i < NB; i++) {
       const bh = bins[i] / mx * (h - mT2 - mB2);
-      g.fillStyle = isD ? "rgba(255,80,90,0.75)" : "rgba(204,0,0,0.6)";
+      g.fillStyle = isD ? "rgba(255,63,63,0.75)" : "rgba(204,0,0,0.6)";
       g.fillRect(mL + i / NB * (w - 20), h - mB2 - bh, (w - 20) / NB - 1, bh);
     }
     // mean and straggle
