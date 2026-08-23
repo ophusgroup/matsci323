@@ -11,8 +11,8 @@
   --msc-accent-soft: rgba(204, 0, 0, 0.12);
 }
 html.dark {
-  --msc-accent: rgb(240, 122, 158);
-  --msc-accent-soft: rgba(240, 122, 158, 0.18);
+  --msc-accent: rgb(255, 80, 90);
+  --msc-accent-soft: rgba(255, 80, 90, 0.18);
 }
 
 /* ---------- Site title (upper-left) ---------- */
@@ -39,6 +39,7 @@ article a:not(.myst-home-link),
 article .link,
 article .hover-link {
   color: var(--msc-accent) !important;
+  text-decoration-color: var(--msc-accent) !important;
 }
 
 /* Cards: accent title, neutral body text */
@@ -281,4 +282,54 @@ article table th {
 article table td:first-child,
 article table th:first-child {
   white-space: nowrap;
+}
+
+/* ---------- Sidebar footer: lab logo (theme-swapped) ---------- */
+.myst-primary-sidebar-footer figure,
+.myst-primary-sidebar-footer p {
+  margin: 0;
+  text-align: left;
+}
+.myst-primary-sidebar-footer .msc-sidebar-logo {
+  display: block;
+  margin: 0 0 2px 0;
+}
+.myst-primary-sidebar-footer .msc-sidebar-logo img {
+  display: block;
+  margin: 0 !important;   /* the theme centers images with auto margins */
+}
+html.dark .msc-logo-light {
+  display: none;
+}
+html:not(.dark) .msc-logo-dark {
+  display: none;
+}
+div.article.footer.myst-primary-sidebar-footer {
+  position: relative;
+  width: 130px;
+}
+/* hide the external-link arrow icon */
+.myst-primary-sidebar-footer p a svg {
+  display: none;
+}
+.myst-primary-sidebar-footer p a {
+  display: block;
+  width: 130px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.75;
+  /* stretch the single line to exactly the logo width */
+  text-align: justify;
+  text-align-last: justify;
+}
+/* make the logo + text block one click target */
+.myst-primary-sidebar-footer p a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.myst-primary-sidebar-footer p a:hover {
+  opacity: 1;
 }

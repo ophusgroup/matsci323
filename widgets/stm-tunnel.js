@@ -43,7 +43,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
 .${uid} .w-controls { display:flex; gap:14px; align-items:center; margin-top:8px;
@@ -114,7 +114,7 @@ function render({ model, el }) {
     g.closePath(); g.fill();
     g.beginPath(); g.arc(tx, ty, 5, 0, 6.3); g.fill();
     // tunneling arrows across the gap, density follows the current
-    g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
     g.lineWidth = 1.4;
     const nArrows = 1 + Math.round(2 * (Math.log10(setI) + 3.2));
     for (let k = 0; k < Math.max(1, nArrows); k++) {
@@ -122,7 +122,7 @@ function render({ model, el }) {
       g.beginPath(); g.moveTo(tx + ox, ty + 6); g.lineTo(tx + ox, Z(0) - 8); g.stroke();
     }
     // recorded trace (the STM topograph)
-    g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)"; g.lineWidth = 2;
+    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; g.lineWidth = 2;
     g.beginPath();
     let started = false;
     const keys = [...trace.keys()].sort((a, b) => a - b);

@@ -21,7 +21,7 @@ $$
 
 where $r_e = 2.82 \times 10^{-15}$ m is the classical electron radius and $n_e$ the electron density; $\beta$ encodes absorption. For Cu K$\alpha$ radiation $\delta$ is of order $10^{-5}$: solids are optically *thinner* than vacuum, but only just. Because $\delta \propto n_e \propto \rho$, the index is a direct, chemistry-independent measure of mass density, which is what makes XRR one of the very few density probes for thin films.
 
-An index below one has a striking consequence. Just as light inside glass totally reflects at a glancing internal angle, X-rays arriving from vacuum totally reflect from any solid below a **critical angle**
+An index below one has an important consequence. Just as light inside glass totally reflects at a glancing internal angle, X-rays arriving from vacuum totally reflect from any solid below a **critical angle**
 
 $$
 \theta_c \approx \sqrt{2\delta},
@@ -55,7 +55,7 @@ $$
 
 the Fresnel decay times the Fourier transform of the electron-density *gradient*. Everything about a reflectivity curve follows from this statement: sharp interfaces contribute strongly at all $q$ (hence $q^{-4}$ persists), a film of thickness $t$ has two gradient spikes separated by $t$ (hence fringes of period $2\pi/t$ in $q$), and any smearing of an interface kills the high-$q$ signal (hence the roughness damping next).
 
-## Roughness, and where the lost intensity goes
+## Roughness and diffuse scattering
 
 A rough or graded interface spreads the density gradient over a width $\sigma$, damping its reflection amplitude by a Gaussian factor, in the standard Névot-Croce form $\exp(-2 k_{z,1} k_{z,2} \sigma^2)$. Two distinct signatures let a fit separate the interfaces: roughness of the **top surface** accelerates the decay of the whole curve, while roughness of a **buried interface** damps the fringe amplitude without changing the overall envelope. Crucially, specular XRR cannot distinguish true roughness from compositional grading; both smear the density profile, and only the diffuse scattering can tell them apart, since grading scatters nothing off-specular while roughness does.
 

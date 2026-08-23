@@ -132,6 +132,8 @@ project:
 site:
   template: book-theme
   title: MATSCI 323
+  parts:
+    primary_sidebar_footer: parts/sidebar-footer.md
   options:
     # Custom theming — see ./style.css
     style: ./style.css

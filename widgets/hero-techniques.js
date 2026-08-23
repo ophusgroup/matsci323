@@ -21,7 +21,9 @@ function render({ model, el }) {
 .${uid} .ht-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr));
   gap:9px; }
 .${uid} .ht-tile { position:relative; border-radius:9px; overflow:hidden;
-  background:#0b0b10; border:1px solid rgba(128,128,128,0.25); }
+  background:#0b0b10; border:1px solid rgba(128,128,128,0.25); display:block;
+  text-decoration:none; cursor:pointer; }
+.${uid} .ht-tile:hover { border-color:rgba(200,200,200,0.6); }
 .${uid} .ht-tile canvas { display:block; width:100%; height:${H}px; }
 .${uid} .ht-label { position:absolute; left:8px; bottom:5px; font-size:12.5px;
   font-weight:650; letter-spacing:0.03em; color:#fff; text-shadow:0 0 6px rgba(0,0,0,0.9); }
@@ -262,20 +264,26 @@ function render({ model, el }) {
           g.fillStyle = `hsla(${hue},60%,68%,0.7)`;
           g.beginPath(); g.arc(i / 12 * w, sy, 2.2, 0, 6.3); g.fill();
         }
-        // converged probe cone in, and the transmitted cone at the SAME angle
-        const slope = 16 / sy;
+        // cone angles set by the disks: the direct cone lands exactly on the
+        // central disk, so its edges are tangent to the disk edge, and each
+        // diffracted cone lands exactly on its own disk
+        const py = H - 16, rx = 8, dy = py - sy;
+        const hw0 = rx / dy * sy;
         g.fillStyle = `hsla(${hue},90%,65%,0.30)`;
-        g.beginPath(); g.moveTo(bx - 16, 0); g.lineTo(bx, sy); g.lineTo(bx + 16, 0);
+        g.beginPath(); g.moveTo(bx - hw0, 0); g.lineTo(bx, sy); g.lineTo(bx + hw0, 0);
         g.closePath(); g.fill();
-        const hw = slope * (H - 22 - sy);
-        g.fillStyle = `hsla(${hue},90%,65%,0.22)`;
-        g.beginPath(); g.moveTo(bx, sy); g.lineTo(bx - hw, H - 22); g.lineTo(bx + hw, H - 22);
-        g.closePath(); g.fill();
+        const ons = [-1, 0, 1].map(n => 0.35 + 0.65 * Math.abs(Math.sin(t * 0.5 + n)));
         for (const n of [-1, 0, 1]) {
-          const on = 0.35 + 0.65 * Math.abs(Math.sin(t * 0.5 + n));
-          g.fillStyle = `hsla(${hue},95%,72%,${n === 0 ? 0.9 : 0.55 * on})`;
+          const a = n === 0 ? 0.22 : 0.13 * ons[n + 1];
+          g.fillStyle = `hsla(${hue},90%,65%,${a})`;
+          g.beginPath(); g.moveTo(bx, sy);
+          g.lineTo(bx + n * 26 - rx, py); g.lineTo(bx + n * 26 + rx, py);
+          g.closePath(); g.fill();
+        }
+        for (const n of [-1, 0, 1]) {
+          g.fillStyle = `hsla(${hue},95%,72%,${n === 0 ? 0.9 : 0.55 * ons[n + 1]})`;
           g.beginPath();
-          g.ellipse(bx + n * 26, H - 16, 8, 4.5, 0, 0, 6.3); g.fill();
+          g.ellipse(bx + n * 26, py, rx, 4.5, 0, 0, 6.3); g.fill();
         }
       } }) },
     { name: "RHEED", make: () => ({
@@ -358,9 +366,18 @@ function render({ model, el }) {
   const grid = document.createElement("div");
   grid.className = "ht-grid";
   root.appendChild(grid);
+  const HREF = {
+    XRD: "modules/photons/xrd", XRR: "modules/photons/xrr",
+    Ellipsometry: "modules/photons/optical", RBS: "modules/ions/rbs",
+    SIMS: "modules/ions/sims", APT: "modules/ions/apt",
+    XPS: "modules/espec/xps", SEM: "modules/sem/sem",
+    FIB: "modules/sem/ebsd-fib", STEM: "modules/stem/stem-imaging",
+    RHEED: "modules/stem/leed-rheed", AFM: "modules/spm/afm",
+  };
   const tiles = V.map((v, i) => {
-    const d = document.createElement("div");
+    const d = document.createElement("a");
     d.className = "ht-tile";
+    if (HREF[v.name]) { d.href = HREF[v.name]; d.title = v.name + " in the course"; }
     const c = document.createElement("canvas");
     d.appendChild(c);
     const lab = document.createElement("div");

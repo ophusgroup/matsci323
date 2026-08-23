@@ -86,7 +86,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
@@ -192,7 +192,7 @@ function render({ model, el }) {
         off += wpx;
       }
       // incident beam, left to right
-      q.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)"; q.lineWidth = 2;
+      q.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)"; q.lineWidth = 2;
       q.beginPath(); q.moveTo(8, cym); q.lineTo(sx - 2, cym); q.stroke();
       q.beginPath(); q.moveTo(sx - 10, cym - 4); q.lineTo(sx - 2, cym); q.lineTo(sx - 10, cym + 4); q.stroke();
       q.fillStyle = isD ? "#eee" : "#222"; q.font = "12px system-ui";
@@ -239,9 +239,9 @@ function render({ model, el }) {
       g.lineTo(mL + (i / bins.length) * pw, h - mB - (bins[i] / ymax) * ph * 0.94);
     g.lineTo(mL + pw, h - mB);
     g.closePath();
-    g.fillStyle = isD ? "rgba(240,122,158,0.25)" : "rgba(204,0,0,0.15)";
+    g.fillStyle = isD ? "rgba(255,80,90,0.25)" : "rgba(204,0,0,0.15)";
     g.fill();
-    g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
     g.lineWidth = 1.5; g.stroke();
     // surface-edge markers K*E0 for every element in the stack
     const seen = new Set();

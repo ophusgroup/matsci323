@@ -1,6 +1,6 @@
 # Functional SPM Modes and STM
 
-The AFM feedback loop holds one interaction constant while scanning; add a second measurement channel and the same platform maps almost any local property alongside topography. These functional modes have made scanning probe microscopy the property-mapping counterpart to everything else in this course: where the other techniques measure what a film is, SPM modes measure what it does, point by point. This page surveys the modes that matter most for thin films, then closes with scanning tunneling microscopy, the original scanning probe and still the highest-resolution imaging technique in existence.
+The AFM feedback loop holds one interaction constant while scanning; add a second measurement channel and the same platform maps almost any local property alongside topography. These functional modes have made scanning probe microscopy the property-mapping counterpart to everything else in this course: the other techniques measure the structure and composition of a film, and SPM modes map its functional properties point by point. This page surveys the modes that matter most for thin films, then closes with scanning tunneling microscopy, the original scanning probe and still the highest-resolution imaging technique in existence.
 
 ## Electrical and functional modes
 
@@ -10,7 +10,7 @@ The AFM feedback loop holds one interaction constant while scanning; add a secon
 - **Magnetic force microscopy (MFM)** senses magnetostatic force gradients with a magnetized tip, usually in a two-pass scheme: each line is first traced for topography, then retraced at a fixed lift height of tens of nanometers where van der Waals forces have died off and the long-range magnetic gradient dominates, read out as a resonance phase shift. Domain structures in magnetic films resolve at roughly 30 to 50 nm, in air, with no preparation; the tip's own stray field can perturb soft magnetic structures, the mode's known systematic.
 - **Nanomechanical modes** (force-curve mapping, contact resonance) extract modulus, adhesion, and dissipation at every pixel, mapping mechanical heterogeneity in polymer blends, composites, and low-k dielectrics.
 
-The shared caveat across all functional modes: the measured signal mixes the property of interest with topography, tip condition, and contact quality. Cross-talk from topography is the universal artifact (any feature that changes the contact area changes most signals), so the discipline is to compare the property map against topography for suspicious correlations, and quantitative claims require the same skepticism developed for [AFM topography](afm.md), doubled.
+The shared caveat across all functional modes: the measured signal mixes the property of interest with topography, tip condition, and contact quality. Cross-talk from topography is the universal artifact (any feature that changes the contact area changes most signals), so the discipline is to compare the property map against topography for suspicious correlations, and quantitative claims require even more skepticism than [AFM topography](afm.md) requires.
 
 % TODO: figures: one panel per major mode showing a real thin film example
 % (c-AFM leakage map, KPFM of a polycrystalline absorber, PFM domains, MFM
@@ -25,7 +25,7 @@ $$
 I \propto \exp(-2\kappa d), \qquad \kappa = \frac{\sqrt{2m\phi}}{\hbar},
 $$
 
-falling roughly an order of magnitude per angstrom for typical work functions $\phi$. That exponential is the whole instrument: it confines the current overwhelmingly to the single outermost atom of the tip, giving atomic resolution laterally and picometer sensitivity vertically with no lenses and no diffraction limit. The Si(111) 7x7 reconstruction from [the first module](../surfaces/properties.md) was solved in real space this way within two years of the instrument's invention, the result that announced the technique.
+falling roughly an order of magnitude per angstrom for typical work functions $\phi$. That exponential is the basis of the entire instrument: it confines the current overwhelmingly to the single outermost atom of the tip, giving atomic resolution laterally and picometer sensitivity vertically with no lenses and no diffraction limit. The Si(111) 7x7 reconstruction from [the first module](../surfaces/properties.md) was solved in real space this way within two years of the instrument's invention, the result that established the technique.
 
 STM images are not topography. In the standard theoretical picture (Tersoff-Hamann), constant-current contours follow surfaces of constant *local density of states* at the tip position, evaluated at energies between the two Fermi levels, so the image entangles geometry with electronic structure: an electronegative adsorbate can image as a depression and a dangling bond as a protrusion, and the same surface can look qualitatively different at opposite bias polarities (which is itself information, famously separating the filled and empty states of semiconductor surfaces). **Scanning tunneling spectroscopy (STS)** makes the electronic content explicit: holding the tip fixed and sweeping the bias while recording $dI/dV$ with a lock-in yields a spectrum proportional to the local density of states, resolving band edges, superconducting gaps, defect states, and molecular orbitals atom by atom, and grid spectroscopy builds energy-resolved maps that underpin much of two-dimensional-materials and correlated-oxide physics.
 
@@ -34,7 +34,7 @@ The demonstration below runs the feedback loop. The tip follows a contour of con
 :::{anywidget} ../../widgets/stm-tunnel.js
 :::
 
-The requirements keep STM a research instrument rather than a routine metrology tool: conductive samples, atomically clean surfaces (hence UHV, and frequently cryogenic temperatures for drift stability and spectroscopic resolution), and vibration isolation worthy of picometer signals. In this course's decision framework, STM answers questions about the atomic and electronic structure of a conductive surface that nothing else can answer at all, and AFM handles everything else.
+The requirements keep STM a research instrument rather than a routine metrology tool: conductive samples, atomically clean surfaces (hence UHV, and frequently cryogenic temperatures for drift stability and spectroscopic resolution), and vibration isolation good enough for picometer signals. In this course's decision framework, STM answers questions about the atomic and electronic structure of a conductive surface that nothing else can answer at all, and AFM handles everything else.
 
 ## References and further reading
 

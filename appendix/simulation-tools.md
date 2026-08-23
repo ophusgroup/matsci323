@@ -4,7 +4,7 @@ Nearly every technique in this course has an open or freely available simulation
 
 ## Ion beam methods
 
-- **SRIM/TRIM** ([srim.org](http://www.srim.org)): the community standard for stopping powers, ion ranges, and Monte Carlo collision cascades. Windows only and venerable of interface, but its stopping tables underpin the whole field. Earlier versions of this course used SRIM directly for homework; we now reproduce the relevant calculations in Python notebooks, using tabulated stopping data.
+- **SRIM/TRIM** ([srim.org](http://www.srim.org)): the community standard for stopping powers, ion ranges, and Monte Carlo collision cascades. Windows only, with a dated interface, but its stopping tables underpin the whole field. Earlier versions of this course used SRIM directly for homework; we now reproduce the relevant calculations in Python notebooks, using tabulated stopping data.
 - **SIMNRA** ([simnra.com](https://www.simnra.com)) and **RUMP**: simulation and fitting of RBS, ERD, and NRA spectra for arbitrary layer stacks. SIMNRA is the de facto standard for quantitative ion beam analysis.
 
 ## X-ray methods
@@ -16,7 +16,7 @@ Nearly every technique in this course has an open or freely available simulation
 ## Electron spectroscopy
 
 - **NIST databases**: the NIST XPS database (binding energies), the NIST Electron IMFP and Electron Effective Attenuation Length databases (the quantitative backbone of escape-depth calculations), and SESSA, which simulates full XPS spectra of multilayer samples including geometry effects.
-- **CasaXPS** (commercial but ubiquitous) and the open Python ecosystem (**lmfit**-based fitting) for peak fitting; the discipline of constrained fitting matters more than the tool.
+- **CasaXPS** (commercial but ubiquitous) and the open Python ecosystem (**lmfit**-based fitting) for peak fitting; constrained fitting matters more than the choice of tool.
 
 ## Electron microscopy
 

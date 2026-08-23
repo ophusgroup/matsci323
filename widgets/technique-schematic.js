@@ -372,7 +372,7 @@ function render({ model, el }) {
     const isD = dark();
     const C = {
       bg: isD ? "#221f1e" : "#ffffff", fg: isD ? "#e8e6e3" : "#222",
-      muted: isD ? "#8a8784" : "#888", acc: isD ? "rgb(240,122,158)" : "rgb(204,0,0)",
+      muted: isD ? "#8a8784" : "#888", acc: isD ? "rgb(255,80,90)" : "rgb(204,0,0)",
       el: isD ? "#7aa2e8" : "#3a62b8", metal: isD ? "#3d3a38" : "#cfcbc5",
       panel: isD ? "#2c2927" : "#f2efe9",
     };

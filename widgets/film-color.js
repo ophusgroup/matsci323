@@ -90,7 +90,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
 .${uid} .w-strip { height:56px; margin-bottom:8px; cursor:crosshair; }
@@ -208,7 +208,7 @@ function render({ model, el }) {
       q.setTransform(dpr, 0, 0, dpr, 0, 0);
       q.fillStyle = isD ? "#221f1e" : "#ffffff"; q.fillRect(0, 0, sw, sh);
       const fy = 58, fpx = 8 + t * 0.022;
-      q.fillStyle = isD ? "rgba(240,122,158,0.25)" : "rgba(204,0,0,0.13)";
+      q.fillStyle = isD ? "rgba(255,80,90,0.25)" : "rgba(204,0,0,0.13)";
       q.fillRect(0, fy, sw, fpx);
       q.fillStyle = isD ? "#3d3a38" : "#cfcbc5";
       q.fillRect(0, fy + fpx, sw, sh - fy - fpx);

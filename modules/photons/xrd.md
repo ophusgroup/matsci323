@@ -48,7 +48,7 @@ The standard laboratory geometry is **Bragg-Brentano** ($\theta$-$2\theta$): the
 
 ## The thin film problem
 
-A symmetric $\theta$-$2\theta$ scan of a film on a substrate has two difficulties. The substrate, being vastly thicker, dominates the pattern with intense peaks that can bury the film signal, and for a strongly textured or epitaxial film only the lattice planes parallel to the surface diffract at all, so most of the pattern is simply absent. Both problems become tools once understood. The substrate peaks provide an internal calibration for the film peak positions, and the presence or absence of film reflections is itself a measurement of orientation.
+A symmetric $\theta$-$2\theta$ scan of a film on a substrate has two difficulties. The substrate, being vastly thicker, dominates the pattern with intense peaks that can bury the film signal, and for a strongly textured or epitaxial film only the lattice planes parallel to the surface diffract at all, so most of the pattern is simply absent. Once understood, both effects become measurement tools. The substrate peaks provide an internal calibration for the film peak positions, and the presence or absence of film reflections is itself a measurement of orientation.
 
 For polycrystalline films the standard fix is **grazing incidence XRD (GIXRD)**: the incident beam is fixed at a small angle $\omega$ of a few degrees while the detector alone scans $2\theta$. Two things happen at once. Geometrically, the path length in the film scales as $1/\sin\omega$, so a grazing beam stays in the film and suppresses the substrate. Physically, the penetration depth of X-rays (set by absorption, typically several micrometers at Cu K$\alpha$ in light-element materials and shrinking near the critical angle of [total external reflection](xrr.md)) becomes tunable: dropping $\omega$ toward the critical angle confines the measurement to the top tens of nanometers, giving a crude but genuinely nondestructive depth profile of phase content. The cost of the asymmetric geometry is that each reflection now samples grains tilted differently with respect to the surface, so GIXRD intensities are only comparable to powder references when the texture is random.
 
@@ -66,7 +66,7 @@ $$
 t \approx \frac{K \lambda}{\beta \cos\theta},
 $$
 
-estimates the coherently diffracting domain size from the peak width $\beta$ (in radians, corrected for instrumental broadening), with $K \approx 0.9$ a shape factor. Two cautions keep it honest. Domain size and microstrain both broaden peaks, but with different angle dependence: size broadening goes as $1/\cos\theta$ while strain broadening goes as $\tan\theta$, and the **Williamson-Hall** construction (plotting $\beta\cos\theta$ against $\sin\theta$) separates the two, with the intercept giving size and the slope giving microstrain. And the coherent domain is not the grain: subgrain boundaries, stacking faults, and columnar growth all cut coherence, so Scherrer sizes below the film thickness usually signal defected or columnar growth rather than literal grains. Grain-by-grain confirmation belongs to [EBSD](../sem/ebsd-fib.md) and [TEM](../stem/stem-imaging.md).
+estimates the coherently diffracting domain size from the peak width $\beta$ (in radians, corrected for instrumental broadening), with $K \approx 0.9$ a shape factor. Two cautions apply. Domain size and microstrain both broaden peaks, but with different angle dependence: size broadening goes as $1/\cos\theta$ while strain broadening goes as $\tan\theta$, and the **Williamson-Hall** construction (plotting $\beta\cos\theta$ against $\sin\theta$) separates the two, with the intercept giving size and the slope giving microstrain. And the coherent domain is not the grain: subgrain boundaries, stacking faults, and columnar growth all cut coherence, so Scherrer sizes below the film thickness usually signal defected or columnar growth rather than literal grains. Grain-by-grain confirmation belongs to [EBSD](../sem/ebsd-fib.md) and [TEM](../stem/stem-imaging.md).
 
 ## Texture and stress
 
@@ -78,7 +78,7 @@ Residual stress is measured by using the lattice itself as a strain gauge. In th
 :alt: Comparison of symmetric theta two theta geometry with the scattering vector fixed along the surface normal, and grazing incidence geometry with a fixed shallow incident angle
 :width: 95%
 
-The two working geometries. In the symmetric scan, $\mathbf{q}$ stays pinned to the surface normal, so only planes parallel to the surface diffract. In grazing incidence, the shallow fixed $\omega$ keeps the beam in the film while the detector alone scans.
+**Thin-film XRD geometries.** In the symmetric scan, $\mathbf{q}$ stays pinned to the surface normal, so only planes parallel to the surface diffract. In grazing incidence, the shallow fixed $\omega$ keeps the beam in the film while the detector alone scans.
 :::
 
 % TODO: figures still wanted: (b) an experimental rocking curve pair (good vs

@@ -22,7 +22,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
@@ -75,7 +75,7 @@ function render({ model, el }) {
     const lam = imfp(E), esc = 3 * lam * Math.cos(th);
     const att = Math.exp(-t / (lam * Math.cos(th)));
     const isD = dark();
-    const acc = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+    const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
     // ---- universal curve, log-log ----
     {
       const dpr = window.devicePixelRatio || 1;
@@ -102,7 +102,7 @@ function render({ model, el }) {
       g.save(); g.translate(10, mT + 130); g.rotate(-Math.PI / 2);
       g.fillText("IMFP (nm)", 0, 0); g.restore();
       // technique bands
-      g.fillStyle = isD ? "rgba(240,122,158,0.10)" : "rgba(204,0,0,0.06)";
+      g.fillStyle = isD ? "rgba(255,80,90,0.10)" : "rgba(204,0,0,0.06)";
       g.fillRect(X(20), mT, X(300) - X(20), h - mT - mB);   // LEED / AES low
       g.fillRect(X(950), mT, X(1500) - X(950), h - mT - mB); // XPS with Al Ka
       g.fillStyle = isD ? "#bbb" : "#555";
@@ -131,13 +131,13 @@ function render({ model, el }) {
       g.fillStyle = isD ? "#1c1a19" : "#efedea";
       g.fillRect(0, surf, w, h - surf);
       // overlayer
-      g.fillStyle = isD ? "rgba(240,122,158,0.18)" : "rgba(204,0,0,0.10)";
+      g.fillStyle = isD ? "rgba(255,80,90,0.18)" : "rgba(204,0,0,0.10)";
       g.fillRect(0, surf, w, t * zScale);
       // exponential signal shading
       for (let i = 0; i < h - surf; i++) {
         const z = i / zScale;
         const a = Math.exp(-z / (lam * Math.cos(th)));
-        g.fillStyle = isD ? `rgba(240,122,158,${0.5 * a})` : `rgba(204,0,0,${0.4 * a})`;
+        g.fillStyle = isD ? `rgba(255,80,90,${0.5 * a})` : `rgba(204,0,0,${0.4 * a})`;
         g.fillRect(w * 0.62, surf + i, w * 0.3, 1);
       }
       // emission arrow at angle theta

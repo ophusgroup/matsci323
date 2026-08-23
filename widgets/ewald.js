@@ -21,7 +21,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} .w-top { display:flex; gap:6px; margin-bottom:8px; align-items:center;
   font-size:13px; color:var(--w-muted); flex-wrap:wrap; }
 .${uid} .w-top button { border:1px solid var(--w-border); border-radius:6px;
@@ -84,7 +84,7 @@ function render({ model, el }) {
 
   function draw() {
     const isD = dark();
-    const acc = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+    const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
     const dpr = window.devicePixelRatio || 1;
     const t = +inE.value;
     const eV = mode === "LEED" ? 20 * Math.pow(500 / 20, t) : 5000 * Math.pow(30000 / 5000, t);

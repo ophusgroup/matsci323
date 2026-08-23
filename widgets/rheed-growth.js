@@ -23,7 +23,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; width:100%; }
 .${uid} .w-film { margin-bottom:8px; }
@@ -101,7 +101,7 @@ function render({ model, el }) {
         if (y < -ch) continue;
         // atoms as circles, every other layer offset half a site
         const cx = i * cw + cw / 2 + (l % 2) * cw / 2;
-        g.fillStyle = l % 2 === 0 ? (isD ? "rgb(240,122,158)" : "rgb(204,0,0)")
+        g.fillStyle = l % 2 === 0 ? (isD ? "rgb(255,80,90)" : "rgb(204,0,0)")
                                   : (isD ? "#a06a76" : "#e0a0a0");
         g.beginPath(); g.arc(cx, y, cw / 2 * 0.95, 0, 6.3); g.fill();
       }
@@ -125,7 +125,7 @@ function render({ model, el }) {
       g.beginPath(); g.moveTo(Xc(mlv), 16); g.lineTo(Xc(mlv), hh - 16); g.stroke();
       if (mlv % 2 === 0) g.fillText(mlv + " ML", Xc(mlv) + 2, hh - 4);
     }
-    g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+    g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
     g.lineWidth = 1.8; g.beginPath();
     for (let i = 0; i < trace.length; i++) {
       const x = Xc(trace[i][0]);

@@ -1,6 +1,6 @@
 # Choosing a Technique
 
-The techniques of this course form a toolbox, and the professional skill this course aims to build is reaching for the right tool without hesitation. This closing chapter organizes the whole quarter around the analytical puzzle posed in [the first module](modules/surfaces/properties.md): given a sample and a question, design the measurement strategy. There is rarely one right answer, but there are many expensive wrong ones, and most of them come from asking an instrument for information its physics cannot provide.
+This closing chapter organizes the whole quarter around the problem posed in [the first module](modules/surfaces/properties.md): given a sample and a question, design the measurement strategy. Several strategies can usually work, but many others fail at significant cost in time and money, most often because a technique was asked for information its physics cannot provide.
 
 ## The master table
 
@@ -23,16 +23,16 @@ The techniques of this course form a toolbox, and the professional skill this co
 | AFM | Topography and roughness | Surface | 1 to 10 nm | sub-angstrom heights | No |
 | Functional SPM | Local properties: conduction, work function, domains | Surface | 10 to 50 nm | mode dependent | Usually no |
 
-The same landscape as a map: each technique plotted by its lateral resolution and the depth it samples per measurement, colored by probe family. Hover any point for the question that technique answers best. The empty upper-left corner is worth contemplating: nothing offers atomic lateral resolution while sampling deep volumes, which is why buried-interface problems always end in sample preparation.
+The same landscape as a map: each technique plotted by its lateral resolution and the depth it samples per measurement, colored by probe family. Hover any point for the question that technique answers best. Note the empty upper-left corner: no technique offers atomic lateral resolution while sampling deep volumes, which is why buried-interface problems require sample preparation.
 
 :::{anywidget} ./widgets/technique-map.js
 :::
 
 ## Decision principles
 
-**Start from the question, not the instrument.** "Characterize the film" is not a question. "Is the leakage path through grain boundaries" is, and it immediately shortlists c-AFM and STEM cross-sectioning at a boundary, with EBSD to find one.
+**Start from the question, not the instrument.** State the specific question before choosing equipment. A request to characterize a film does not constrain the measurement, while a specific hypothesis does: to test whether the leakage path in a dielectric runs along grain boundaries, the natural strategy is c-AFM to map local conduction and a STEM cross-section cut through a boundary, with EBSD to locate a suitable one.
 
-**Spend cheap information first.** XRD, ellipsometry, AFM, and SEM cost minutes, require no preparation, and average over meaningful areas. A morning with these four answers or sharpens most questions, and their ensemble averages tell you where the expensive, local techniques should look. The general workflow of modern practice runs wide-then-narrow: wafer-scale optical and X-ray metrology, then micron-scale electron microscopy, then, only where justified, the nanoscale endgame of STEM, APT, or STS on a FIB-defined site.
+**Spend cheap information first.** XRD, ellipsometry, AFM, and SEM cost minutes, require no preparation, and average over meaningful areas. A morning with these four answers or sharpens most questions, and their ensemble averages tell you where the expensive, local techniques should look. The general workflow of modern practice runs wide-then-narrow: wafer-scale optical and X-ray metrology, then micron-scale electron microscopy, and only where justified, STEM, APT, or STS on a FIB-defined site.
 
 **Match the sampled volume to the feature.** Most characterization errors in the literature are volume mismatches: an XPS spot averaging over patterned features, an EDS measurement of a film thinner than the interaction volume, a single APT needle standing in for a wafer. Always ask what fraction of the signal comes from the thing you care about.
 

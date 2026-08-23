@@ -63,7 +63,7 @@ function render({ model, el }) {
 .${uid} { --w-panel:#fff; --w-fg:#1a1a1a; --w-muted:#777; --w-border:#d8d5d0;
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg); display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 280px; min-width:250px; }
@@ -195,7 +195,7 @@ function render({ model, el }) {
           const v = hist[gz * HG + gx];
           if (!v) continue;
           const a = Math.log1p(v) / Math.log1p(mx);
-          g.fillStyle = isD ? `rgba(240,122,158,${(0.9 * a).toFixed(3)})`
+          g.fillStyle = isD ? `rgba(255,80,90,${(0.9 * a).toFixed(3)})`
                             : `rgba(204,0,0,${(0.85 * a).toFixed(3)})`;
           g.fillRect(w / 2 + (gx / HG - 0.5) * (w / 1.1), zTop + gz * ch, cw + 0.5, ch + 0.5);
         }
@@ -207,7 +207,7 @@ function render({ model, el }) {
     g.fillText("deposited energy (log color scale)", 10, 16);
   }
   function drawTraj(g, t, X, Y) {
-    g.strokeStyle = t.bse ? (dark() ? "rgba(240,122,158,0.85)" : "rgba(204,0,0,0.8)")
+    g.strokeStyle = t.bse ? (dark() ? "rgba(255,80,90,0.85)" : "rgba(204,0,0,0.8)")
                           : (dark() ? "rgba(160,190,255,0.28)" : "rgba(40,70,160,0.22)");
     g.lineWidth = 1;
     g.beginPath();

@@ -50,7 +50,7 @@ RBS cannot see hydrogen: nothing backscatters from a lighter target, and hydroge
 :alt: Computed RBS spectrum of a gold on copper on silicon stack, with kinematic edges marked
 :width: 85%
 
-Spectrum formation for a 60 nm Au / 150 nm Cu / Si stack at 2 MeV (computed with this page's physics). Each element's signal begins at its kinematic edge $K E_0$ and extends downward in energy with depth; burying the Cu under Au shifts its edge below $K_{Cu}E_0$ by the energy lost crossing the gold.
+**Spectrum formation.** A 60 nm Au / 150 nm Cu / Si stack at 2 MeV (computed with this page's physics). Each element's signal begins at its kinematic edge $K E_0$ and extends downward in energy with depth; burying the Cu under Au shifts its edge below $K_{Cu}E_0$ by the energy lost crossing the gold.
 :::
 
 % TODO: figure still wanted: an annotated experimental spectrum, and the ERD

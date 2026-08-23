@@ -62,7 +62,7 @@ function render({ model, el }) {
   --w-accent:rgb(204,0,0); font-family:system-ui,sans-serif; color:var(--w-fg);
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
-  --w-accent:rgb(240,122,158); }
+  --w-accent:rgb(255,80,90); }
 .${uid} .w-top { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
 .${uid} .w-top button { border:1px solid var(--w-border); border-radius:6px;
   background:var(--w-panel); color:var(--w-fg); padding:4px 12px; cursor:pointer; font-size:13px; }
@@ -153,7 +153,7 @@ function render({ model, el }) {
       g.beginPath(); g.moveTo(bx + bw, by); g.lineTo(bx + bw + ox, by + oy);
       g.lineTo(bx + bw + ox, by + oy + bh); g.lineTo(bx + bw, by + bh); g.closePath(); g.fill();
       // beams
-      const acc = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
+      const acc = isD ? "rgb(255,80,90)" : "rgb(204,0,0)";
       g.strokeStyle = acc; g.lineWidth = 2;
       // plan-view beam: down through the top face
       g.beginPath(); g.moveTo(bx + bw * 0.75 + ox / 2, 12);
@@ -199,7 +199,7 @@ function render({ model, el }) {
       g.fillText("cross-section image (beam into page)", 8, 16);
       g.fillText("apparent interface width: " + (wid * 100).toFixed(1) + " (a.u.)", 8, h - 64);
       // profile trace
-      g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(255,120,140)"; g.lineWidth = 1.6;
+      g.strokeStyle = isD ? "rgb(255,80,90)" : "rgb(255,120,140)"; g.lineWidth = 1.6;
       g.beginPath();
       for (let iz = 0; iz < NZ; iz++) {
         const px = x0 + prof[iz] * (imW - 4), py = h - 54 + iz / NZ * 44 - 44 + 44;

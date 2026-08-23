@@ -48,7 +48,7 @@ The course covers the techniques a thin film scientist reaches for most often, b
 
 ## Historical reference
 
-The full 1980s-era table of surface science acronyms from earlier versions of this course, more than a hundred entries from ADAM to XRD, is preserved in the course archive. It repays a browse: most modern techniques are recombinations of the same probes and signals, and the table is a reminder that the periodic table of measurements was mapped early. What has changed is which combinations proved to matter.
+The full 1980s-era table of surface science acronyms from earlier versions of this course, more than a hundred entries from ADAM to XRD, is preserved in the course archive. Most modern techniques are recombinations of the same probes and signals, and most of the combinations were named early. What has changed is which combinations proved to matter.
 
 % TODO: link the archived table (scan or retype selected entries) once the
 % course archive location is settled.
