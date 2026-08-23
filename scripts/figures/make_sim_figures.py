@@ -64,7 +64,7 @@ axp.fill_between(E, sp, color=st.ACCENT, alpha=0.15)
 axp.plot(E, sp, color=st.ACCENT, lw=1.8)
 for el, (M, Zt, n, eps) in ELEM.items():
     KE = kfac(M)*2000
-    axp.axvline(KE, color=st.GRAY, lw=0.9, ls="--", alpha=0.7)
+    axp.plot([KE, KE], [0, 0.97], color=st.GRAY, lw=0.9, ls="--", alpha=0.7)
     axp.text(KE, 1.04, f"$K_{{{el}}}E_0$", ha="center", fontsize=11)
 axp.set_xlabel("detected energy (keV)")
 axp.set_ylabel("yield (arb.)")
@@ -159,31 +159,62 @@ ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.8, 1.6), 
 ax.set_ylim(-3, 2.6)
 st.save(fig, "force-curve.svg"); plt.close(fig)
 
-# ---- 4. EELS spectrum anatomy (log intensity), ZLP + plasmons + core edge ----
-Eax = np.linspace(-5, 620, 3000)
-tl = 0.5                                     # t / lambda
+# ---- 4. EELS spectrum anatomy: broken axis, phonons + plasmons + core edge ----
+# Three energy windows on one log-intensity scale; the axis breaks step the
+# energy unit from meV to eV so the meV-scale phonon losses stay visible.
 def g(x, mu, s): return np.exp(-0.5*((x-mu)/s)**2)
-spec = np.zeros_like(Eax)
-for n in range(0, 6):
-    Pn = np.exp(-tl)*tl**n/__import__("math").factorial(n)
-    spec += Pn * g(Eax, 16.7*n, 1.2 + 2.2*n)
-edge = np.where(Eax > 99, ((Eax-99+2)/12.0)**-0.2 * np.exp(-(Eax-99)/300), 0) * 3e-4
-elnes = 6e-5*(g(Eax, 103, 1.6) + 0.7*g(Eax, 108, 2.4))
-bg = np.where(Eax > 25, 2.5e-3*(Eax/25.0)**-2.6, 0)
-tot = spec + bg + edge + elnes
-fig, ax = plt.subplots(figsize=(7.0, 4.2))
-ax.semilogy(Eax, tot, color=st.ACCENT, lw=1.8)
-ax.semilogy(Eax[Eax > 60], bg[Eax > 60], color=st.GRAY, lw=1.2, ls="--")
-ax.set_xlabel("energy loss (eV)")
-ax.set_ylabel("intensity (log scale)")
-ax.set_xlim(-5, 400); ax.set_ylim(1e-5, 2)
-ax.annotate("zero-loss peak", xy=(0, 0.7), xytext=(40, 0.9), fontsize=11,
-            arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("plasmon\n(multiples: Poisson in t/λ)", xy=(17, 0.20), xytext=(78, 0.12), fontsize=11,
-            arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("core-loss edge\n(Si L, with ELNES)", xy=(103, 4.5e-4), xytext=(180, 6e-3), fontsize=11,
-            arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("power-law background $AE^{-r}$", xy=(250, 6.3e-5), xytext=(255, 6e-4), fontsize=11,
-            arrowprops=dict(arrowstyle="->", color=st.GRAY))
+tl = 0.5                                     # t / lambda
+
+def model(E):
+    """Loss spectrum in eV, monochromated (ZLP FWHM ~ 8 meV)."""
+    s = np.zeros_like(E)
+    # ZLP + plasmon multiples (Poisson in t/lambda)
+    for n in range(0, 6):
+        Pn = np.exp(-tl)*tl**n/__import__("math").factorial(n)
+        wid = 0.0034 if n == 0 else 1.2 + 2.2*n
+        s += Pn * g(E, 16.7*n, wid) * (1 if n else 0.0034/1.2*350)
+    s /= s.max()
+    # phonon losses on the ZLP tail (tens of meV; drawn at 20 and 38 meV)
+    s += 1.2e-2*g(E, 0.020, 0.004) + 7e-3*g(E, 0.038, 0.005)
+    # core edge (Si L) + ELNES + power-law background
+    s += np.where(E > 99, ((E-99+2)/12.0)**-0.2 * np.exp(-(E-99)/300), 0) * 3e-4
+    s += 6e-5*(g(E, 103, 1.6) + 0.7*g(E, 108, 2.4))
+    s += np.where(E > 25, 2.5e-3*(E/25.0)**-2.6, 0)
+    return s
+
+fig, axs = plt.subplots(1, 3, figsize=(8.6, 4.0), sharey=True,
+    gridspec_kw={"width_ratios": [1.0, 1.2, 1.4], "wspace": 0.07})
+wins = [(-0.012, 0.062, 1e3, "energy loss (meV)"),
+        (0.5, 55, 1.0, "energy loss (eV)"),
+        (55, 620, 1.0, "energy loss (eV)")]
+for ax, (e0, e1, unit, xl) in zip(axs, wins):
+    E = np.linspace(e0, e1, 4000)
+    ax.semilogy(E*unit, model(E), color=st.ACCENT, lw=1.6)
+    ax.set_xlim(e0*unit, e1*unit)
+    ax.set_xlabel(xl, fontsize=10.5)
+    ax.spines["left"].set_visible(ax is axs[0])
+    if ax is not axs[0]: ax.tick_params(left=False)
+axs[0].set_ylim(1e-5, 3)
+axs[0].set_ylabel("intensity (log scale)")
+# background line in the core-loss window
+E3 = np.linspace(60, 620, 500)
+axs[2].semilogy(E3, 2.5e-3*(E3/25.0)**-2.6, color=st.GRAY, lw=1.1, ls="--")
+# axis-break slashes between panels
+for axL, axR in [(axs[0], axs[1]), (axs[1], axs[2])]:
+    for ax, x in [(axL, 1.0), (axR, 0.0)]:
+        ax.plot([x, x], [-0.02, 0.02], transform=ax.transAxes, color=st.GRAY,
+                lw=1.2, clip_on=False)
+        ax.plot([x-0.015, x+0.015], [-0.025, 0.025], transform=ax.transAxes,
+                color=st.GRAY, lw=1.2, clip_on=False)
+axs[0].annotate("zero-loss peak", xy=(0.5, 0.55), xytext=(8, 1.1), fontsize=10,
+    arrowprops=dict(arrowstyle="->", color=st.GRAY))
+axs[0].annotate("phonon\nlosses", xy=(21, 1.6e-2), xytext=(33, 0.08),
+    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+axs[1].annotate("plasmon multiples\n(Poisson in t/λ)", xy=(17.5, 0.13), xytext=(21, 0.6),
+    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+axs[2].annotate("core-loss edge\n(Si L, with ELNES)", xy=(104, 4.7e-4), xytext=(180, 8e-3),
+    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+axs[2].annotate("power-law\nbackground $AE^{-r}$", xy=(330, 2.3e-5), xytext=(330, 4e-4),
+    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 st.save(fig, "eels-anatomy.svg"); plt.close(fig)
 print("batch 2 done")

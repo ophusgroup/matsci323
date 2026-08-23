@@ -207,14 +207,23 @@ function render({ model, el }) {
         i ? g.lineTo(px, py) : g.moveTo(px, py);
       }
       g.stroke();
-      // labels on visible peaks
+      // labels on visible peaks: vertical text, pushed up when neighbors collide
       g.fillStyle = isD ? "#ddd" : "#333"; g.font = "12px system-ui";
+      const placed = [];
       for (const r of rows) {
         if (r.Ieff / norm < 0.02) continue;
+        const txt = `${r.h}${r.k}${r.l}`;
+        const len = g.measureText(txt).width;
+        const px = X(r.tth);
+        let yb = Y(Math.min(1, r.Ieff / norm)) - 5;   // label bottom (text runs upward)
+        for (const p of placed)
+          if (Math.abs(p.x - px) < 13 && yb > p.yTop - 3) yb = p.yTop - 3;
+        yb = Math.max(yb, mT + len + 2);
+        placed.push({ x: px, yTop: yb - len });
         g.save();
-        g.translate(X(r.tth), Y(Math.min(1, r.Ieff / norm)) - 6);
-        g.rotate(-Math.PI / 2.6);
-        g.fillText(`${r.h}${r.k}${r.l}`, 0, 0);
+        g.translate(px + 4, yb);
+        g.rotate(-Math.PI / 2);
+        g.fillText(txt, 0, 0);
         g.restore();
       }
     }
@@ -240,52 +249,58 @@ function render({ model, el }) {
       g.fillText("detector", cx + 38, cy - 52);
       g.fillText("θ", cx - 30, cy - 6);
       g.fillText("θ", cx + 24, cy - 6);
-      // microstructures: random grains vs textured columns, highlight by T
-      const y2 = 170;
-      const boxW = w / 2 - 14;
-      const alpha = tSel => 0.25 + 0.75 * tSel;
-      // random grains
-      g.globalAlpha = alpha(1 - T);
-      g.strokeStyle = isD ? "#aaa" : "#666"; g.lineWidth = 1;
-      g.strokeRect(8, y2, boxW, 84);
+      // film cross-section, one column per grain, colored by plane tilt.
+      // Each grain has a fixed random tilt; the texture slider pulls every
+      // tilt toward zero so the colors converge as the film textures.
+      const y2 = 168, filmH = 78, x0 = 10, x1 = w - 10;
       let seed = 5;
       const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-      for (let i = 0; i < 12; i++) {
-        const gx = 14 + rnd() * (boxW - 16), gy = y2 + 8 + rnd() * 68, gr = 5 + rnd() * 7;
-        const ang = rnd() * Math.PI;
-        g.beginPath(); g.arc(gx, gy, gr, 0, 6.3); g.stroke();
-        g.beginPath();
-        for (let ll = -1; ll <= 1; ll++) {
-          g.moveTo(gx - Math.cos(ang) * gr * 0.8 + Math.sin(ang) * ll * 3,
-                   gy - Math.sin(ang) * gr * 0.8 - Math.cos(ang) * ll * 3);
-          g.lineTo(gx + Math.cos(ang) * gr * 0.8 + Math.sin(ang) * ll * 3,
-                   gy + Math.sin(ang) * gr * 0.8 - Math.cos(ang) * ll * 3);
+      const hue = t => 210 + t / 90 * 140;          // tilt -90..90 -> hue 70..350
+      const edges = [x0];
+      while (edges[edges.length - 1] < x1 - 14)
+        edges.push(Math.min(x1, edges[edges.length - 1] + 14 + rnd() * 16));
+      edges[edges.length - 1] = x1;
+      for (let i = 0; i + 1 < edges.length; i++) {
+        const gx0 = edges[i], gx1 = edges[i + 1];
+        const tiltFull = (rnd() * 2 - 1) * 88;
+        const tilt = tiltFull * (1 - T);
+        g.fillStyle = `hsl(${hue(tilt)} 55% ${isD ? 46 : 60}%)`;
+        g.fillRect(gx0, y2, gx1 - gx0, filmH);
+        // lattice planes inside the grain, tilted by the grain orientation
+        g.save();
+        g.beginPath(); g.rect(gx0, y2, gx1 - gx0, filmH); g.clip();
+        g.strokeStyle = isD ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.75)";
+        g.lineWidth = 1;
+        const a = tilt * Math.PI / 180, cxg = (gx0 + gx1) / 2, cyg = y2 + filmH / 2;
+        for (let p = -9; p <= 9; p++) {
+          const ox = -Math.sin(a) * p * 7, oy = Math.cos(a) * p * 7;
+          g.beginPath();
+          g.moveTo(cxg + ox - Math.cos(a) * 60, cyg + oy - Math.sin(a) * 60);
+          g.lineTo(cxg + ox + Math.cos(a) * 60, cyg + oy + Math.sin(a) * 60);
+          g.stroke();
         }
-        g.stroke();
+        g.restore();
+        g.strokeStyle = isD ? "#181616" : "#fff"; g.lineWidth = 1.5;
+        g.strokeRect(gx0, y2, gx1 - gx0, filmH);
       }
-      g.globalAlpha = 1;
+      // substrate
+      g.fillStyle = isD ? "#3d3a38" : "#cfcbc5";
+      g.fillRect(x0, y2 + filmH, x1 - x0, 14);
       g.fillStyle = isD ? "#ccc" : "#444";
-      g.globalAlpha = alpha(1 - T);
-      g.fillText("random grains", 10, y2 + 100);
-      g.globalAlpha = alpha(T);
-      // textured columns
-      g.strokeStyle = isD ? "#aaa" : "#666";
-      g.strokeRect(w / 2 + 6, y2, boxW, 84);
-      for (let c = 0; c < 6; c++) {
-        const gx = w / 2 + 10 + c * (boxW - 8) / 6;
-        g.strokeRect(gx, y2 + 4, (boxW - 12) / 6, 76);
-        g.beginPath();
-        for (let ll = 1; ll < 5; ll++) {
-          g.moveTo(gx + 1, y2 + 4 + ll * 15);
-          g.lineTo(gx + (boxW - 12) / 6 - 1, y2 + 4 + ll * 15);
-        }
-        g.stroke();
+      g.fillText("film cross-section: color and lines", x0, y2 + filmH + 30);
+      g.fillText("show each grain's plane tilt", x0, y2 + filmH + 44);
+      // tilt-to-color ramp
+      const rampY = y2 - 24;
+      for (let px = 0; px <= x1 - x0 - 70; px++) {
+        const t = -90 + 180 * px / (x1 - x0 - 70);
+        g.fillStyle = `hsl(${hue(t)} 55% ${isD ? 46 : 60}%)`;
+        g.fillRect(x0 + px, rampY, 1.5, 9);
       }
-      g.fillText("textured columns", w / 2 + 8, y2 + 100);
-      g.globalAlpha = 1;
+      g.fillStyle = isD ? "#ccc" : "#444";
+      g.fillText("±90° tilt", x1 - 56, rampY + 8);
       const m = MATS[selM.value];
-      g.fillText(selM.value + ": " + m.st + ", a = " + m.a.toFixed(3) + " Å", 10, h - 26);
-      g.fillText("texture axis [" + TEXAXIS[m.st].join("") + "]", 10, h - 10);
+      g.fillText(selM.value + ": " + m.st + ", a = " + m.a.toFixed(3) + " Å", 10, h - 22);
+      g.fillText("texture axis [" + TEXAXIS[m.st].join("") + "]", 10, h - 8);
     }
     root.querySelector(".w-texv").textContent = (T * 100).toFixed(0) + "%";
     root.querySelector(".w-gsv").textContent = grainNm.toFixed(0) + " nm";

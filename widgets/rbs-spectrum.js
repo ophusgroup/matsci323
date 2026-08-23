@@ -206,7 +206,7 @@ function render({ model, el }) {
       q.fillStyle = isD ? "#666" : "#888";
       q.fillRect(dxd - 5, dyd - 10, 10, 20);
       q.fillStyle = isD ? "#eee" : "#222";
-      q.fillText("detector", dxd + 9, dyd + 4);
+      q.fillText("detector", dxd - 24, dyd - 16);
       q.fillText("θ = 165°", sx - 92, cym - 22);
     }
     const { bins, Emax } = spectrum(stack, E0 * 1000);

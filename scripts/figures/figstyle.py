@@ -36,7 +36,9 @@ def apply():
         "axes.spines.top": False,
         "axes.spines.right": False,
         "legend.frameon": False,
-        "svg.fonttype": "none",
+        # Render text as paths: the browser would otherwise substitute its own
+        # font under matplotlib's per-glyph positions and wreck the kerning.
+        "svg.fonttype": "path",
     })
 
 def save(fig, name):

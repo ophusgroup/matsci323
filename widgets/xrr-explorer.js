@@ -81,41 +81,30 @@ function render({ model, el }) {
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { background:var(--w-panel); border:1px solid var(--w-border);
   border-radius:8px; display:block; }
-.${uid} .w-plot { flex:1 1 340px; min-width:300px; }
-.${uid} .w-plot canvas { width:100%; }
-.${uid} .w-ctl { width:230px; display:flex; flex-direction:column; gap:6px; font-size:13px;
-  color:var(--w-muted); }
-.${uid} .w-ctl label { display:flex; flex-direction:column; gap:2px; }
-.${uid} .w-ctl .w-val { color:var(--w-fg); font-weight:600; font-variant-numeric:tabular-nums; }
-.${uid} select, .${uid} input[type=range] { width:100%; accent-color:var(--w-accent); }
+.${uid} .w-plot { flex:2 1 340px; min-width:300px; }
+.${uid} .w-plot canvas, .${uid} .w-schem { width:100%; }
+.${uid} .w-side { flex:1 1 200px; min-width:190px; }
+.${uid} .w-bar { display:flex; gap:14px; align-items:center; margin-top:8px; font-size:13px;
+  color:var(--w-muted); flex-wrap:wrap; }
+.${uid} .w-bar label { display:flex; align-items:center; gap:6px; }
+.${uid} .w-bar .w-val { color:var(--w-fg); font-weight:600; font-variant-numeric:tabular-nums; }
 .${uid} select { background:var(--w-panel); color:var(--w-fg); border:1px solid var(--w-border);
-  border-radius:5px; padding:3px; }
-.${uid} .w-out { background:var(--w-panel); border:1px solid var(--w-border); border-radius:6px;
-  padding:6px 8px; line-height:1.5; }
-.${uid} .w-out b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
+  border-radius:5px; padding:2px 4px; }
+.${uid} input[type=range] { width:110px; accent-color:var(--w-accent); }
 `;
   const root = document.createElement("div");
   root.className = uid;
   root.innerHTML = `
 <div class="w-wrap">
+  <div class="w-side"><canvas class="w-schem" height="330"></canvas></div>
   <div class="w-plot"><canvas height="330"></canvas></div>
-  <div class="w-ctl">
-    <canvas class="w-schem" height="104" style="border-radius:8px"></canvas>
-    <label>film material <select class="w-mat"></select></label>
-    <label>thickness <span class="w-val w-tv"></span>
-      <input class="w-t" type="range" min="3" max="120" step="0.5" value="10"></label>
-    <label>density (vs nominal) <span class="w-val w-dv"></span>
-      <input class="w-d" type="range" min="0.60" max="1.15" step="0.01" value="1.00"></label>
-    <label>surface roughness <span class="w-val w-r1v"></span>
-      <input class="w-r1" type="range" min="0" max="3" step="0.05" value="0.3"></label>
-    <label>interface roughness <span class="w-val w-r2v"></span>
-      <input class="w-r2" type="range" min="0" max="3" step="0.05" value="0.2"></label>
-    <div class="w-out">
-      critical angle (film) <b class="w-tc"></b><br>
-      critical angle (Si) <b class="w-tcs"></b><br>
-      fringe period &lambda;/2t <b class="w-fr"></b>
-    </div>
-  </div>
+</div>
+<div class="w-bar">
+  <label>film <select class="w-mat"></select></label>
+  <label>thickness <input class="w-t" type="range" min="3" max="120" step="0.5" value="10"><span class="w-val w-tv"></span></label>
+  <label>density <input class="w-d" type="range" min="0.60" max="1.15" step="0.01" value="1.00"><span class="w-val w-dv"></span></label>
+  <label>surface roughness <input class="w-r1" type="range" min="0" max="3" step="0.05" value="0.3"><span class="w-val w-r1v"></span></label>
+  <label>interface roughness <input class="w-r2" type="range" min="0" max="3" step="0.05" value="0.2"><span class="w-val w-r2v"></span></label>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
@@ -190,56 +179,68 @@ function render({ model, el }) {
       started = true;
     }
     g.stroke();
-    // ---- schematic: rays, film, roughness (tracks the sliders) ----
+    // ---- schematic: full-height panel with rays, stack, and readouts ----
+    const tcF = Math.sqrt(2 * dF) * 180 / Math.PI, tcS = Math.sqrt(2 * dS) * 180 / Math.PI;
     {
-      const sw = sc.clientWidth || 220, sh = 104;
+      const sw = sc.clientWidth || 210, sh = 330;
       sc.width = sw * dpr; sc.height = sh * dpr;
       const q = sc.getContext("2d");
       q.setTransform(dpr, 0, 0, dpr, 0, 0);
       q.fillStyle = isD ? "#221f1e" : "#ffffff";
       q.fillRect(0, 0, sw, sh);
-      const surfY = 54, filmPx = 8 + t * 0.24;
+      const surfY = 130, filmPx = 14 + t * 0.55;
+      const cx = sw * 0.5;
       const wig = (y, amp, ph) => {
         q.beginPath();
-        for (let x = 0; x <= sw; x += 3)
-          x ? q.lineTo(x, y + amp * Math.sin(x / 6 + ph)) : q.moveTo(x, y + amp * Math.sin(ph));
+        for (let x = 8; x <= sw - 8; x += 3)
+          x > 8 ? q.lineTo(x, y + amp * Math.sin(x / 6 + ph)) : q.moveTo(x, y + amp * Math.sin(ph));
         q.stroke();
       };
-      // substrate
+      // substrate and film
       q.fillStyle = isD ? "#3d3a38" : "#cfcbc5";
-      q.fillRect(0, surfY + filmPx, sw, sh - surfY - filmPx);
-      // film
+      q.fillRect(8, surfY + filmPx, sw - 16, 268 - surfY - filmPx);
       q.fillStyle = isD ? "rgba(240,122,158,0.30)" : "rgba(204,0,0,0.18)";
-      q.fillRect(0, surfY, sw, filmPx);
+      q.fillRect(8, surfY, sw - 16, filmPx);
       // rough interfaces
       q.strokeStyle = isD ? "#eee" : "#333"; q.lineWidth = 1.2;
-      wig(surfY, Math.min(5, 1 + s1 * 2.2), 0);
-      wig(surfY + filmPx, Math.min(5, 1 + s2 * 2.2), 2);
-      // rays: incident and reflected at grazing angle
-      const rayA = 0.42;
+      wig(surfY, Math.min(5, 0.6 + s1 * 2.2), 0);
+      wig(surfY + filmPx, Math.min(5, 0.6 + s2 * 2.2), 2);
+      // rays: surface reflection plus one internal bounce (the fringe pair)
+      const rayA = 0.40, run = surfY - 26;
       q.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)"; q.lineWidth = 1.6;
-      q.beginPath(); q.moveTo(8, surfY - 50 * Math.tan(rayA)); q.lineTo(sw / 2, surfY); q.stroke();
-      q.beginPath(); q.moveTo(sw / 2, surfY); q.lineTo(sw - 8, surfY - 50 * Math.tan(rayA)); q.stroke();
-      q.beginPath(); q.moveTo(sw / 2 - 20, surfY + 0.5); q.lineTo(sw / 2 + 34, surfY + filmPx);
-      q.lineTo(sw / 2 + 74, surfY - 24); q.stroke();
-      q.fillStyle = isD ? "#eee" : "#222"; q.font = "12px system-ui";
-      q.fillText("θ", sw / 2 - 26, surfY - 4);
-      q.fillText(sel.value + "  t, σ₁", 8, surfY + Math.min(filmPx - 3, 24) + (filmPx < 16 ? -14 : 0));
-      q.fillText("Si  σ₂", 8, surfY + filmPx + 16);
-      q.fillText("X-rays", 10, surfY - 50 * Math.tan(rayA) + 12);
+      q.beginPath(); q.moveTo(cx - run / Math.tan(rayA) * 0.55, 26);
+      q.lineTo(cx, surfY); q.lineTo(cx + run / Math.tan(rayA) * 0.55, 26); q.stroke();
+      q.globalAlpha = 0.65;
+      q.beginPath(); q.moveTo(cx, surfY); q.lineTo(cx + filmPx * 1.5, surfY + filmPx);
+      q.lineTo(cx + filmPx * 3, surfY);
+      q.lineTo(cx + filmPx * 3 + run / Math.tan(rayA) * 0.55, 26); q.stroke();
+      q.globalAlpha = 1;
+      q.fillStyle = isD ? "#eee" : "#222"; q.font = "12.5px system-ui";
+      q.fillText("X-rays", 12, 22);
+      q.fillText("θ", cx - 34, surfY - 8);
+      q.fillText(sel.value + "   t, σ₁", 14, surfY + Math.max(14, Math.min(filmPx - 4, 24)));
+      q.fillText("Si   σ₂", 14, surfY + filmPx + 16);
+      // readouts inside the panel
+      q.fillStyle = isD ? "#bbb" : "#555"; q.font = "12.5px system-ui";
+      const ro = [["critical angle (film)", tcF.toFixed(3) + "°"],
+                  ["critical angle (Si)", tcS.toFixed(3) + "°"],
+                  ["fringe period λ/2t", (LAM / (2 * t) * 180 / Math.PI).toFixed(3) + "°"]];
+      ro.forEach(([k, v], i) => {
+        q.fillText(k, 12, 288 + i * 16);
+        q.fillStyle = isD ? "#eee" : "#111";
+        q.fillText(v, sw - 12 - q.measureText(v).width, 288 + i * 16);
+        q.fillStyle = isD ? "#bbb" : "#555";
+      });
     }
     // readouts
-    const tcF = Math.sqrt(2 * dF) * 180 / Math.PI, tcS = Math.sqrt(2 * dS) * 180 / Math.PI;
     root.querySelector(".w-tv").textContent = t.toFixed(1) + " nm";
     root.querySelector(".w-dv").textContent = (ds * m.rho).toFixed(2) + " g/cm³";
     root.querySelector(".w-r1v").textContent = s1.toFixed(2) + " nm";
     root.querySelector(".w-r2v").textContent = s2.toFixed(2) + " nm";
-    root.querySelector(".w-tc").textContent = tcF.toFixed(3) + "°";
-    root.querySelector(".w-tcs").textContent = tcS.toFixed(3) + "°";
-    root.querySelector(".w-fr").textContent = (LAM / (2 * t) * 180 / Math.PI).toFixed(3) + "°";
   }
   for (const i of [sel, inT, inD, inR1, inR2]) i.addEventListener("input", draw);
   new ResizeObserver(draw).observe(cv);
+  new ResizeObserver(draw).observe(sc);
   syncTheme();
   return () => obs.disconnect();
 }

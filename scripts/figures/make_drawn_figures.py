@@ -9,36 +9,57 @@ import figstyle as st
 st.apply()
 
 # ---- 1. symmetric theta-2theta vs grazing-incidence geometry ----
-fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.6))
+from matplotlib.patches import Arc
+fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.8))
 for ax, mode in zip(axes, ["sym", "gixrd"]):
-    ax.axis("off"); ax.set_xlim(-1.3, 1.3); ax.set_ylim(-0.35, 1.15)
+    ax.axis("off"); ax.set_xlim(-1.35, 1.35); ax.set_ylim(-0.40, 1.22)
+    ax.set_aspect("equal")
     # film on substrate
-    ax.fill_between([-0.8, 0.8], -0.06, 0, color=st.ACCENT, alpha=0.25)
-    ax.fill_between([-0.8, 0.8], -0.28, -0.06, color=st.GRAY, alpha=0.3)
-    ax.text(-1.25, -0.05, "film", fontsize=11)
-    ax.text(-1.25, -0.22, "substrate", fontsize=11)
+    ax.fill_between([-0.8, 0.8], -0.07, 0, color=st.ACCENT, alpha=0.25)
+    ax.fill_between([-0.8, 0.8], -0.30, -0.07, color=st.GRAY, alpha=0.3)
+    ax.text(-1.30, -0.06, "film", fontsize=11)
+    ax.text(-1.30, -0.24, "substrate", fontsize=11)
     if mode == "sym":
         th = np.radians(35)
         ax.add_patch(FancyArrowPatch((-np.cos(th), np.sin(th)), (0, 0),
             arrowstyle="-|>", mutation_scale=14, color=st.ACCENT, lw=2))
         ax.add_patch(FancyArrowPatch((0, 0), (np.cos(th), np.sin(th)),
             arrowstyle="-|>", mutation_scale=14, color=st.ACCENT, lw=2))
-        ax.add_patch(FancyArrowPatch((0, 0.06), (0, 0.75),
+        ax.add_patch(Arc((0, 0), 0.72, 0.72, theta1=145, theta2=180,
+            color=st.GRAY, lw=1.2))
+        ax.add_patch(Arc((0, 0), 0.72, 0.72, theta1=0, theta2=35,
+            color=st.GRAY, lw=1.2))
+        ax.text(-0.52, 0.09, "θ", fontsize=12)
+        ax.text(0.44, 0.09, "θ", fontsize=12)
+        ax.add_patch(FancyArrowPatch((0, 0.06), (0, 0.82),
             arrowstyle="-|>", mutation_scale=12, color=st.BLUE, lw=1.8))
-        ax.text(0.03, 0.78, "q (always along\nthe surface normal)", fontsize=10, color=st.BLUE)
-        ax.text(-0.62, 0.13, "θ", fontsize=12); ax.text(0.5, 0.13, "θ", fontsize=12)
-        ax.set_title("symmetric θ-2θ:\nsees only planes parallel to the surface", fontsize=11)
+        ax.text(0.06, 0.94, "q stays along the\nsurface normal", fontsize=10,
+            color=st.BLUE, va="top")
+        ax.set_title("symmetric θ-2θ scan:\nonly planes parallel to the surface diffract",
+            fontsize=11)
     else:
-        w = np.radians(6); t2 = np.radians(50)
-        ax.add_patch(FancyArrowPatch((-1.15, np.tan(w)*1.15), (0, 0),
+        w = np.radians(6)
+        ax.add_patch(FancyArrowPatch((-1.25, np.tan(w)*1.25), (0, 0),
             arrowstyle="-|>", mutation_scale=14, color=st.ACCENT, lw=2))
-        ax.add_patch(FancyArrowPatch((0, 0), (np.cos(t2-w), np.sin(t2-w)),
-            arrowstyle="-|>", mutation_scale=14, color=st.ACCENT, lw=2))
-        ax.text(-0.95, 0.10, "ω fixed, a few deg", fontsize=10)
-        ax.text(0.45, 0.55, "detector scans 2θ", fontsize=10)
-        ax.plot([0, 0.45], [0.0, 0.83], color=st.BLUE, lw=1.6)
-        ax.text(0.30, 0.9, "q tilts with 2θ", fontsize=10, color=st.BLUE)
-        ax.set_title("grazing incidence (GIXRD):\nlong path in the film, substrate suppressed", fontsize=11)
+        ax.text(-1.25, 0.24, "ω fixed,\na few degrees", fontsize=10)
+        # two detector positions on the 2-theta circle, plus the scan arc
+        for t2 in [np.radians(32), np.radians(66)]:
+            ax.add_patch(FancyArrowPatch((0, 0),
+                (0.85*np.cos(t2 - w), 0.85*np.sin(t2 - w)),
+                arrowstyle="-|>", mutation_scale=12, color=st.ACCENT, lw=1.6))
+        ax.add_patch(Arc((0, 0), 2.06, 2.06, theta1=20, theta2=72,
+            color=st.GRAY, lw=1.2, ls="--"))
+        ax.text(0.60, 1.02, "detector\nscans 2θ", fontsize=10)
+        # q bisects incident and exit for the lower detector position
+        t2 = np.radians(32)
+        kin = np.array([np.cos(-w), np.sin(-w)])
+        kout = np.array([np.cos(t2 - w), np.sin(t2 - w)])
+        q = kout - kin; q = q / np.hypot(*q)
+        ax.add_patch(FancyArrowPatch((0, 0.02), tuple(0.55*q + [0, 0.02]),
+            arrowstyle="-|>", mutation_scale=12, color=st.BLUE, lw=1.8))
+        ax.text(-1.05, 0.72, "q tilts as the\ndetector scans", fontsize=10, color=st.BLUE)
+        ax.set_title("grazing incidence (GIXRD):\nlong beam path in the film, substrate suppressed",
+            fontsize=11)
 st.save(fig, "xrd-geometries.svg"); plt.close(fig)
 
 # ---- 2. STEM detector angular layout ----

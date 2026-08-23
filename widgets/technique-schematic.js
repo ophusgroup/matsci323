@@ -32,37 +32,76 @@ function helpers(g, C) {
     g.fillRect(x, y, w2, h2);
     g.strokeStyle = C.muted; g.lineWidth = 1; g.strokeRect(x, y, w2, h2);
   };
-  return { arrow, label, lens, box };
+  // magnetic lens drawn as its two pole pieces flanking the optic axis
+  const pole = (cx, y, gap, pw, ph) => {
+    box(cx - gap - pw, y - ph / 2, pw, ph);
+    box(cx + gap, y - ph / 2, pw, ph);
+  };
+  // mirrored marginal rays: pts = [[halfWidth, y], ...] along the axis
+  const ray = (cx, pts) => {
+    g.strokeStyle = C.el; g.lineWidth = 1.4;
+    for (const s of [-1, 1]) {
+      g.beginPath();
+      pts.forEach(([hw, y], i) =>
+        i ? g.lineTo(cx + s * hw, y) : g.moveTo(cx + s * hw, y));
+      g.stroke();
+    }
+  };
+  return { arrow, label, lens, box, pole, ray };
 }
 
 const SCHEMS = {
-  xps: { cap: "XPS: monochromated X-rays eject photoelectrons; a hemispherical analyzer disperses them by kinetic energy.",
+  xps: { cap: "<b>XPS.</b> Monochromated Al K&alpha; X-rays eject photoelectrons; the transfer lens feeds the hemispherical analyzer, which disperses them in kinetic energy.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
-      const sx = w * 0.42, sy = h * 0.76;
-      box(sx - 40, sy, 80, 10);
-      label("sample", sx - 24, sy + 24);
-      box(20, h * 0.30, 56, 26);
-      label("X-ray source", 12, h * 0.30 - 8);
-      // monochromator crystal
-      g.save(); g.translate(w * 0.22, h * 0.62); g.rotate(-0.5);
-      box(-22, -5, 44, 8); g.restore();
-      label("monochromator", 8, h * 0.62 + 26);
-      arrow(76, h * 0.36, w * 0.20, h * 0.58, C.acc, 1.6);
-      arrow(w * 0.245, h * 0.60, sx - 4, sy - 2, C.acc, 1.6);
-      // electron lens column up to hemispheres
-      arrow(sx + 8, sy - 6, sx + w * 0.16, sy - h * 0.34, C.el, 1.8);
-      label("photoelectrons", sx + 16, sy - 20);
-      const cxh = sx + w * 0.22, cyh = h * 0.34;
-      g.strokeStyle = C.muted; g.lineWidth = 2.5;
-      for (const r of [w * 0.10, w * 0.155]) {
-        g.beginPath(); g.arc(cxh, cyh, r, Math.PI * 0.95, Math.PI * 1.85); g.stroke();
+      const norm = (vx, vy) => { const n = Math.hypot(vx, vy); return [vx / n, vy / n]; };
+      const P = [w * 0.44, 200], M = [w * 0.16, 150], S = [46, 56];
+      // sample
+      box(P[0] - 55, P[1], 110, 9);
+      label("sample", P[0] - 52, P[1] + 22);
+      // source box tilted along its own beam
+      const d1 = norm(M[0] - S[0], M[1] - S[1]);
+      g.save(); g.translate(S[0], S[1]); g.rotate(Math.atan2(d1[1], d1[0]));
+      box(-26, -10, 52, 20); g.restore();
+      label("Al Kα source", 12, 24);
+      // monochromator crystal: surface tangent set by the reflection law
+      const d2 = norm(P[0] - M[0], P[1] - M[1]);
+      const nrm = norm(d1[0] - d2[0], d1[1] - d2[1]);
+      g.save(); g.translate(M[0], M[1]); g.rotate(Math.atan2(nrm[0], -nrm[1]));
+      box(-26, -4, 52, 8); g.restore();
+      label("monochromator", M[0] - 40, M[1] + 26);
+      arrow(S[0] + d1[0] * 30, S[1] + d1[1] * 30, M[0] - d1[0] * 12, M[1] - d1[1] * 12, C.acc, 1.6);
+      arrow(M[0] + d2[0] * 12, M[1] + d2[1] * 12, P[0] - d2[0] * 14, P[1] - d2[1] * 14, C.acc, 1.6);
+      // hemispherical analyzer: entrance and exit slits on the diameter
+      const H = [w * 0.68, 96], r1 = w * 0.085, r2 = w * 0.135, rm = (r1 + r2) / 2;
+      const E = [H[0] - rm, H[1]], Xt = [H[0] + rm, H[1]];
+      // transfer lens along the sample-to-entrance path
+      const dpv = norm(E[0] - P[0], E[1] - P[1]);
+      g.strokeStyle = C.el; g.lineWidth = 1.6;
+      g.beginPath(); g.moveTo(P[0] + dpv[0] * 6, P[1] + dpv[1] * 6 - 2);
+      g.lineTo(E[0], E[1] + 4); g.stroke();
+      for (const f of [0.42, 0.60]) {
+        const lx = P[0] + (E[0] - P[0]) * f, ly = P[1] + (E[1] - P[1]) * f;
+        g.save(); g.translate(lx, ly); g.rotate(Math.atan2(dpv[1], dpv[0]));
+        g.strokeStyle = C.muted; g.lineWidth = 2;
+        g.beginPath(); g.moveTo(0, -11); g.lineTo(0, 11); g.stroke(); g.restore();
       }
-      label("hemispherical analyzer", cxh - w * 0.14, cyh - w * 0.165);
-      box(cxh + w * 0.09, cyh + 6, 34, 12);
-      label("detector", cxh + w * 0.09, cyh + 34);
+      label("transfer lens", P[0] + 4, P[1] - 44);
+      g.strokeStyle = C.muted; g.lineWidth = 2.5;
+      for (const r of [r1, r2]) {
+        g.beginPath(); g.arc(H[0], H[1], r, Math.PI, 2 * Math.PI); g.stroke();
+      }
+      // electron path through the hemispheres, dashed at the mean radius
+      g.strokeStyle = C.el; g.lineWidth = 1.4; g.setLineDash([4, 3]);
+      g.beginPath(); g.arc(H[0], H[1], rm, Math.PI, 2 * Math.PI); g.stroke();
+      g.setLineDash([]);
+      arrow(Xt[0], Xt[1] + 2, Xt[0], Xt[1] + 24, C.el, 1.4);
+      box(Xt[0] - 16, H[1] + 26, 32, 13);
+      label("detector", Xt[0] - 18, H[1] + 54);
+      label("hemispherical analyzer", H[0] - r2 - 4, H[1] - r2 - 10);
+      label("photoelectrons", P[0] + 46, P[1] - 14, C.el);
     } },
-  sims: { cap: "SIMS: a keV primary ion beam sputters the surface; secondary ions are extracted into a mass spectrometer.",
+  sims: { cap: "<b>SIMS.</b> A keV primary ion beam sputters the surface; secondary ions are extracted into a mass spectrometer.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const sx = w * 0.45, sy = h * 0.78;
@@ -84,60 +123,74 @@ const SCHEMS = {
       label("detector", w - 70, 24);
       arrow(sx + 152, sy - 118, w - 50, 48, C.el, 1.6);
     } },
-  sem: { cap: "SEM: a demagnified electron probe is scanned over the sample; detectors collect secondary and backscattered electrons.",
+  sem: { cap: "<b>SEM.</b> Two condenser lenses demagnify the source through successive crossovers, the objective focuses the probe, and the scan coils raster it over the sample.",
     draw(g, w, h, C) {
-      const { arrow, label, lens, box } = helpers(g, C);
-      const cx = w * 0.44;
-      box(cx - 16, 12, 32, 16);
-      label("electron gun", cx + 24, 24);
-      g.strokeStyle = C.el; g.lineWidth = 1.6;
-      g.beginPath(); g.moveTo(cx, 30); g.lineTo(cx, h * 0.74); g.stroke();
-      lens(cx, h * 0.24, 26); label("condenser", cx + 34, h * 0.24 + 4);
-      lens(cx, h * 0.40, 26); label("condenser", cx + 34, h * 0.40 + 4);
-      // scan coils
-      box(cx - 30, h * 0.50, 12, 10); box(cx + 18, h * 0.50, 12, 10);
-      label("scan coils", cx + 36, h * 0.52 + 6);
-      lens(cx, h * 0.62, 30); label("objective", cx + 38, h * 0.62 + 4);
-      box(cx - 55, h * 0.76, 110, 9);
-      label("sample", cx - 20, h * 0.76 + 24);
-      // ET detector
-      box(w * 0.10, h * 0.56, 26, 18);
-      label("SE detector", w * 0.05, h * 0.56 - 6);
-      arrow(cx - 8, h * 0.74, w * 0.10 + 26, h * 0.62, C.el, 1.2);
-      // EDS
-      box(w * 0.78, h * 0.52, 30, 16);
-      label("EDS", w * 0.80, h * 0.50 - 2);
-      arrow(cx + 10, h * 0.74, w * 0.78, h * 0.60, C.acc, 1.2);
-      label("X-rays", cx + 40, h * 0.70);
+      const { arrow, label, box, pole, ray } = helpers(g, C);
+      const cx = w * 0.42;
+      box(cx - 14, 10, 28, 16);
+      label("electron gun", cx + 34, 22);
+      // marginal rays through two crossovers, then the objective focus
+      const pts = [[0, 26], [7, 64], [0, 91], [6, 118], [0, 145], [9, 180], [0, 208]];
+      ray(cx, pts);
+      pole(cx, 64, 15, 15, 11); label("condenser 1", cx + 34, 68);
+      pole(cx, 118, 14, 15, 11); label("condenser 2", cx + 34, 122);
+      box(cx - 19, 155, 8, 9); box(cx + 11, 155, 8, 9);
+      label("scan coils", cx + 34, 163);
+      pole(cx, 180, 17, 16, 12); label("objective", cx + 38, 184);
+      box(cx - 60, 208, 120, 8);
+      label("sample", cx - 58, 232);
+      // Everhart-Thornley SE detector, with curved SE trajectories
+      box(w * 0.10, 168, 30, 17);
+      label("SE detector", w * 0.07, 162);
+      g.strokeStyle = C.el; g.lineWidth = 1.2;
+      for (const d of [0, 7]) {
+        g.beginPath(); g.moveTo(cx - 4 - d, 206);
+        g.quadraticCurveTo(cx - 60 - d, 170 + d, w * 0.10 + 32, 177); g.stroke();
+      }
+      // EDS with a straight X-ray path
+      box(w * 0.80, 164, 30, 17);
+      label("EDS", w * 0.82, 158);
+      arrow(cx + 6, 206, w * 0.80, 176, C.acc, 1.2);
+      label("X-rays", cx + 52, 202, C.acc);
     } },
-  stem: { cap: "STEM: a sub-angstrom probe scans a thin sample; annular detectors and the EELS spectrometer collect the transmitted signals.",
+  stem: { cap: "<b>STEM.</b> The condensers and objective focus a sub-angstrom probe on a thin sample; annular detectors catch the scattered cone and the spectrometer disperses the axial beam.",
     draw(g, w, h, C) {
-      const { arrow, label, lens, box } = helpers(g, C);
-      const cx = w * 0.46;
-      box(cx - 14, 10, 28, 14);
-      label("gun + corrector", cx + 22, 22);
-      g.strokeStyle = C.el; g.lineWidth = 1.5;
-      g.beginPath(); g.moveTo(cx, 26); g.lineTo(cx, h * 0.42); g.stroke();
-      lens(cx, h * 0.22, 24);
-      // converging onto thin sample
-      g.beginPath(); g.moveTo(cx - 14, h * 0.30); g.lineTo(cx, h * 0.44); g.lineTo(cx + 14, h * 0.30); g.stroke();
-      box(cx - 46, h * 0.44, 92, 5, C.metal);
-      label("thin sample", cx + 52, h * 0.45 + 5);
-      // transmitted cone to detectors
-      g.beginPath(); g.moveTo(cx, h * 0.45); g.lineTo(cx - 22, h * 0.66); g.moveTo(cx, h * 0.45); g.lineTo(cx + 22, h * 0.66); g.stroke();
-      box(cx - 52, h * 0.66, 26, 8); box(cx + 26, h * 0.66, 26, 8);
-      label("HAADF (annular)", cx + 56, h * 0.66 + 8);
-      box(cx - 12, h * 0.70, 24, 8);
-      label("BF", cx - 42, h * 0.70 + 8);
-      // EELS prism
-      g.strokeStyle = C.el;
-      g.beginPath(); g.moveTo(cx, h * 0.70); g.lineTo(cx, h * 0.80); g.quadraticCurveTo(cx, h * 0.90, cx + 30, h * 0.90); g.lineTo(w * 0.80, h * 0.90); g.stroke();
-      box(cx + 8, h * 0.78, 22, 16, C.metal);
-      label("magnetic prism", cx + 34, h * 0.80);
-      box(w * 0.80, h * 0.84, 34, 12);
-      label("EELS spectrum", w * 0.72, h * 0.82);
+      const { arrow, label, box, pole, ray } = helpers(g, C);
+      const cx = w * 0.40;
+      box(cx - 14, 8, 28, 14);
+      label("gun + corrector", cx + 32, 18);
+      // one crossover, the probe-forming aperture, then the focused probe
+      ray(cx, [[0, 22], [8, 52], [0, 76], [7, 96], [11, 124], [0, 152]]);
+      pole(cx, 52, 16, 15, 11); label("condenser", cx + 34, 56);
+      // aperture: two bars with a gap
+      g.fillStyle = C.muted;
+      g.fillRect(cx - 26, 94, 16, 4); g.fillRect(cx + 10, 94, 16, 4);
+      label("aperture", cx + 34, 100);
+      pole(cx, 124, 17, 16, 12); label("objective", cx + 38, 128);
+      box(cx - 50, 152, 100, 5, C.metal);
+      label("thin sample", cx + 56, 158);
+      // transmitted cones: direct beam plus scattering to the annular detector
+      g.strokeStyle = C.el; g.lineWidth = 1.3;
+      for (const s of [-1, 1]) {
+        g.beginPath(); g.moveTo(cx, 152); g.lineTo(cx + s * 11, 196); g.stroke();
+        g.globalAlpha = 0.55;
+        g.beginPath(); g.moveTo(cx, 152); g.lineTo(cx + s * 31, 196); g.stroke();
+        g.globalAlpha = 1;
+      }
+      box(cx - 40, 196, 18, 8); box(cx + 22, 196, 18, 8);
+      label("ADF (annular)", cx + 46, 203);
+      label("BF cone", cx - 78, 188, C.el);
+      // axial beam into the magnetic prism, bent to the EELS camera
+      g.strokeStyle = C.el; g.lineWidth = 1.3;
+      g.beginPath(); g.moveTo(cx, 196); g.lineTo(cx, 218);
+      g.quadraticCurveTo(cx, 234, cx + 26, 234); g.lineTo(w * 0.74, 234); g.stroke();
+      g.save(); g.translate(cx + 2, 219); g.rotate(0.5);
+      box(-10, -8, 22, 16, C.metal); g.restore();
+      label("magnetic prism", cx - 118, 226);
+      box(w * 0.74, 227, 34, 13);
+      label("EELS camera", w * 0.74 - 4, 222);
     } },
-  ellipsometer: { cap: "Spectroscopic ellipsometry: polarized light reflects near the Brewster angle; the polarization change gives Psi and Delta.",
+  ellipsometer: { cap: "<b>Spectroscopic ellipsometry.</b> Polarized light reflects near the Brewster angle; the polarization change gives Psi and Delta.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const sx = w / 2, sy = h * 0.72;
@@ -157,30 +210,41 @@ const SCHEMS = {
       box(w - 60, h * 0.14, 44, 20); label("detector", w - 60, h * 0.12);
       label("~70°", sx - 12, sy - 14);
     } },
-  raman: { cap: "Micro-Raman: a laser is focused through the objective; the edge filter passes only the Raman-shifted light to the spectrograph.",
+  raman: { cap: "<b>Micro-Raman.</b> The edge filter reflects the laser down through the objective and transmits only the Raman-shifted light up to the spectrograph.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
-      const cx = w * 0.40;
-      box(16, 24, 52, 20); label("laser", 24, 18);
-      // beamsplitter / edge filter at 45 deg
-      g.save(); g.translate(cx, 34); g.rotate(Math.PI / 4);
-      box(-20, -3, 40, 6); g.restore();
-      label("edge filter", cx + 20, 28);
-      arrow(68, 34, cx - 8, 34, C.acc, 1.8);
-      arrow(cx, 42, cx, h * 0.52, C.acc, 1.8);
-      // objective
+      const cx = w * 0.42, fy = 92, oy = 148, ot = 170, sy = 216;
+      // collected light: wide blue cone from the focus, collimated up to the spectrograph
+      g.strokeStyle = C.el; g.lineWidth = 1.4;
+      for (const s of [-1, 1]) {
+        g.beginPath(); g.moveTo(cx, sy); g.lineTo(cx + s * 11, ot);
+        g.lineTo(cx + s * 11, 40); g.stroke();
+      }
+      arrow(cx, 52, cx, 40, C.el, 1.4);
+      box(cx - 32, 12, 64, 26);
+      label("spectrograph", cx + 40, 30);
+      label("Raman-shifted light", cx + 20, 66, C.el);
+      // laser: in from the left, folded down by the 45-degree edge filter
+      arrow(66, fy, cx - 14, fy, C.acc, 1.8);
+      box(14, fy - 10, 46, 20); label("laser", 18, fy + 28);
+      g.save(); g.translate(cx, fy); g.rotate(Math.PI / 4);
+      box(-19, -3, 38, 6); g.restore();
+      label("edge filter (45°)", cx + 26, fy + 22);
+      // marginal rays: collimated to the objective, focused to a point on the sample
+      g.strokeStyle = C.acc; g.lineWidth = 1.6;
+      for (const s of [-1, 1]) {
+        g.beginPath(); g.moveTo(cx + s * 5, fy + 8); g.lineTo(cx + s * 5, ot);
+        g.lineTo(cx, sy); g.stroke();
+      }
+      // objective as a trapezoid, exit pupil at ot
       g.strokeStyle = C.muted; g.lineWidth = 2;
-      g.beginPath(); g.moveTo(cx - 16, h * 0.54); g.lineTo(cx + 16, h * 0.54);
-      g.lineTo(cx + 8, h * 0.64); g.lineTo(cx - 8, h * 0.64); g.closePath(); g.stroke();
-      label("objective", cx + 24, h * 0.60);
-      box(cx - 44, h * 0.78, 88, 9); label("sample", cx - 20, h * 0.78 + 22);
-      arrow(cx - 4, h * 0.76, cx - 4, 44, C.el, 1.4);
-      // to spectrograph
-      arrow(cx + 6, 30, w * 0.74, 30, C.el, 1.6);
-      box(w * 0.74, 18, 60, 26); label("spectrograph", w * 0.72, 14);
-      label("(scattered, shifted light)", cx + 30, 52);
+      g.beginPath(); g.moveTo(cx - 17, oy); g.lineTo(cx + 17, oy);
+      g.lineTo(cx + 13, ot); g.lineTo(cx - 13, ot); g.closePath(); g.stroke();
+      label("objective", cx + 26, oy + 14);
+      box(cx - 46, sy, 92, 9); label("sample", cx - 44, sy + 22);
+      label("focus", cx + 8, sy - 6);
     } },
-  afm: { cap: "AFM beam deflection: the laser reflects off the cantilever onto a quadrant photodiode; sub-angstrom bending is measurable.",
+  afm: { cap: "<b>AFM beam deflection.</b> The laser reflects off the cantilever onto a quadrant photodiode; sub-angstrom bending is measurable.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const cy = h * 0.55;
@@ -209,7 +273,7 @@ const SCHEMS = {
       g.moveTo(qx, qy + 15); g.lineTo(qx + 30, qy + 15); g.stroke();
       label("quadrant photodiode", qx - 66, qy - 8);
     } },
-  ebsd: { cap: "EBSD: the sample is tilted to 70 degrees and backscattered electrons form Kikuchi bands on the phosphor screen.",
+  ebsd: { cap: "<b>EBSD.</b> The sample is tilted to 70 degrees and backscattered electrons form Kikuchi bands on the phosphor screen.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const cx = w * 0.36, cy = h * 0.55;
@@ -233,7 +297,7 @@ const SCHEMS = {
       box(w * 0.86, cy - 20, 30, 40, C.metal);
       label("camera", w * 0.86, cy - 28);
     } },
-  fib: { cap: "Dual-beam FIB: the electron column images while the ion column mills; the gas injector writes protective deposits.",
+  fib: { cap: "<b>Dual-beam FIB.</b> The electron column images while the ion column mills; the gas injector writes protective deposits.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const sx = w * 0.5, sy = h * 0.74;
@@ -258,7 +322,7 @@ const SCHEMS = {
       g.fillRect(sx - 6, sy, 22, 6);
       label("milled cross-section", sx + 20, sy - 12);
     } },
-  leed: { cap: "LEED: low-energy electrons backscatter through retarding grids; elastic beams form the spot pattern on the screen.",
+  leed: { cap: "<b>LEED.</b> Low-energy electrons backscatter through retarding grids; elastic beams form the spot pattern on the screen.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
       const sx = w * 0.78, sy = h * 0.52;
