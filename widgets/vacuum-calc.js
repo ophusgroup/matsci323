@@ -8,8 +8,9 @@
 //   :::{anywidget} ../../widgets/vacuum-calc.js
 //   :::
 
-const KB = 1.380649e-23, T = 300, M = 28 * 1.6605e-27, D = 3.7e-10; // N2
-function props(pTorr) {
+const KB = 1.380649e-23, M = 28 * 1.6605e-27, D = 3.7e-10; // N2
+function props(pTorr, T) {
+  T = T || 300;
   const p = pTorr * 133.322;                       // Pa
   const n = p / (KB * T);                          // m^-3
   const flux = p / Math.sqrt(2 * Math.PI * M * KB * T); // m^-2 s^-1
@@ -63,32 +64,34 @@ function render({ model, el }) {
   <div class="w-side">
     <label>pressure <b class="w-pv" style="color:var(--w-fg)"></b>
       <input class="w-p" type="range" min="-12" max="2.9" step="0.05" value="-6"></label>
+    <label>gas temperature <b class="w-tv" style="color:var(--w-fg)"></b>
+      <input class="w-T" type="range" min="77" max="700" step="1" value="300"></label>
     <div class="w-box">
       gas density <b class="w-n"></b><br>
       impingement flux <b class="w-f"></b><br>
       mean free path <b class="w-m"></b><br>
       monolayer time <b class="w-t w-big"></b>
     </div>
-    <div class="w-box" style="font-size:12px; line-height:1.5">Nitrogen at 300 K with unit
-      sticking, 10¹⁵ sites/cm². A surface analysis session needs the monolayer
-      time to exceed the measurement time.</div>
+    <div class="w-box" style="font-size:12px; line-height:1.5">Nitrogen with unit sticking, 10¹⁵ sites/cm². A surface analysis
+      session needs the monolayer time to exceed the measurement time.</div>
   </div>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Monolayer formation time.</b> How long a surface stays atomically clean at each pressure (N₂, 300 K, unit sticking).";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Monolayer formation time.</b> How long a surface stays clean at each pressure (N₂, unit sticking).";
   root.appendChild(cap);
   const cv = root.querySelector("canvas");
   const inP = root.querySelector(".w-p");
+  const inT = root.querySelector(".w-T");
   function dark() { return document.documentElement.classList.contains("dark"); }
   function syncTheme() { root.classList.toggle("w-dark", dark()); draw(); }
   const obs = new MutationObserver(syncTheme);
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
   function draw() {
-    const lp = +inP.value, pT = Math.pow(10, lp);
-    const { n, flux, mfp, tml } = props(pT);
+    const lp = +inP.value, pT = Math.pow(10, lp), TK = +inT.value;
+    const { n, flux, mfp, tml } = props(pT, TK);
     const dpr = window.devicePixelRatio || 1;
     const w = cv.clientWidth || 320, h = 320;
     cv.width = w * dpr; cv.height = h * dpr;
@@ -133,29 +136,24 @@ function render({ model, el }) {
     g.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)"; g.lineWidth = 2;
     g.beginPath();
     for (let l = -12; l <= 2.9; l += 0.1) {
-      const t = props(Math.pow(10, l)).tml;
+      const t = props(Math.pow(10, l), TK).tml;
       const lt = Math.log10(t);
       l === -12 ? g.moveTo(X(l), Y(Math.min(ltMax, Math.max(ltMin, lt))))
                 : g.lineTo(X(l), Y(Math.min(ltMax, Math.max(ltMin, lt))));
     }
     g.stroke();
-    // label riding along the line, lower right, clear of the bands
-    g.fillStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
-    g.save();
-    g.translate(X(-2.2), Y(Math.log10(props(Math.pow(10, -2.2)).tml)) - 10);
-    g.rotate(-Math.atan2(h - mT - mB, (w - mL - mR)) * 0.86);
-    g.fillText("monolayer formation time", 0, 0);
-    g.restore();
     // marker
     g.fillStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
     g.beginPath(); g.arc(X(lp), Y(Math.min(ltMax, Math.max(ltMin, Math.log10(tml)))), 6, 0, 6.3); g.fill();
     root.querySelector(".w-pv").textContent = pT.toExponential(1) + " Torr";
+    root.querySelector(".w-tv").textContent = TK + " K";
     root.querySelector(".w-n").textContent = n.toExponential(1) + " m⁻³";
     root.querySelector(".w-f").textContent = (flux / 1e4).toExponential(1) + " cm⁻²s⁻¹";
     root.querySelector(".w-m").textContent = fmtLen(mfp);
     root.querySelector(".w-t").textContent = fmtTime(tml);
   }
   inP.addEventListener("input", draw);
+  inT.addEventListener("input", draw);
   new ResizeObserver(draw).observe(cv);
   syncTheme();
   return () => obs.disconnect();

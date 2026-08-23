@@ -49,7 +49,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>RHEED intensity oscillations.</b> A film grows atom by atom; every completed monolayer rings the specular intensity.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>RHEED oscillations.</b> A film grows atom by atom; each completed monolayer rings the intensity.";
   root.appendChild(cap);
 
   const cvF = root.querySelector(".w-film"), cvI = root.querySelector(".w-int");

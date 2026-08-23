@@ -38,6 +38,9 @@ repository **Settings → Pages → Source → GitHub Actions**.
 - `myst.yml`: site config, navigation, and table of contents
 - `assets/`: images and figures
 - `widgets/`: interactive demos (anywidget ES modules, embedded with local paths)
+- `scripts/figures/`: matplotlib scripts that generate the static SVGs in
+  `assets/figures/` (run with a python that has matplotlib; transparent
+  backgrounds and mid-tone colors so they read in both site themes)
 - `test-*.html`: standalone widget test pages for development
 - `style.css`: theme overrides for the MyST book-theme
 - `scripts/patch_theme.py`: theme patch (flat top-bar search)

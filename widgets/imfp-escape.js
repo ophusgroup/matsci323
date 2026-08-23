@@ -49,7 +49,7 @@ function render({ model, el }) {
       <input class="w-t" type="range" min="0" max="10" step="0.1" value="2"></label>
     <canvas class="w-depth" height="120"></canvas>
     <div class="w-box">
-      IMFP &lambda; <b class="w-l"></b><br>
+      inelastic mean free path &lambda; <b class="w-l"></b><br>
       95% of signal from top <b class="w-d95"></b><br>
       substrate signal through overlayer <b class="w-att"></b>
     </div>
@@ -58,7 +58,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Electron escape depth.</b> The universal curve, and the sampling depth it implies for a chosen energy and emission angle.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Electron escape depth.</b> The universal curve, and the sampling depth it implies at any energy and angle.";
   root.appendChild(cap);
 
   const cvC = root.querySelector(".w-curve"), cvD = root.querySelector(".w-depth");
@@ -84,12 +84,12 @@ function render({ model, el }) {
       const g = cvC.getContext("2d");
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.clearRect(0, 0, w, h);
-      const mL = 40, mR = 10, mT = 12, mB = 40;
+      const mL = 46, mR = 10, mT = 12, mB = 42;
       const lx0 = Math.log10(1), lx1 = 4, ly0 = Math.log10(0.3), ly1 = Math.log10(30);
       const X = e => mL + (Math.log10(e) - lx0) / (lx1 - lx0) * (w - mL - mR);
       const Y = l => mT + (ly1 - Math.log10(l)) / (ly1 - ly0) * (h - mT - mB);
       g.strokeStyle = isD ? "#333" : "#eee"; g.fillStyle = isD ? "#999" : "#777";
-      g.font = "12px system-ui";
+      g.font = "13px system-ui";
       for (const e of [1, 10, 100, 1000, 10000]) {
         g.beginPath(); g.moveTo(X(e), mT); g.lineTo(X(e), h - mB); g.stroke();
         g.fillText(e >= 1000 ? e / 1000 + "k" : e, X(e) - 6, h - mB + 13);
@@ -151,7 +151,7 @@ function render({ model, el }) {
       g.strokeStyle = acc; g.setLineDash([4, 3]);
       g.beginPath(); g.moveTo(w * 0.55, surf + esc * zScale);
       g.lineTo(w * 0.98, surf + esc * zScale); g.stroke(); g.setLineDash([]);
-      g.fillStyle = isD ? "#ccc" : "#444"; g.font = "12px system-ui";
+      g.fillStyle = isD ? "#ccc" : "#444"; g.font = "13px system-ui";
       g.fillText("3λcosθ", w * 0.55, surf + esc * zScale - 3);
       g.fillText("signal", w * 0.62, h - 4);
       if (t > 0) g.fillText("overlayer", 4, surf + Math.max(10, t * zScale - 2));

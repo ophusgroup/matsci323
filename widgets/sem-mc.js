@@ -107,7 +107,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>SEM interaction volume.</b> Monte Carlo electron trajectories and the interaction volume they build up inside the target.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>SEM interaction volume.</b> Monte Carlo electron trajectories and the deposited energy volume.";
   root.appendChild(cap);
 
   const cv = root.querySelector(".w-traj");

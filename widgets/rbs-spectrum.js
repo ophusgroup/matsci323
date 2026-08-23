@@ -115,9 +115,11 @@ function render({ model, el }) {
 </div>`;
   root.innerHTML = `
 <div class="w-wrap">
-  <div class="w-plot"><canvas height="340"></canvas></div>
+  <div class="w-plot">
+    <canvas class="w-schem" height="96" style="border-radius:8px; margin-bottom:8px"></canvas>
+    <canvas class="w-main" height="300"></canvas>
+  </div>
   <div class="w-ctl">
-    <canvas class="w-schem" height="110" style="border-radius:8px"></canvas>
     <div class="w-lay"><span>beam energy <span class="w-val w-ev"></span></span>
       <input class="w-E" type="range" min="1000" max="3000" step="50" value="2000"></div>
     ${layerHTML(0, "Au", 40)}
@@ -132,10 +134,10 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>RBS spectrum builder.</b> Backscattering spectrum of the layer stack you define; kinematics exact, stopping powers approximate.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>RBS spectrum builder.</b> The backscattering spectrum of your stack; kinematics exact, stopping approximate.";
   root.appendChild(cap);
 
-  const cv = root.querySelector(".w-plot canvas");
+  const cv = root.querySelector(".w-main");
   const sc = root.querySelector(".w-schem");
   const inE = root.querySelector(".w-E"), sub = root.querySelector(".w-sub");
   const els = [root.querySelector(".w-e0"), root.querySelector(".w-e1")];
@@ -168,42 +170,44 @@ function render({ model, el }) {
       d.textContent = l.el;
       sv.appendChild(d);
     }
-    // ---- schematic: beam, stack, detector at 165 degrees ----
+    // ---- schematic: beam in from the left, stack at right, detector upper left ----
     {
       const dpr = window.devicePixelRatio || 1;
-      const sw = sc.clientWidth || 230, sh = 110;
+      const sw = sc.clientWidth || 420, sh = 96;
       sc.width = sw * dpr; sc.height = sh * dpr;
       const q = sc.getContext("2d");
       q.setTransform(dpr, 0, 0, dpr, 0, 0);
       const isD = dark();
       q.fillStyle = isD ? "#221f1e" : "#ffffff";
       q.fillRect(0, 0, sw, sh);
-      // sample: vertical layer stack on the right, beam arrives horizontally
-      const sx = sw - 60, cym = sh / 2;
+      const sx = sw * 0.72, cym = sh * 0.62;
+      // layer stack (beam hits its left face)
       let off = 0;
       for (const l of stack) {
-        const wpx = l.t >= 4000 ? 26 : Math.max(5, l.t / 18);
+        const wpx = l.t >= 4000 ? 30 : Math.max(6, l.t / 14);
         q.fillStyle = COLORS[l.el];
-        q.fillRect(sx + off, 14, wpx, sh - 28);
+        q.fillRect(sx + off, 12, wpx, sh - 24);
+        q.fillStyle = "#fff"; q.font = "11px system-ui";
+        if (wpx > 13) q.fillText(l.el, sx + off + 2, sh - 28);
         off += wpx;
       }
-      // incident beam
+      // incident beam, left to right
       q.strokeStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)"; q.lineWidth = 2;
-      q.beginPath(); q.moveTo(6, cym); q.lineTo(sx - 2, cym); q.stroke();
-      q.beginPath(); q.moveTo(sx - 9, cym - 4); q.lineTo(sx - 2, cym); q.lineTo(sx - 9, cym + 4); q.stroke();
-      // backscattered ray at 165 deg (15 deg above the incoming path)
-      const bs = 165 * Math.PI / 180;
-      q.setLineDash([4, 3]);
-      q.beginPath(); q.moveTo(sx, cym);
-      q.lineTo(sx + Math.cos(bs) * 95, cym - Math.sin(bs) * 55); q.stroke();
-      q.setLineDash([]);
-      // detector
-      q.fillStyle = isD ? "#666" : "#888";
-      q.fillRect(sx + Math.cos(bs) * 95 - 6, cym - Math.sin(bs) * 55 - 9, 10, 18);
+      q.beginPath(); q.moveTo(8, cym); q.lineTo(sx - 2, cym); q.stroke();
+      q.beginPath(); q.moveTo(sx - 10, cym - 4); q.lineTo(sx - 2, cym); q.lineTo(sx - 10, cym + 4); q.stroke();
       q.fillStyle = isD ? "#eee" : "#222"; q.font = "12px system-ui";
-      q.fillText("He²⁺ beam", 8, cym - 7);
-      q.fillText("θ = 165°", sx - 76, cym - 30);
-      q.fillText("detector", sx + Math.cos(bs) * 95 - 34, cym - Math.sin(bs) * 55 + 24);
+      q.fillText("He beam", 10, cym - 8);
+      // backscattered ray at 165 degrees and the detector it reaches
+      const bs = 165 * Math.PI / 180;
+      const dxd = sx + Math.cos(bs) * (sw * 0.42), dyd = cym - Math.sin(bs) * (sh * 0.42);
+      q.setLineDash([4, 3]);
+      q.beginPath(); q.moveTo(sx, cym); q.lineTo(dxd, dyd); q.stroke();
+      q.setLineDash([]);
+      q.fillStyle = isD ? "#666" : "#888";
+      q.fillRect(dxd - 5, dyd - 10, 10, 20);
+      q.fillStyle = isD ? "#eee" : "#222";
+      q.fillText("detector", dxd + 9, dyd + 4);
+      q.fillText("θ = 165°", sx - 92, cym - 22);
     }
     const { bins, Emax } = spectrum(stack, E0 * 1000);
     const dpr = window.devicePixelRatio || 1;

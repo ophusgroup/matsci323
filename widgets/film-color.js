@@ -67,16 +67,19 @@ function filmRGB(t, n1, boost) {
 }
 
 function spectralRGB(l) {
-  // color of monochromatic light at wavelength l (approximate, saturated)
-  let X = xbar(l), Y = ybar(l), Z = zbar(l);
-  const s = 1.6 / Math.max(0.02, X + Y + Z);
-  X *= s; Y *= s; Z *= s;
-  let r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z;
-  let g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z;
-  let b = 0.0557 * X - 0.2040 * Y + 1.0570 * Z;
-  const m = Math.max(r, g, b, 1e-6);
-  r = Math.max(0, r / m); g = Math.max(0, g / m); b = Math.max(0, b / m);
-  const gam = v => Math.round(255 * Math.pow(v, 1 / 2.2));
+  // piecewise visible-spectrum colors: violet stays violet, deep red darkens
+  // toward the infrared, nothing wraps around the hue circle
+  let r = 0, g = 0, b = 0;
+  if (l < 440) { r = (440 - l) / 60; b = 1; }
+  else if (l < 490) { g = (l - 440) / 50; b = 1; }
+  else if (l < 510) { g = 1; b = (510 - l) / 20; }
+  else if (l < 580) { r = (l - 510) / 70; g = 1; }
+  else if (l < 645) { r = 1; g = (645 - l) / 65; }
+  else { r = 1; }
+  let f = 1;
+  if (l < 420) f = 0.55 + 0.45 * (l - 380) / 40;        // violet: bright
+  else if (l > 690) f = Math.max(0.15, 1 - (l - 690) / 60); // toward IR: dark red
+  const gam = v => Math.round(255 * Math.pow(Math.max(0, v * f), 0.8));
   return `rgb(${gam(r)},${gam(g)},${gam(b)})`;
 }
 
@@ -111,7 +114,8 @@ function render({ model, el }) {
 <canvas class="w-strip" height="56"></canvas>
 <div class="w-row">
   <div class="w-spec"><canvas class="w-sp" height="220"></canvas></div>
-  <div class="w-side"><div class="w-chip"><span class="w-chiplabel"></span></div></div>
+  <div class="w-side"><canvas class="w-schem" height="110" style="border-radius:8px"></canvas>
+  <div class="w-chip"><span class="w-chiplabel"></span></div></div>
 </div>
 <div class="w-controls">
   <button class="w-ox on">SiO&#8322; (n=1.46)</button>
@@ -122,7 +126,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Thin-film interference colors.</b> The cleanroom oxide color chart, computed from interference physics plus human color vision.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Thin-film interference colors.</b> The color of a film on silicon viewed in white light, versus thickness.";
   root.appendChild(cap);
 
   const cvStrip = root.querySelector(".w-strip"), cvSp = root.querySelector(".w-sp");
@@ -151,7 +155,8 @@ function render({ model, el }) {
         g.fillRect(px, 12, 2, h - 24);
       }
       g.fillStyle = isD ? "#999" : "#777"; g.font = "12px system-ui";
-      for (let tt = 0; tt <= 1000; tt += 200) g.fillText(tt + " nm", tt / 1000 * (w - 40), 10);
+      g.fillText("film thickness:", 2, 10);
+      for (let tt = 200; tt <= 1000; tt += 200) g.fillText(tt + " nm", tt / 1000 * (w - 40), 10);
       const mx = t / 1000 * w;
       g.strokeStyle = isD ? "#fff" : "#000"; g.lineWidth = 1.5;
       g.beginPath(); g.moveTo(mx, 10); g.lineTo(mx, h - 8); g.stroke();
@@ -178,11 +183,6 @@ function render({ model, el }) {
         g.fillText(l, X(l) - 9, h - mB + 13);
       }
       g.fillText("wavelength (nm)", mL + 90, h - 4);
-      // spectral color bar along the wavelength axis
-      for (let l = 380; l <= 740; l += 2) {
-        g.fillStyle = spectralRGB(l);
-        g.fillRect(X(l), h - mB + 1, X(l + 2) - X(l) + 1, 6);
-      }
       // reflectance curve, drawn in the color of each wavelength
       g.lineWidth = 3.5; g.lineCap = "round";
       let prev = null;
@@ -198,11 +198,40 @@ function render({ model, el }) {
       g.fillStyle = isD ? "#999" : "#777";
       g.fillText("reflectance of the film stack", mL + 6, mT + 10);
     }
+    // schematic: white light onto the film stack, side view
+    {
+      const sc = root.querySelector(".w-schem");
+      const dpr = window.devicePixelRatio || 1;
+      const sw = sc.clientWidth || 200, sh = 110;
+      sc.width = sw * dpr; sc.height = sh * dpr;
+      const q = sc.getContext("2d");
+      q.setTransform(dpr, 0, 0, dpr, 0, 0);
+      q.fillStyle = isD ? "#221f1e" : "#ffffff"; q.fillRect(0, 0, sw, sh);
+      const fy = 58, fpx = 8 + t * 0.022;
+      q.fillStyle = isD ? "rgba(240,122,158,0.25)" : "rgba(204,0,0,0.13)";
+      q.fillRect(0, fy, sw, fpx);
+      q.fillStyle = isD ? "#3d3a38" : "#cfcbc5";
+      q.fillRect(0, fy + fpx, sw, sh - fy - fpx);
+      // incoming white light and the two reflected rays that interfere
+      const hx = sw * 0.42;
+      for (const [dx0, col] of [[-2, "#d33"], [0, "#3a3"], [2, "#36d"]]) {
+        q.strokeStyle = col; q.lineWidth = 1.3;
+        q.beginPath(); q.moveTo(hx - 44 + dx0, fy - 40); q.lineTo(hx + dx0, fy); q.stroke();
+      }
+      q.strokeStyle = isD ? "#eee" : "#222"; q.lineWidth = 1.3;
+      q.beginPath(); q.moveTo(hx, fy); q.lineTo(hx + 44, fy - 40); q.stroke();
+      q.beginPath(); q.moveTo(hx, fy); q.lineTo(hx + fpx * 0.9, fy + fpx);
+      q.lineTo(hx + fpx * 1.8, fy); q.lineTo(hx + fpx * 1.8 + 44, fy - 40); q.stroke();
+      q.fillStyle = isD ? "#ccc" : "#333"; q.font = "12px system-ui";
+      q.fillText("white light", 4, 12);
+      q.fillText(n1 === 1.46 ? "SiO₂ film" : "Si₃N₄ film", 4, fy + Math.min(fpx - 1, 12) + (fpx < 14 ? -13 : 0));
+      q.fillText("Si substrate", 4, sh - 6);
+    }
     const [r, gg, b] = filmRGB(t, n1, 0.50);
     const chip = root.querySelector(".w-chip");
     chip.style.background = `rgb(${r},${gg},${b})`;
     root.querySelector(".w-chiplabel").textContent =
-      `${t} nm ${n1 === 1.46 ? "SiO₂" : "Si₃N₄"} on Si`;
+      `${t} nm ${n1 === 1.46 ? "SiO₂" : "Si₃N₄"} on Si, white light`;
     root.querySelector(".w-tv").textContent = t + " nm";
   }
   bOx.addEventListener("click", () => { n1 = 1.46; bOx.classList.add("on"); bNi.classList.remove("on"); draw(); });

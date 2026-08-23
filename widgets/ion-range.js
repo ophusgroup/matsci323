@@ -176,14 +176,13 @@ function render({ model, el }) {
 .${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 280px; min-width:250px; }
-.${uid} .w-ctl { width:215px; display:flex; flex-direction:column; gap:8px; font-size:13px;
-  color:var(--w-muted); }
-.${uid} .w-box { background:var(--w-panel); border:1px solid var(--w-border); border-radius:6px;
-  padding:6px 8px; display:flex; flex-direction:column; gap:3px; }
-.${uid} .w-box b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
-.${uid} select, .${uid} input[type=range] { width:100%; accent-color:var(--w-accent); }
+.${uid} .w-bar { display:flex; gap:16px; align-items:center; margin-top:8px; font-size:13px;
+  color:var(--w-muted); flex-wrap:wrap; }
+.${uid} .w-bar label { display:flex; align-items:center; gap:6px; }
+.${uid} .w-bar b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
 .${uid} select { background:var(--w-panel); color:var(--w-fg); border:1px solid var(--w-border);
-  border-radius:5px; padding:2px; }
+  border-radius:5px; padding:2px 4px; }
+.${uid} input[type=range] { accent-color:var(--w-accent); }
 .${uid} button { border:1px solid var(--w-border); border-radius:6px; background:var(--w-panel);
   color:var(--w-fg); padding:4px 10px; cursor:pointer; font-size:13px; }
 `;
@@ -191,29 +190,26 @@ function render({ model, el }) {
   root.className = uid;
   root.innerHTML = `
 <div class="w-wrap">
-  <div class="w-plot"><canvas class="w-traj" height="360"></canvas></div>
-  <div class="w-plot"><canvas class="w-hist" height="360"></canvas></div>
-  <div class="w-ctl">
-    <div class="w-box"><span>ion</span>
-      <select class="w-ion">${Object.keys(IONS).map(k => `<option${k === "B" ? " selected" : ""}>${k}</option>`).join("")}</select></div>
-    <div class="w-box"><span>target</span>
-      <select class="w-tgt">${Object.keys(TARGETS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></div>
-    <div class="w-box"><span>energy <b class="w-ev"></b></span>
-      <input class="w-E" type="range" min="0" max="2.48" step="0.02" value="1.7"></div>
-    <div class="w-box">
-      <span>ions run <b class="w-n">0</b></span>
-      <span>projected range R&#8346; <b class="w-rp">&ndash;</b></span>
-      <span>straggle &Delta;R&#8346; <b class="w-dr">&ndash;</b></span>
-      <span>energy to nuclei <b class="w-fn">&ndash;</b></span>
-      <span>vacancies / ion (est.) <b class="w-vac">&ndash;</b></span>
-    </div>
-    <button class="w-go">Restart</button>
-  </div>
+  <div class="w-plot"><canvas class="w-traj" height="340"></canvas></div>
+  <div class="w-plot"><canvas class="w-hist" height="340"></canvas></div>
+</div>
+<div class="w-bar">
+  <label>ion <select class="w-ion">${Object.keys(IONS).map(k => `<option${k === "B" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+  <label>target <select class="w-tgt">${Object.keys(TARGETS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+  <label>energy <input class="w-E" type="range" min="0" max="2.48" step="0.02" value="1.7" style="width:110px"><b class="w-ev"></b></label>
+  <button class="w-go">Restart</button>
+</div>
+<div class="w-bar">
+  <span>ions <b class="w-n">0</b></span>
+  <span>range R&#8346; <b class="w-rp">&ndash;</b></span>
+  <span>straggle &Delta;R&#8346; <b class="w-dr">&ndash;</b></span>
+  <span>energy to nuclei <b class="w-fn">&ndash;</b></span>
+  <span>vacancies/ion <b class="w-vac">&ndash;</b></span>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> Binary-collision Monte Carlo with the ZBL potential: trajectories and collision cascades (left, recoils in blue), and the implantation depth profile with range and straggle (right).";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> ZBL binary-collision Monte Carlo: cascades (left) and the range profile (right).";
   root.appendChild(cap);
 
   const cvT = root.querySelector(".w-traj"), cvH = root.querySelector(".w-hist");

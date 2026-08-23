@@ -1,6 +1,6 @@
 # STEM Imaging
 
-Transmission electron microscopy answers the question every depth-profiling technique in this course approximates: what does the buried interface actually look like? Prepare a cross-section thin enough for electrons to pass through, and the film stack, its interfaces, its defects, and its atomic structure are imaged directly, at resolution down to well below an angstrom. The price is the preparation: the sample must be thinned to below about 100 nm, almost always by [FIB lift-out](../sem/ebsd-fib.md), and the analyzed region is measured in micrometers. This page covers imaging and diffraction in the scanning transmission electron microscope (STEM), the mode that now dominates materials work; the [next page](analytical-stem.md) adds spectroscopy.
+Transmission electron microscopy answers the question every depth-profiling technique in this course approximates: what does the buried interface actually look like? Prepare a cross-section thin enough for electrons to pass through, and the film stack, its interfaces, its defects, and its atomic structure are imaged directly, at resolution down to well below an angstrom. The price is the preparation: the sample must be thinned to below about 100 nm, almost always by [FIB lift-out](../sem/ebsd-fib.md), and the analyzed region is measured in micrometers. This page covers imaging and diffraction in the transmission microscope, emphasizing the scanning (STEM) mode that now dominates materials work; the [next page](analytical-stem.md) adds spectroscopy.
 
 | At a glance | |
 | --- | --- |
@@ -11,37 +11,63 @@ Transmission electron microscopy answers the question every depth-profiling tech
 | Sensitivity | Single atomic columns; single dopant atoms in favorable cases |
 | Sample requirements | Electron-transparent lamella, typically FIB-prepared; preparation is destructive |
 
-## The scanning transmission geometry
+## Fast electrons and the resolution problem
 
-A STEM focuses the beam to a fine probe, scans it across the thin sample, and records scattered intensity on detectors below, building the image pixel by pixel exactly as in the [SEM](../sem/sem.md). The crucial differences are the sample and the energy: through a sample tens of nanometers thick at hundreds of keV, the beam broadens only slightly, so resolution is set by the probe itself. Aberration correctors, standard on high-end instruments since the mid-2000s, cancel the intrinsic spherical aberration of round magnetic lenses and shrink the probe below 1 angstrom, comfortably resolving atomic columns in any orientation-aligned crystal.
+At 100 to 300 kV, electrons are relativistic and their wavelengths are picometers (about 2.5 pm at 200 kV, computed with the relativistic correction), hundreds of times smaller than an atom. Diffraction therefore never limits TEM resolution; the lenses do. Round magnetic lenses suffer unavoidable **spherical aberration** (rays through the lens periphery focus too strongly, an aberration Scherzer proved cannot be eliminated in any static round lens) and **chromatic aberration** (energy spread focuses at different planes). For half a century resolution was set by balancing spherical aberration against diffraction at an optimal aperture, stranding microscopes near 1 to 2 Å. Multipole **aberration correctors**, standard on high-end instruments since the mid-2000s, cancel the spherical aberration with non-round optics and push probes and images below 0.5 Å, which in practice means every crystalline material resolves into atomic columns when aligned along a low-index axis.
 
-Detectors partition the scattered beam by angle, and the collection angle selects the contrast:
+:::{anywidget} ../../widgets/technique-schematic.js
+{ "name": "stem" }
+:::
 
-- **High-angle annular dark field (HAADF)** collects electrons scattered to high angles by near-nucleus Rutherford-like scattering. Intensity scales roughly as $Z^{1.7}$, giving directly interpretable atomic number contrast: heavy layers bright, light layers dark, with none of the contrast reversals of phase-contrast imaging. HAADF is the default structural image of a film stack.
-- **Bright field and annular bright field** collect the transmitted disk and its rim, where phase contrast makes light-element columns (oxygen, even hydrogen in favorable cases) visible alongside heavy ones.
-- **Pixelated detectors** record the full diffraction pattern at every probe position (4D-STEM), from which essentially any contrast can be synthesized computationally, and local strain, orientation, polarity, and fields can be mapped quantitatively.
+Two operating modes share the column. Conventional TEM illuminates the sample broadly and forms an image with post-specimen lenses; STEM focuses the beam to a fine probe, scans it, and records scattered intensity on detectors below, building the image pixel by pixel exactly as in the [SEM](../sem/sem.md). The two are related by reciprocity (a STEM detector plays the role of a TEM source, and vice versa), so their contrast mechanisms mirror each other; STEM's practical advantages, directly interpretable incoherent contrast and simultaneous multi-signal collection, have made it the default for materials work, and this course follows that usage.
 
-For thin film problems the routine STEM measurements are direct: layer thicknesses without the model-dependence of XRR or ellipsometry, interface abruptness and interdiffusion seen atom column by atom column, misfit dislocations and threading defects, local epitaxial relationships, and the real conformality of a deposited film over topography.
+## Contrast: what makes an image
 
-## Diffraction in the TEM and STEM
+The beam leaving a thin sample carries several distinguishable signals, and detector geometry selects among them:
 
-Selected-area electron diffraction from any chosen region gives single-crystal patterns that identify phases and orientation relationships across an interface, the local, single-grain complement to the ensemble average of [XRD](../photons/xrd.md). Converging the beam (CBED) adds sensitivity to thickness and symmetry, and scanning nanobeam diffraction maps strain fields across device structures at nanometer resolution with precision competitive with the X-ray methods, from exactly the region of interest. Where the reciprocal-space rods of [RHEED and LEED](leed-rheed.md) probed the surface, transmission diffraction probes the full thin foil, and the same Ewald constructions carry over directly.
+- **High-angle annular dark field (HAADF)** collects electrons scattered to high angles (inner angle several tens of milliradians) by near-nucleus, Rutherford-like scattering. Intensity scales roughly as $Z^{1.7}$ per atom and increases monotonically with thickness, giving directly interpretable atomic-number contrast: heavy layers bright, light layers dark, with none of the contrast reversals that haunt phase-contrast imaging. HAADF is the default structural image of a film stack, and the mode meant by "Z-contrast."
+- **Bright field (BF)** collects the transmitted disk. In crystalline samples its contrast at medium resolution is **diffraction contrast**: any region satisfying a Bragg condition scatters intensity out of the BF detector and appears dark. This is the classical language of defect imaging: bend contours sweep through elastically bent regions, thickness fringes stripe wedge-shaped foils, and strain fields of dislocations light up against background, with the textbook invisibility criterion (a dislocation vanishes when its Burgers vector lies in the reflecting plane, $\mathbf{g}\cdot\mathbf{b}=0$) still the standard way to identify Burgers vectors.
+- **Annular bright field (ABF)**, the rim of the transmitted disk, renders light-element columns (oxygen, nitrogen, lithium) visible alongside heavy ones, filling Z-contrast's blind spot.
+- **Pixelated detectors** record the full diffraction pattern at every probe position (4D-STEM), from which any of the above contrasts can be synthesized after the fact, and quantities like local strain, orientation, polarity, and electromagnetic field maps can be computed. We keep 4D-STEM to a mention here; its methods are prime final-project territory.
 
-## Reading STEM images honestly
+Underneath all crystalline-sample imaging sits **dynamical diffraction**: a fast electron in a crystal does not scatter once but channels and exchanges intensity among beams continuously, with a characteristic length (the extinction distance, tens of nanometers) over which intensity oscillates between the direct and diffracted beams. This is the origin of the thickness fringes above, the reason image intensities are not simply proportional to scattering power, and the reason quantitative comparisons lean on simulation (the multislice method; see the [simulation appendix](../../appendix/simulation-tools.md)). HAADF's popularity rests on being the *most forgiving* of these effects, incoherent enough that intuition usually survives, but honest atomic-scale quantification still checks against simulation.
 
-Three cautions keep STEM quantitative. The image is a two-dimensional projection through the foil thickness, so a "diffuse" interface may be a sharp but rough interface viewed edge-on, and roughness projects into apparent interdiffusion. The FIB-prepared foil carries amorphized surface layers and possible implanted Ga, so the outer few nanometers of the sample are artifacts of preparation, not of the film. And the beam itself deposits energy: knock-on displacement and radiolysis modify sensitive materials during observation, managed by lowering voltage or dose, cryogenic stages, and low-dose acquisition schemes developed for exactly this purpose.
+## Diffraction in the microscope
 
-% TODO: figures: (a) STEM geometry with detector layout labeled by angle;
-% (b) HAADF cross-section of a multilayer or device stack with the layers
-% annotated (we have many candidates in-house); (c) an interface image pair
-% illustrating the projection/roughness caveat.
+The same instrument is a diffraction camera with a selectable probe size, and the diffraction modes ladder neatly by convergence:
 
-% TODO: decide how much 4D-STEM to include here vs leaving it as a final project
-% topic; current draft mentions it in one sentence by design.
+- **Selected-area electron diffraction (SAED)**: parallel illumination over a chosen sub-micrometer region gives single-crystal spot patterns that identify phases and orientation relationships across an interface, the local, single-grain complement to the ensemble average of [XRD](../photons/xrd.md). Indexing a zone-axis pattern (ratios of spot spacings plus interplanar angles) is a core skill inherited directly from the reciprocal-lattice machinery of Module 2.
+- **Convergent-beam electron diffraction (CBED)**: focusing the beam turns spots into disks whose internal intensity structure encodes specimen thickness and full crystal symmetry (including the point-group information that spot positions alone cannot give).
+- **Nanobeam / scanning electron diffraction**: a small-convergence probe scanned across the sample yields a pattern per position; tracking the Bragg disk positions maps local lattice parameters, and hence strain, at a few nanometers resolution with about $10^{-3}$ precision, directly on the device feature of interest.
+
+Where the reciprocal-space rods of [RHEED and LEED](leed-rheed.md) probed the surface, transmission diffraction probes the full foil thickness, and the same Ewald constructions carry over with one addition: the finite foil thickness relaxes the third Laue condition into short rods (rel-rods) along the beam direction, the transmission cousin of the surface-rod physics of the previous page.
+
+## Projection
+
+Every TEM and STEM image is a projection through the full thickness of the foil, and forgetting this is the most common way to misread one. A rough interface viewed edge-on projects into an apparently diffuse interface: the measured "interfacial width" is the roughness amplitude folded through the lamella thickness, not the chemistry. An inclined interface does the same, with the apparent width growing linearly with lamella thickness. The only case where the apparent width is the real chemical width is a flat, chemically graded interface, and distinguishing these cases from a single image is not possible. In practice we check by comparing two orthogonal cross-sections, by thinning the lamella further and watching whether the apparent width shrinks, or by tilting.
+
+The demonstration below makes the geometry explicit for the two standard specimen geometries. A cross-section (the FIB lift-out of the [previous page](../sem/ebsd-fib.md)) views the film edge-on: interfaces appear directly, and the projection error is set by the lamella thickness. Plan view (often just the film floated or back-thinned, far easier preparation) views along the film normal: lateral structure appears clearly, but a flat buried interface produces no contrast at all, sharp or diffuse. Run the interface types against both views and note the apparent-width readout: for a rough interface it tracks the lamella thickness, which is why "how thick was your lamella" is a fair question to ask of any published interface width.
+
+:::{anywidget} ../../widgets/stem-projection.js
+:::
+
+## Other things to keep straight
+
+Three more items belong on the checklist. The FIB lamella carries amorphized surface layers and implanted Ga on both faces, so the outer few nanometers of the sample are preparation, not material, and the thinner the lamella the larger the corrupted fraction. Beam damage (knock-on displacement at high voltage, radiolysis in insulators and organics) can modify a sensitive sample faster than it can be imaged; the controls are voltage, dose rate, total dose, and cryo. And dynamical diffraction means intensities are not proportional to scattering power, so quantitative claims about atomic-scale intensities need to be checked against simulation.
+
+:::{figure} ../../assets/figures/stem-detectors.svg
+:alt: Angular ranges of the bright field, annular bright field, low-angle annular dark field, and high-angle annular dark field detectors below a thin sample
+:width: 72%
+
+Scattering angle selects the signal: the bright-field disk and its rim (phase contrast, light elements), the low-angle annulus (strain and diffraction contrast), and the high-angle annulus (Z-contrast). Modern instruments record several simultaneously.
+:::
+
+% TODO: figures still wanted: (b) HAADF cross-section of a device stack,
+% annotated (in-house data); (d) SAED pattern with indexing.
 
 ## References and further reading
 
-1. D. B. Williams and C. B. Carter, *Transmission Electron Microscopy*, 2nd ed., Springer (2009).
+1. D. B. Williams and C. B. Carter, *Transmission Electron Microscopy*, 2nd ed., Springer (2009). The comprehensive text, including all of diffraction contrast.
 2. S. J. Pennycook and P. D. Nellist (eds.), *Scanning Transmission Electron Microscopy: Imaging and Analysis*, Springer (2011).
 3. C. Ophus, Quantitative scanning transmission electron microscopy for materials science: imaging, diffraction, spectroscopy, and tomography, *Annual Review of Materials Research* **53** (2023). [doi.org/10.1146/annurev-matsci-080921-092646](https://doi.org/10.1146/annurev-matsci-080921-092646)
 

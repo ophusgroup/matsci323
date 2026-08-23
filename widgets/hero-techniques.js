@@ -39,10 +39,10 @@ function render({ model, el }) {
   const V = [
     { name: "XRD", make: () => ({
       step(g, w, t, hue) {
-        const cx = w / 2, cy = H * 0.56;
-        for (let r = 0; r < 3; r++) for (let i = -4; i <= 4; i++) {
+        const cx = w / 2, cy = H * 0.52;
+        for (let r = 0; r < 4; r++) for (let i = -4; i <= 4; i++) {
           g.fillStyle = `hsla(${hue},60%,70%,0.5)`;
-          g.beginPath(); g.arc(cx + i * 14, cy + 8 + r * 11, 1.8, 0, 6.3); g.fill();
+          g.beginPath(); g.arc(cx + i * 14, cy + r * 11, 1.8, 0, 6.3); g.fill();
         }
         const th = 0.45 + 0.28 * Math.sin(t * 0.8);
         const bragg = Math.max(0, 1 - Math.abs(th - 0.6) / 0.07); // 0..1
@@ -61,37 +61,46 @@ function render({ model, el }) {
         }
       } }) },
     { name: "XRR", make: () => ({
+      pts: [],
       step(g, w, t, hue) {
-        const sy = H * 0.46, fb = sy + 13;    // film top and bottom
-        g.fillStyle = `hsla(${hue},45%,42%,0.35)`; g.fillRect(0, sy, w, 13);
-        g.fillStyle = `hsla(${hue},30%,26%,0.35)`; g.fillRect(0, fb, w, H * 0.3 - 13);
-        const x1 = w * 0.38, x2 = x1 + 14;
-        const dy = q => q * 0.34;             // ray slope
-        // incident ray to the top surface
-        beam(g, x1 - 90, sy - dy(90), x1, sy, `hsla(${hue},90%,66%,0.9)`, 1.8);
-        // reflection from the top interface
-        beam(g, x1, sy, x1 + 95, sy - dy(95), `hsla(${hue},90%,70%,0.75)`, 1.6);
-        // refracted leg to the bottom interface and back out, exiting parallel
-        beam(g, x1, sy, x2 / 2 + x1 / 2 + 4, fb, `hsla(${hue},90%,66%,0.5)`, 1.4);
-        beam(g, x2 / 2 + x1 / 2 + 4, fb, x2, sy, `hsla(${hue},90%,66%,0.5)`, 1.4);
-        beam(g, x2, sy, x2 + 90, sy - dy(90), `hsla(${hue},90%,70%,0.75)`, 1.6);
-        // interference fringes, kept clear of the label strip
-        const ph = t * 1.4;
-        g.strokeStyle = `hsla(${hue},95%,72%,0.9)`; g.lineWidth = 1.6;
+        const sy = H * 0.40, fpx = 11;
+        g.fillStyle = `hsla(${hue},45%,42%,0.35)`; g.fillRect(0, sy, w, fpx);
+        g.fillStyle = `hsla(${hue},30%,26%,0.35)`; g.fillRect(0, sy + fpx, w, 12);
+        // the measurement: incidence angle sweeps upward, the detector trace
+        // draws the fringe pattern in step with the sweep
+        const p = (t * 0.07) % 1;
+        if (this.lastP !== undefined && p < this.lastP) this.pts = [];
+        this.lastP = p;
+        const th = 0.10 + 0.42 * p;
+        const I = (0.55 + 0.45 * Math.cos(2 * Math.PI * 5.5 * p)) * Math.exp(-1.8 * p);
+        const px = w * 0.40;
+        // incident + two exit rays (top surface, buried interface), parallel
+        beam(g, px - Math.cos(th) * 110, sy - Math.sin(th) * 110, px, sy,
+          `hsla(${hue},90%,66%,0.9)`, 1.8);
+        const a = 0.25 + 0.75 * I;
+        beam(g, px, sy, px + Math.cos(th) * 110, sy - Math.sin(th) * 110,
+          `hsla(${hue},95%,72%,${a})`, 1 + 2 * I);
+        const dxf = fpx / Math.tan(Math.max(th, 0.12));
+        beam(g, px, sy, px + dxf, sy + fpx, `hsla(${hue},90%,66%,0.4)`, 1.2);
+        beam(g, px + dxf, sy + fpx, px + 2 * dxf, sy, `hsla(${hue},90%,66%,0.4)`, 1.2);
+        beam(g, px + 2 * dxf, sy, px + 2 * dxf + Math.cos(th) * 100, sy - Math.sin(th) * 100,
+          `hsla(${hue},95%,72%,${a * 0.7})`, 1 + 1.4 * I);
+        // detector trace accumulating below
+        this.pts.push([w * (0.05 + 0.9 * p), H - 22 - I * 30]);
+        g.strokeStyle = `hsla(${hue},95%,72%,0.95)`; g.lineWidth = 1.7;
         g.beginPath();
-        for (let x = 4; x < w - 4; x += 2) {
-          const a = Math.abs(Math.sin(x * 0.05 - ph)) * Math.exp(-x * 0.004);
-          const y = H - 26 - a * 15;
-          x === 4 ? g.moveTo(x, y) : g.lineTo(x, y);
-        }
+        this.pts.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]));
         g.stroke();
+        const last = this.pts[this.pts.length - 1];
+        g.fillStyle = `hsla(${hue},100%,80%,1)`;
+        g.beginPath(); g.arc(last[0], last[1], 2.6, 0, 6.3); g.fill();
       } }) },
     { name: "Ellipsometry", make: () => ({
       step(g, w, t, hue) {
         const sy = H * 0.74, cx = w / 2;
         g.fillStyle = `hsla(${hue},40%,35%,0.4)`; g.fillRect(0, sy, w, H);
         for (let k = 0; k < 8; k++) {
-          const f = k / 8, a = t * 1.6 + k * 0.7;
+          const f = k / 8, a = t * 3.6 + k * 0.7;
           const x = f * cx, y = sy - (1 - f) * H * 0.45;
           g.strokeStyle = `hsla(${(hue + k * 5) % 360},95%,68%,0.85)`;
           g.lineWidth = 1.3;
@@ -253,13 +262,14 @@ function render({ model, el }) {
           g.fillStyle = `hsla(${hue},60%,68%,0.7)`;
           g.beginPath(); g.arc(i / 12 * w, sy, 2.2, 0, 6.3); g.fill();
         }
-        // converged probe cone in
+        // converged probe cone in, and the transmitted cone at the SAME angle
+        const slope = 16 / sy;
         g.fillStyle = `hsla(${hue},90%,65%,0.30)`;
         g.beginPath(); g.moveTo(bx - 16, 0); g.lineTo(bx, sy); g.lineTo(bx + 16, 0);
         g.closePath(); g.fill();
-        // transmitted cone + diffracted disks below
+        const hw = slope * (H - 22 - sy);
         g.fillStyle = `hsla(${hue},90%,65%,0.22)`;
-        g.beginPath(); g.moveTo(bx, sy); g.lineTo(bx - 13, H - 22); g.lineTo(bx + 13, H - 22);
+        g.beginPath(); g.moveTo(bx, sy); g.lineTo(bx - hw, H - 22); g.lineTo(bx + hw, H - 22);
         g.closePath(); g.fill();
         for (const n of [-1, 0, 1]) {
           const on = 0.35 + 0.65 * Math.abs(Math.sin(t * 0.5 + n));
@@ -269,27 +279,44 @@ function render({ model, el }) {
         }
       } }) },
     { name: "RHEED", make: () => ({
-      cov: 0, ad: [],
+      h: null, fall: [],
       step(g, w, t, hue) {
-        const sy = H * 0.76;
-        // substrate + growing partial layer
-        g.fillStyle = `hsla(${hue},40%,40%,0.4)`; g.fillRect(0, sy, w * 0.52, H);
-        this.cov = (this.cov + 0.0012) % 1;
-        g.fillStyle = `hsla(${hue},55%,55%,0.8)`;
-        const natoms = Math.floor(this.cov * 13);
-        for (let i = 0; i < natoms; i++)
-          { g.beginPath(); g.arc(4 + i * w * 0.04, sy - 3, 3.2, 0, 6.3); g.fill(); }
-        // depositing atoms falling in
-        if (rnd() < 0.1) this.ad.push({ x: 6 + rnd() * w * 0.45, y: -4 });
-        for (const a of this.ad) {
-          a.y += 0.9;
-          g.beginPath(); g.arc(a.x, a.y, 3.2, 0, 6.3); g.fill();
+        const NCOL = 13, da = 6.6, sy = H * 0.72, x0 = 5, cw = (w * 0.5 - 10) / NCOL;
+        if (!this.h) this.h = new Float64Array(NCOL);
+        const mean = this.h.reduce((a2, b) => a2 + b, 0) / NCOL;
+        // substrate block below the (level) surface
+        g.fillStyle = `hsla(${hue},40%,40%,0.4)`;
+        g.fillRect(0, sy + 4, w * 0.52, H);
+        // deposited atoms: stacked circles, whole film sinking as it grows
+        g.fillStyle = `hsla(${hue},55%,58%,0.85)`;
+        for (let i = 0; i < NCOL; i++) {
+          for (let l = Math.max(0, Math.floor(mean) - 1); l < this.h[i]; l++) {
+            const y = sy - (l - mean + 1) * da + da / 2;
+            if (y > 8 && y < sy + 6) {
+              g.beginPath();
+              g.arc(x0 + (i + 0.5) * cw + (l % 2) * cw * 0.5, y, da * 0.46, 0, 6.3);
+              g.fill();
+            }
+          }
         }
-        this.ad = this.ad.filter(a => a.y < sy - 6);
-        beam(g, 0, sy - 11, w * 0.26, sy - 5, `hsla(${hue},90%,65%,0.9)`, 1.6);
-        beam(g, w * 0.26, sy - 5, w * 0.52, sy - 11, `hsla(${hue},90%,65%,0.6)`, 1.4);
-        // streaks pulse with layer completion: bright at complete, dim at half
-        const osc = 0.5 + 0.5 * Math.cos(2 * Math.PI * this.cov);
+        // falling atoms: land on their column's current top, then stack
+        if (rnd() < 0.09) this.fall.push({ c: Math.floor(rnd() * NCOL), y: -4 });
+        const landed = [];
+        for (const a2 of this.fall) {
+          const top = sy - (this.h[a2.c] - mean) * da;
+          a2.y += 0.9;
+          if (a2.y >= top - da) { this.h[a2.c] += 1; landed.push(a2); }
+          else {
+            g.beginPath();
+            g.arc(x0 + (a2.c + 0.5) * cw, a2.y, da * 0.46, 0, 6.3); g.fill();
+          }
+        }
+        this.fall = this.fall.filter(a2 => !landed.includes(a2));
+        // grazing beam skimming the surface
+        beam(g, 0, sy - 8, w * 0.26, sy - 2, `hsla(${hue},90%,65%,0.9)`, 1.6);
+        beam(g, w * 0.26, sy - 2, w * 0.52, sy - 8, `hsla(${hue},90%,65%,0.6)`, 1.4);
+        // streaks pulse with layer completion
+        const osc = 0.5 + 0.5 * Math.cos(2 * Math.PI * (mean % 1));
         for (let n = -2; n <= 2; n++) {
           const x = w * 0.76 + n * w * 0.07;
           const len = (20 + 22 * osc) * Math.exp(-Math.abs(n) * 0.4);
@@ -308,7 +335,7 @@ function render({ model, el }) {
         g.beginPath();
         for (let x = 0; x < w; x += 3) x ? g.lineTo(x, surf(x)) : g.moveTo(x, surf(x));
         g.stroke();
-        const tx = ((t * 13) % (w + 60)) - 30;
+        const tx = ((t * 26) % (w + 60)) - 30;
         const ty = surf(tx);
         // cantilever beam first, tip triangle hanging from its underside
         const camber = -5;

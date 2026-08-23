@@ -83,7 +83,7 @@ function render({ model, el }) {
   border-radius:8px; display:block; }
 .${uid} .w-plot { flex:1 1 340px; min-width:300px; }
 .${uid} .w-plot canvas { width:100%; }
-.${uid} .w-ctl { width:220px; display:flex; flex-direction:column; gap:8px; font-size:13px;
+.${uid} .w-ctl { width:230px; display:flex; flex-direction:column; gap:6px; font-size:13px;
   color:var(--w-muted); }
 .${uid} .w-ctl label { display:flex; flex-direction:column; gap:2px; }
 .${uid} .w-ctl .w-val { color:var(--w-fg); font-weight:600; font-variant-numeric:tabular-nums; }
@@ -98,9 +98,9 @@ function render({ model, el }) {
   root.className = uid;
   root.innerHTML = `
 <div class="w-wrap">
-  <div class="w-plot"><canvas height="340"></canvas></div>
+  <div class="w-plot"><canvas height="330"></canvas></div>
   <div class="w-ctl">
-    <canvas class="w-schem" height="120" style="border-radius:8px"></canvas>
+    <canvas class="w-schem" height="104" style="border-radius:8px"></canvas>
     <label>film material <select class="w-mat"></select></label>
     <label>thickness <span class="w-val w-tv"></span>
       <input class="w-t" type="range" min="3" max="120" step="0.5" value="10"></label>
@@ -120,7 +120,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>X-ray reflectivity explorer.</b> Exact Parratt reflectivity of a film on silicon; each slider maps to one feature of the curve.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>X-ray reflectivity explorer.</b> Exact Parratt reflectivity; each slider maps to one feature of the curve.";
   root.appendChild(cap);
 
   const sel = root.querySelector(".w-mat");
@@ -149,7 +149,7 @@ function render({ model, el }) {
       { delta: dS, beta: bS, d: 0, sigmaTop: s2 },
     ];
     const dpr = window.devicePixelRatio || 1;
-    const w = cv.clientWidth || 360, h = 340;
+    const w = cv.clientWidth || 360, h = 330;
     cv.width = w * dpr; cv.height = h * dpr;
     const g = cv.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -192,13 +192,13 @@ function render({ model, el }) {
     g.stroke();
     // ---- schematic: rays, film, roughness (tracks the sliders) ----
     {
-      const sw = sc.clientWidth || 220, sh = 120;
+      const sw = sc.clientWidth || 220, sh = 104;
       sc.width = sw * dpr; sc.height = sh * dpr;
       const q = sc.getContext("2d");
       q.setTransform(dpr, 0, 0, dpr, 0, 0);
       q.fillStyle = isD ? "#221f1e" : "#ffffff";
       q.fillRect(0, 0, sw, sh);
-      const surfY = 62, filmPx = 10 + t * 0.28;
+      const surfY = 54, filmPx = 8 + t * 0.24;
       const wig = (y, amp, ph) => {
         q.beginPath();
         for (let x = 0; x <= sw; x += 3)

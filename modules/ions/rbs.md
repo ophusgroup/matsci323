@@ -1,6 +1,6 @@
 # RBS and ERD
 
-Rutherford backscattering spectrometry (RBS) sends a beam of MeV helium ions at a sample and measures the energy spectrum of the ions scattered back to a detector near 170 degrees. Everything needed to interpret the spectrum was developed on the [previous page](ion-solid.md): the kinematic factor converts energy to target mass, the stopping power converts energy loss to depth, and the Rutherford cross section converts count rate to concentration, absolutely and without standards. RBS is no longer a routine technique, accelerators are scarce and its niche has narrowed, but it remains the calibration anchor of thin film analysis: when another technique needs an absolute composition or areal density standard, that standard was probably measured by RBS.
+Rutherford backscattering spectrometry (RBS) sends a beam of MeV helium ions at a sample and measures the energy spectrum of the ions scattered back to a detector near 165 to 170 degrees. Everything needed to interpret the spectrum was developed on the [previous page](ion-solid.md): the kinematic factor converts energy to target mass, the stopping power converts energy loss to depth, and the Rutherford cross section converts count rate to concentration, absolutely and without standards. RBS is no longer a routine technique, accelerators are scarce and its niche has narrowed, but it remains the calibration anchor of thin film analysis: when another technique needs an absolute composition or areal density standard, that standard was probably measured by RBS.
 
 | At a glance | |
 | --- | --- |
@@ -13,19 +13,20 @@ Rutherford backscattering spectrometry (RBS) sends a beam of MeV helium ions at 
 
 ## Reading an RBS spectrum
 
-Three rules decode any RBS spectrum:
+Three rules decode any RBS spectrum, and each has a quantitative form worth knowing.
 
-1. **Energy identifies mass.** An ion scattered from a surface atom of mass $M_2$ arrives at the detector with energy $K E_0$. Heavier elements appear at higher energy. Mass resolution is good for light and medium elements and degrades for heavy ones, where neighboring $K$ values crowd together; RBS can distinguish Si from O easily, but not W from Ta.
-2. **Energy loss measures depth.** An ion scattered at depth $t$ loses energy on the way in and again on the way out, so atoms of one element produce a peak whose width maps the depth distribution. The conversion is the stopping power, giving a depth scale of typically a few hundred eV per nanometer. A thin film of one element appears as a box whose width gives the film's areal density (atoms/cm$^2$) directly; dividing by an assumed atomic density converts to thickness in nanometers.
-3. **Yield measures concentration.** The height of the spectrum scales with the Rutherford cross section, $Z_2^2$, times concentration. Since the cross section is known exactly, relative concentrations follow with no standards, and with a measured beam dose, absolute ones.
+**Energy identifies mass.** An ion scattered from a surface atom of mass $M_2$ arrives at the detector with energy $K(M_2)E_0$, so each element present produces a signal whose high-energy edge sits at its own kinematic factor. Mass resolution follows from the slope of $K$ with $M_2$: the separation between neighboring masses is largest for light and medium elements and at the most backward angles (which is why detectors sit near 170°), and it collapses for heavy elements as $K \to 1$. In practice a 2 MeV He beam separates Si from Al easily, struggles beyond mass 100, and cannot distinguish W from Ta; raising the beam energy or using a heavier projectile stretches the heavy-mass scale at the cost of other complications.
 
-The signature strength is heavy-on-light: a submonolayer of Hf on silicon stands isolated at high energy above a low silicon background, measurable to $10^{13}$ atoms/cm$^2$ (about a hundredth of a monolayer). The signature weakness is the reverse: carbon or oxygen on a heavy substrate sits as a small bump on a large background. Simulation and fitting programs (SIMNRA, RUMP) make the interpretation of multilayer spectra routine; see the [simulation appendix](../../appendix/simulation-tools.md).
+**Energy loss measures depth.** An ion scattered at depth $t$ loses energy along the inward path, is reduced by the factor $K$ in the collision, and loses more energy along the outward path of length $t/\cos\theta_{out}$. Collecting the terms, the energy deficit below the surface edge is proportional to depth,
 
-% TODO: figures: (a) annotated experimental spectrum of a metal film on Si showing
-% surface energies, film width, and substrate edge; (b) the classic schematic of
-% spectrum formation from a two-element film. Mark's Lecture 5 (2025) has good
-% examples worth redrawing; his hand-drawn spectrum-buildup figures are the best
-% part of the old deck.
+$$
+\Delta E = [S]\, t, \qquad
+[S] = K \left.\frac{dE}{dx}\right|_{in} + \frac{1}{\cos\theta_{out}} \left.\frac{dE}{dx}\right|_{out},
+$$
+
+where $[S]$ is the **energy loss factor**, evaluated in the simplest ("surface energy") approximation at $E_0$ on the way in and $KE_0$ on the way out. Typical values are a few hundred eV per nanometer, so a detector resolution of about 15 keV translates to a near-surface depth resolution of tens of nanometers, improvable by grazing exit geometries that stretch the outward path. A film of one element thus appears as a box whose width gives its thickness, or more precisely its **areal density** $Nt$ in atoms/cm$^2$, since stopping is what is actually measured; dividing by an assumed atomic density converts to nanometers, and this distinction is why RBS thickness values are honest in atoms/cm$^2$ and model-dependent in nm.
+
+**Yield measures concentration.** The count rate in a channel is proportional to the number of beam particles, the detector solid angle, the concentration of the scattering element, and the Rutherford cross section evaluated at the ion energy *at that depth*. Since the cross section is exact, relative concentrations follow with no standards at all, and with a measured beam dose (integrated current) absolute ones. The $Z^2$ weighting makes the technique lopsided: the signature strength is heavy-on-light, where a submonolayer of Hf on silicon stands isolated at high energy above a low background, measurable to $10^{13}$ atoms/cm$^2$, about a hundredth of a monolayer. The signature weakness is the reverse: carbon or oxygen on a heavy substrate sits as a small bump on a large background, and their cross sections at MeV energies can also deviate from Rutherford because the He ion begins to touch the nuclear force (for oxygen there is a well-known strong resonance near 3.04 MeV that ion beam analysts exploit deliberately to boost oxygen sensitivity). Simulation and fitting programs (SIMNRA, RUMP) handle all of these effects and make multilayer interpretation routine; see the [simulation appendix](../../appendix/simulation-tools.md).
 
 The simulator below applies all three rules to a stack you define. The kinematic factors and the $Z^2/E^2$ cross sections are exact; the stopping powers are approximate tabulated values, so treat depth scales as semi-quantitative. Reproduce the classic cases: a heavy marker layer (Au) standing isolated above a light substrate, the box width growing with film thickness, layer signals shifting down in energy as you bury them, and the hopeless overlap of two neighboring heavy elements.
 
@@ -37,16 +38,26 @@ The simulator below applies all three rules to a stack you define. The kinematic
 
 ## Instrumentation
 
-RBS requires an electrostatic accelerator (typically a tandem in the 1 to 3 MV range) delivering a collimated He beam to a UHV-adjacent scattering chamber, and a silicon surface-barrier detector whose 12 to 15 keV energy resolution sets the depth resolution. This infrastructure explains the technique's scarcity: measurements are usually obtained through university or national laboratory facilities. Channeling measurements, in which the beam is aligned with a crystal axis to suppress scattering from lattice atoms and thereby measure crystalline quality and impurity lattice sites, are covered in the [channeling appendix](../../appendix/channeling.md).
+RBS requires an electrostatic accelerator, typically a tandem in the 1 to 3 MV range, delivering a collimated, magnetically analyzed He beam to a scattering chamber, with the accumulated charge measured to convert yields into absolute quantities. The detector is a silicon **surface-barrier diode**: the backscattered ion generates electron-hole pairs in proportion to its energy (one pair per 3.6 eV in silicon), and the collected charge is the energy measurement. Its 12 to 15 keV resolution for He sets the standard depth resolution; electrostatic or time-of-flight analyzers improve on it by an order of magnitude in the specialized variants below. The classic applications built the field's textbooks: measuring thin film reaction kinetics (watching a silicide layer grow between a metal film and silicon, with the reacted thickness read from the evolving spectrum, established the diffusion-versus-reaction-controlled growth laws of silicide formation), verifying implant doses, and certifying reference films that then calibrate SIMS, XPS, and EDS in other laboratories. Channeling measurements, in which the beam is aligned with a crystal axis to suppress scattering from lattice atoms and thereby measure crystalline quality, damage profiles, and impurity lattice sites, are covered in the [channeling appendix](../../appendix/channeling.md).
 
 ## Elastic recoil detection
 
-RBS cannot see hydrogen: nothing bounces backward off a lighter target. **Elastic recoil detection (ERD)** inverts the geometry, hitting the sample at a glancing angle and detecting the target atoms knocked forward. With a He beam and an absorber foil to stop forward-scattered He, ERD measures hydrogen and deuterium depth profiles quantitatively, the standard method for H content in materials from diamond-like carbon to hydrogenated a-Si. With heavy ion beams (say 30 MeV iodine) and a detector that identifies each recoil species, heavy-ion ERD profiles all light elements simultaneously, a powerful if scarce capability for nitrides, oxides, and other light-element films.
+RBS cannot see hydrogen: nothing backscatters from a lighter target, and hydrogen's cross section is small regardless. **Elastic recoil detection (ERD)** measures the target atoms instead. The sample is tilted to grazing incidence and the beam knocks target atoms *forward*; from the recoil kinematics on the previous page, a detector at forward angle $\phi$ receives recoils of energy $E_2 = [4M_1M_2/(M_1+M_2)^2]E_0\cos^2\phi$, so different target masses arrive at different energies and the same stopping-power bookkeeping converts energy to depth. With a He beam, a thin absorber foil in front of the detector stops the flood of forward-scattered He while passing the lighter, more penetrating H and D recoils: this simple arrangement is the standard quantitative hydrogen depth profile, the measurement behind hydrogen contents in diamond-like carbon, hydrogenated amorphous silicon, and hydride films. With heavy ion beams (tens of MeV iodine or gold) every light element in the film recoils measurably, and a detector that identifies each recoil species (a time-of-flight plus energy telescope) profiles B, C, N, O, and F simultaneously and quantitatively, a capability scarce but unique for light-element films such as nitrides and oxides.
 
-**Medium-energy ion scattering (MEIS)** shrinks RBS to about 100 keV, where electrostatic energy analyzers deliver sub-nanometer depth resolution over the top few nanometers, resolving, for example, the individual layers of an ultrathin gate oxide stack. It bridges toward the single-layer sensitivity of [LEIS](sims.md).
+**Medium-energy ion scattering (MEIS)** shrinks RBS to about 100 keV, where a toroidal electrostatic analyzer measures the scattered energy to a resolution equivalent to single atomic layers. The price of the lower energy is that screening corrections to the cross section grow and the analyzed depth shrinks to tens of nanometers, but within that window MEIS resolves the individual layers of an ultrathin gate-oxide stack, and in blocking geometry on crystals it measures surface relaxations. It bridges toward the single-layer sensitivity of [LEIS](sims.md).
+
+:::{figure} ../../assets/figures/rbs-formation.svg
+:alt: Computed RBS spectrum of a gold on copper on silicon stack, with kinematic edges marked
+:width: 85%
+
+Spectrum formation for a 60 nm Au / 150 nm Cu / Si stack at 2 MeV (computed with this page's physics). Each element's signal begins at its kinematic edge $K E_0$ and extends downward in energy with depth; burying the Cu under Au shifts its edge below $K_{Cu}E_0$ by the energy lost crossing the gold.
+:::
+
+% TODO: figure still wanted: an annotated experimental spectrum, and the ERD
+% geometry with absorber foil.
 
 ## References and further reading
 
-1. W.-K. Chu, J. W. Mayer, and M.-A. Nicolet, *Backscattering Spectrometry*, Academic Press (1978).
+1. W.-K. Chu, J. W. Mayer, and M.-A. Nicolet, *Backscattering Spectrometry*, Academic Press (1978). Still the definitive treatment; Chapters 2 to 5 cover this page.
 2. L. C. Feldman and J. W. Mayer, *Fundamentals of Surface and Thin Film Analysis*, North-Holland (1986), Chapters 2 to 5.
 3. M. Mayer, SIMNRA, a simulation program for the analysis of NRA, RBS and ERDA, *AIP Conference Proceedings* **475**, 541 (1999). [doi.org/10.1063/1.59188](https://doi.org/10.1063/1.59188)

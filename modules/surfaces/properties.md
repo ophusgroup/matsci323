@@ -40,19 +40,28 @@ $$
 \gamma \approx \frac{Z_s}{Z} \frac{E_c}{A_s}.
 $$
 
-This crude estimate captures the correct magnitudes and, more importantly, the trends: surface energy scales with cohesive energy, so refractory metals have the highest values and noble metals, molecular solids, and polymers the lowest; and close-packed faces, which break the fewest bonds, have the lowest energy of any orientation. Representative values:
+The cleanest way to see where the formula comes from is a cleaving thought experiment: split a crystal along a plane, and the work done equals the number of bonds crossing that plane times the bond energy, shared between the *two* new surfaces created. Diamond makes a concrete worked example, because its bonds are well defined. Cleaving on (111) breaks one bond per surface atom; with the (111) packing density of $1.8 \times 10^{15}$ atoms/cm$^2$ and a C-C bond energy of about 6.2 x $10^{-19}$ J, the estimate gives $\gamma_{(111)} \approx 5.6$ J/m$^2$. Cleaving on (100) breaks *two* bonds per atom at a slightly lower packing density, roughly doubling the answer. Both numbers are enormous by the standards of the table below, which is why diamond is hard to cleave and why its surfaces reconstruct aggressively, and the factor of two between them is why cleavage selects (111).
 
-| Material | $\gamma$ (J/m$^2$) |
-| --- | --- |
-| W | 3.7 |
-| Fe | 2.4 |
-| Ni | 2.4 |
-| Cu | 1.8 |
-| Au | 1.5 |
-| Si | 1.2 |
-| Al | 1.1 |
-| Water (liquid) | 0.072 |
-| PTFE | 0.02 |
+The broken-bond picture also predicts a useful correlation: the same bonds that hold a surface together must be broken completely to sublime an atom, so the surface energy per atom should be a fixed fraction (the fraction of bonds lost, typically one quarter to one half) of the sublimation energy per atom. Plotting measured surface energies against tabulated heats of sublimation confirms it across the periodic table, which is practically valuable because sublimation heats are measured easily and surface energies are not: when you need a $\gamma$ that is not in the tables, the sublimation heat gets you within tens of percent.
+
+This crude estimate captures the correct magnitudes and, more importantly, the trends: surface energy scales with cohesive energy, so bond type organizes the table. Van der Waals solids sit lowest, hydrogen-bonded liquids next, then metals in proportion to their cohesion, and covalent networks highest. Representative values:
+
+| Material | Bonding | $\gamma$ (J/m$^2$) |
+| --- | --- | --- |
+| PTFE | van der Waals | 0.02 |
+| Polyethylene | van der Waals | 0.03 |
+| Water (liquid) | hydrogen bonding | 0.072 |
+| Mercury (liquid) | metallic | 0.49 |
+| Al | metallic | 1.1 |
+| Au | metallic | 1.5 |
+| Cu | metallic | 1.8 |
+| Fe | metallic | 2.4 |
+| W | metallic | 3.7 |
+| MgO (100) | ionic | 1.2 |
+| Si | covalent | 1.2 |
+| Diamond (111) | covalent | about 5.7 |
+
+One more comparison with large practical consequences: metal *oxides* generally have far lower surface energies than their parent metals, often by a factor of five or more. Energetically, an oxide skin is therefore a way for a metal surface to buy down its surface energy, one reason oxide films spread over and passivate metals, and a standing warning that the surface you measure on any air-exposed metal is an oxide surface unless you cleaned it in vacuum.
 
 Solid surface energies are measured only with difficulty (typically from high-temperature zero-creep experiments or liquid-metal extrapolations) and calculated values differ between methods, so treat any single number as approximate; the values above follow the compilations of Tyson and Miller ([doi.org/10.1016/0039-6028(77)90442-3](https://doi.org/10.1016/0039-6028(77)90442-3)) and the calculations of Vitos et al. ([doi.org/10.1016/S0039-6028(98)00363-X](https://doi.org/10.1016/S0039-6028(98)00363-X)). Wikipedia's [surface energy](wiki:Surface_energy) article maintains a longer table with sources.
 
@@ -60,8 +69,25 @@ Solid surface energies are measured only with difficulty (typically from high-te
 
 Because $\gamma$ depends on orientation, a crystal free to choose its shape minimizes total surface energy rather than total area, giving the faceted equilibrium shapes of the [Wulff construction](wiki:Wulff_construction), exactly the physics that turned the simulated disk into a hexagon. Surface energy balances also decide whether a deposited film wets its substrate or balls up into islands, set the driving forces for grain growth and sintering, and drive the segregation and adsorption phenomena below.
 
-% TODO: static figure: broken-bond counting on fcc (111), (100), (110) plus a
-% Wulff construction sketch; Mark's Lecture 2 (2025) has versions to redraw.
+The construction below computes both cases. On the left, the polar plot of $\gamma(\theta)$ and the equilibrium shape it generates: with no anisotropy the shape is a circle (a liquid drop), and as anisotropy grows, facets appear and sharpen. On the right, the Winterbottom extension puts the same crystal on a substrate: the balance of surface, interface, and substrate energies truncates the shape, and sweeping the wetting parameter moves the island continuously from a barely attached particle to a spread film. This is the equilibrium framework behind island growth, dewetting, and why deposited films ball up on substrates they do not wet.
+
+:::{anywidget} ../../widgets/wulff.js
+:::
+
+:::{figure} ../../assets/figures/gamma-vs-sublimation.svg
+:alt: Surface energies of metals plotted against their heats of sublimation, showing a linear correlation
+:width: 75%
+
+Surface energy against heat of sublimation for representative metals: the same bonds are broken partially by a surface and completely by sublimation, so the two track each other. Values are approximate; the correlation is the point.
+:::
+
+% TODO: static figure still wanted: broken-bond counting on fcc (111), (100), (110).
+
+## Terraces, steps, and kinks
+
+Real surfaces are not single perfect planes. A surface cut slightly off a low-index orientation (a vicinal surface) decomposes into low-energy terraces separated by atomic steps, with the step spacing set by the miscut angle; the steps themselves contain kinks. This terrace-step-kink picture organizes almost everything kinetic that happens on a surface. Kink sites are special: an atom attaching or detaching at a kink leaves the kink itself unchanged, so the kink is the repeatable growth site, and its energy sets the equilibrium between a crystal and its vapor. Steps are where deposited atoms attach during growth and where atoms detach during evaporation and etching, which is why growth and dissolution both proceed by steps flowing across terraces rather than by atoms landing at random. The step and kink energies are the one- and zero-dimensional analogues of the surface energy, and the simulation above displays all three: facets (low energy, dark), step edges along the facets (brighter), and kink and corner atoms (brightest of all).
+
+A related distinction worth keeping precise: the **surface energy** $\gamma$ is the work to create new area (by cleaving), while the **surface stress** is the work to elastically stretch existing area. For liquids the two are equal, because a stretched liquid surface immediately repopulates with atoms; for solids they differ, and surface stress is what bends micromechanical cantilevers when molecules adsorb on one face.
 
 ## Relaxation and reconstruction
 
@@ -69,8 +95,14 @@ The atoms at a real surface do not sit at truncated bulk positions. In **relaxat
 
 Reconstructions matter to us for two reasons. They change surface reactivity and epitaxial growth behavior, and they produce the superstructure spots we will learn to read in low-energy electron diffraction in [Module 6](../stem/leed-rheed.md).
 
-% TODO: figure of relaxation vs reconstruction, plus the Si(111) 7x7 example
-% (an STM image would be ideal; public domain versions exist).
+:::{figure} ../../assets/figures/relax-reconstruct.svg
+:alt: Three atom-row schematics comparing a bulk-terminated surface, a relaxed surface with contracted first interlayer spacing, and a reconstructed surface with dimer rows
+
+The three responses of a terminated crystal: hypothetical bulk termination, relaxation of the first interlayer spacing, and reconstruction into a new surface periodicity, drawn here as dimer rows of the kind Si(100) forms.
+:::
+
+% TODO: figure still wanted: an STM image of the Si(111) 7x7 (public domain
+% versions exist).
 
 ## Adsorption and the need for vacuum
 
@@ -82,11 +114,31 @@ $$
 
 where $P$ is the pressure and $m$ the molecular mass. At atmospheric pressure this flux is about $3 \times 10^{23}$ molecules per cm$^2$ per second for nitrogen, enough to deliver a complete monolayer in a few nanoseconds if every molecule stuck. Even at $10^{-6}$ Torr, a good high vacuum, a monolayer arrives roughly every second. Keeping a surface atomically clean for the duration of an experiment, one hour say, requires pressures near $10^{-10}$ Torr. This single estimate explains why surface analysis instruments are built around ultrahigh vacuum, and we treat the technology on the [next page](vacuum.md).
 
-Adsorption itself comes in two flavors. Physisorption binds molecules weakly through van der Waals forces, with binding energies below about 0.3 eV; chemisorption forms true chemical bonds, with energies of 1 eV or more. The coverage at equilibrium depends on pressure and temperature through adsorption isotherms, and the residence time of an adsorbed molecule scales as $\tau = \tau_0 \exp(E_a / k_B T)$, so modest temperature changes swing surface coverage by orders of magnitude.
+Adsorption itself comes in two flavors. Physisorption binds molecules weakly through van der Waals forces, with binding energies below about 0.3 eV; chemisorption forms true chemical bonds, with energies of 1 eV or more. The residence time of an adsorbed molecule scales as $\tau = \tau_0 \exp(E_a / k_B T)$ with $\tau_0$ a vibrational period of order $10^{-13}$ s, so modest temperature changes swing surface coverage by orders of magnitude: a physisorbed molecule at room temperature leaves almost immediately, while a chemisorbed one is effectively permanent.
+
+The simplest quantitative model of equilibrium coverage is the **Langmuir isotherm**: assume a fixed number of equivalent sites, one molecule per site, and no interactions between adsorbates. Balancing the arrival rate (proportional to pressure, from the flux formula above, times the fraction of empty sites) against the thermally activated desorption rate gives a coverage
+
+$$
+\theta = \frac{bP}{1 + bP},
+$$
+
+which rises linearly at low pressure and saturates at one monolayer, with $b(T)$ containing the binding energy. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline, and temperature-programmed desorption (an appendix-list technique) measures the binding energies directly by ramping the temperature and watching molecules leave.
+
+Adsorbed atoms also move. Surface diffusion is thermally activated hopping between sites, with barriers typically a few tenths of an electron-volt on close-packed metal terraces, far below bulk diffusion barriers; this is why surfaces equilibrate at temperatures where bulks are frozen, and why every annealing behavior in the simulation above is dominated by atoms skating along edges rather than moving through the interior. One subtlety with large consequences for film growth: an atom approaching a descending step often faces an extra barrier to hopping down over the edge (the Ehrlich-Schwoebel barrier), which traps atoms on top of islands and can tip growth from smooth layer-by-layer toward three-dimensional mounds, a kinetic effect we will meet again in the [RHEED discussion](../stem/leed-rheed.md) of growth modes.
 
 ## Segregation
 
-The composition of a surface is not the composition of the bulk. In an alloy, the component that lowers the total energy, generally the one with the lower surface energy or the larger size mismatch, enriches at the surface. Segregation of a dilute impurity can be dramatic: a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition wildly different from the bulk, and both numbers are correct.
+The composition of a surface is not the composition of the bulk. In an alloy, the component that lowers the total energy, generally the one with the lower surface energy or the larger size mismatch, enriches at the surface. The equilibrium enrichment follows Boltzmann statistics: moving an atom to the surface costs the fraction $f$ of its bonds that a surface site lacks, so each species distributes as
+
+$$
+\frac{C_{surf}}{C_{bulk}} \propto \exp\!\left( \frac{-f\, \Delta E_{sub}}{RT} \right),
+$$
+
+and the species with the smaller sublimation energy (the weaker bonder, the lower-$\gamma$ component) wins the surface. Because the energies in the exponent are electron-volts against a thermal energy of hundredths of an electron-volt, the enrichment factors are large: segregation of a dilute impurity can be dramatic, and a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition wildly different from the bulk, and both numbers are correct.
+
+## The electronic surface
+
+The electrons feel the surface too. The conduction electron density of a metal does not stop abruptly at the last atomic plane: it spills a fraction of an angstrom into the vacuum and, inside the crystal, relaxes back toward the bulk density through decaying (Friedel) oscillations. The spillout separates negative charge from the positive ion cores, creating a surface dipole layer, and that dipole is part of the work function, which is why the work function of a single metal differs measurably from facet to facet and why adsorbates that donate or withdraw charge shift it strongly. Localized electronic states that exist only at the surface (surface states, and the dangling bonds of semiconductors) pin Fermi levels at interfaces and drive the reconstructions above. These electronic differences are not a curiosity for us: they are the contrast mechanism of [scanning tunneling microscopy](../spm/spm-modes.md), the signal of [Kelvin probe microscopy](../spm/spm-modes.md), and the reason work functions appear throughout the electron spectroscopies of [Module 4](../espec/xps.md).
 
 ## The analytical puzzle
 

@@ -496,7 +496,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--se-muted);";
-  cap.innerHTML = "<b style='color:var(--se-fg)'>Surface energy sandbox.</b> 2D Lennard-Jones atoms colored by energy per atom: dark means fully bonded bulk, glowing means undercoordinated surfaces, edges, and defects.";
+  cap.innerHTML = "<b style='color:var(--se-fg)'>Surface energy sandbox.</b> 2D Lennard-Jones atoms colored by energy: dark is bulk, glowing is undercoordinated.";
   root.appendChild(cap);
 
   const sim = root.querySelector(".se-sim");

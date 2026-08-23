@@ -1,26 +1,38 @@
 // apt-evaporate.js
-// AnyWidget: atom probe tomography in action. Left: a needle specimen loses
-// atoms one by one from its apex by field evaporation; the evaporation front
-// recedes into the shank and its radius grows. Right: the reconstruction
-// built from the detected atoms: depth (sequence order) is nearly perfect,
-// lateral positions are blurred by trajectory aberrations, and detection is
-// incomplete, with the lighter matrix atoms lost more often than the heavy
-// solute. The multilayer stays razor sharp in depth and fuzzy sideways,
-// which is exactly the character of real APT data.
+// AnyWidget: atom probe tomography. Left: field evaporation of a needle
+// specimen; atoms leave from the curved evaporation front where the field is
+// highest, and the front recedes into the widening shank. Right: the
+// reconstruction assembled from the detected atoms, with adjustable detection
+// efficiency and lateral/depth position errors, drawn over a faint ground
+// truth for comparison. The run completes once, then can be replayed.
 //
 //   :::{anywidget} ../../widgets/apt-evaporate.js
 //   :::
 
-const A = 1;                       // lattice spacing
-const CONE = 0.22;                 // shank half-angle (radians-ish, slope)
-const R0 = 7;                      // initial apex radius, lattice units
-const DEPTH = 46;                  // tip length simulated
-const DET_A = 0.55, DET_B = 0.85;  // detection efficiency: matrix vs heavy solute
-const SIG_LAT = 2.2, SIG_Z = 0.25; // reconstruction noise, lattice units
+const A = 1;
+const CONE = 0.24;                 // shank slope
+const R0 = 5.5;                    // initial apex radius
+const DEPTH = 40;                  // tip length simulated
 
-function buildTip() {
-  // apex at z=0, z increases into the shank; 2D cross-section, x centered
+const SAMPLES = {
+  Multilayer: (x, z) => (z > 3) && ((z - 3) % 9 < 2.2),
+  Clusters: (x, z) => {
+    for (const [cx, cz, r] of [[-3, 9, 1.8], [2.5, 15, 2.2], [-1, 23, 1.9],
+      [4, 29, 1.7], [-4.5, 33, 2.0], [0.5, 36, 1.6]])
+      if (Math.hypot(x - cx, z - cz) < r) return true;
+    return false;
+  },
+  Interface: (x, z) => {
+    // one chemically diffuse interface at z = 18, width ~3
+    const p = 1 / (1 + Math.exp(-(z - 18) / 1.5));
+    return Math.random() < p * 0.9;
+  },
+  Alloy: () => Math.random() < 0.18,
+};
+
+function buildTip(kind) {
   const atoms = [];
+  const f = SAMPLES[kind];
   for (let j = 0; j < DEPTH / (A * 0.866); j++) {
     const z = j * A * 0.866;
     let r;
@@ -30,14 +42,19 @@ function buildTip() {
     for (let i = -nx; i <= nx; i++) {
       const x = (i + 0.5 * (j & 1)) * A;
       if (Math.abs(x) > r) continue;
-      // species: heavy solute B in periodic 3-layer bands, plus one cluster
-      const band = Math.floor((z - 4) / 11);
-      let b = (z > 4) && ((z - 4) % 11 < 2.6) && band >= 0;
-      if (Math.hypot(x - 4, z - 30) < 2.2) b = true;
-      atoms.push({ x, z, b, alive: true });
+      atoms.push({ x, z, b: !!f(x, z), alive: true });
     }
   }
   return atoms;
+}
+function frontRadius(zf) {
+  return zf < R0 ? R0 : R0 + (zf - R0) * CONE;
+}
+// evaporation coordinate: distance along the tip axis of the curved front
+// passing through this atom; atoms with the smallest u are most exposed
+function evapU(a, zf) {
+  const R = frontRadius(Math.max(zf, 2));
+  return a.z - Math.max(0, R - Math.sqrt(Math.max(0, R * R - a.x * a.x)));
 }
 
 function render({ model, el }) {
@@ -49,54 +66,43 @@ function render({ model, el }) {
   display:block; margin-bottom:30px; }
 .${uid}.w-dark { --w-panel:#221f1e; --w-fg:#eee; --w-muted:#999; --w-border:#3a3735;
   --w-accent:rgb(240,122,158); }
-.${uid} .w-wrap { display:flex; gap:12px; flex-wrap:wrap; }
+.${uid} .w-row { display:flex; gap:10px; flex-wrap:wrap; }
 .${uid} canvas { border:1px solid var(--w-border); border-radius:8px; display:block; width:100%; }
 .${uid} .w-plot { flex:1 1 260px; min-width:240px; }
-.${uid} .w-ctl { width:210px; display:flex; flex-direction:column; gap:8px; font-size:13px;
-  color:var(--w-muted); }
-.${uid} .w-box { background:var(--w-panel); border:1px solid var(--w-border); border-radius:6px;
-  padding:6px 8px; display:flex; flex-direction:column; gap:3px; }
-.${uid} .w-box b { color:var(--w-fg); font-variant-numeric:tabular-nums; }
-.${uid} button { border:1px solid var(--w-border); border-radius:6px; background:var(--w-panel);
-  color:var(--w-fg); padding:4px 10px; cursor:pointer; font-size:13px; }
-.${uid} input[type=range] { width:100%; accent-color:var(--w-accent); }
+.${uid} .w-controls { display:flex; gap:14px; align-items:center; margin-top:8px;
+  font-size:13px; color:var(--w-muted); flex-wrap:wrap; }
+.${uid} .w-controls button { border:1px solid var(--w-border); border-radius:6px;
+  background:var(--w-panel); color:var(--w-fg); padding:4px 10px; cursor:pointer; font-size:13px; }
+.${uid} .w-controls button.on { border-color:var(--w-accent); color:var(--w-accent); font-weight:600; }
+.${uid} .w-controls label { display:flex; align-items:center; gap:6px; }
+.${uid} input[type=range] { width:90px; accent-color:var(--w-accent); }
+.${uid} .w-stat { color:var(--w-fg); font-weight:600; font-variant-numeric:tabular-nums; }
 `;
   const root = document.createElement("div");
   root.className = uid;
   root.innerHTML = `
-<div class="w-wrap">
-  <div class="w-plot"><canvas class="w-tip" height="400"></canvas></div>
-  <div class="w-plot"><canvas class="w-rec" height="400"></canvas></div>
-  <div class="w-ctl">
-    <div class="w-box"><span>evaporation rate</span>
-      <input class="w-rate" type="range" min="0.5" max="8" step="0.5" value="3"></div>
-    <div class="w-box">
-      <span>atoms evaporated <b class="w-nev">0</b></span>
-      <span>matrix detected <b class="w-da">&ndash;</b></span>
-      <span>solute detected <b class="w-db">&ndash;</b></span>
-      <span>solute fraction, true <b class="w-ct">&ndash;</b></span>
-      <span>solute fraction, measured <b class="w-cm">&ndash;</b></span>
-    </div>
-    <div class="w-box" style="font-size:12px; line-height:1.5">Depth in the
-      reconstruction comes from arrival order, so layers stay sharp in z.
-      Lateral positions carry trajectory noise, and undetected atoms
-      (more often the light matrix) are simply absent, biasing composition.</div>
-    <button class="w-play">&#10074;&#10074; Pause</button>
-    <button class="w-reset">Reset</button>
-  </div>
+<div class="w-row">
+  <div class="w-plot"><canvas class="w-tip" height="330"></canvas></div>
+  <div class="w-plot"><canvas class="w-rec" height="330"></canvas></div>
+</div>
+<div class="w-controls w-samples"></div>
+<div class="w-controls">
+  <button class="w-play">&#9654; Replay</button>
+  <label>efficiency <input class="w-eff" type="range" min="0.2" max="1" step="0.05" value="0.6"><span class="w-stat w-effv"></span></label>
+  <label>xy error <input class="w-sx" type="range" min="0" max="4" step="0.1" value="1.5"><span class="w-stat w-sxv"></span></label>
+  <label>z error <input class="w-sz" type="range" min="0" max="1" step="0.05" value="0.15"><span class="w-stat w-szv"></span></label>
+  <span>solute: true <span class="w-stat w-ct">&ndash;</span> measured <span class="w-stat w-cm">&ndash;</span></span>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Atom probe, atom by atom.</b> Field evaporation peels the needle from its apex (left); the reconstruction (right) preserves depth almost perfectly, blurs laterally, and misses the atoms that were never detected.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Atom probe tomography.</b> Field evaporation (left) and the reconstruction from detected atoms (right).";
   root.appendChild(cap);
 
   const cvT = root.querySelector(".w-tip"), cvR = root.querySelector(".w-rec");
-  let atoms = buildTip();
-  let flying = [];        // {x, z, vx, vz, b, t}
-  let detected = [];      // {xr, zr, b}
-  let nEv = 0, nA = 0, nB = 0, dA = 0, dB = 0, zSeq = 0;
-  let playing = true, raf = 0, visible = true;
+  let kind = "Multilayer";
+  let atoms, flying, detected, nEv, nB, dA, dB;
+  let playing = true, raf = 0, visible = true, finished = false;
 
   function dark() { return document.documentElement.classList.contains("dark"); }
   function syncTheme() { root.classList.toggle("w-dark", dark()); }
@@ -104,182 +110,182 @@ function render({ model, el }) {
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   syncTheme();
 
+  const sampleBox = root.querySelector(".w-samples");
+  for (const k of Object.keys(SAMPLES)) {
+    const b = document.createElement("button");
+    b.textContent = k;
+    if (k === kind) b.classList.add("on");
+    b.addEventListener("click", () => {
+      kind = k;
+      sampleBox.querySelectorAll("button").forEach(q => q.classList.toggle("on", q === b));
+      reset();
+    });
+    sampleBox.appendChild(b);
+  }
   function gauss() {
     let u = 0, v = 0;
     while (!u) u = Math.random(); while (!v) v = Math.random();
     return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
   }
+  function reset() {
+    atoms = buildTip(kind); flying = []; detected = [];
+    nEv = 0; nB = 0; dA = 0; dB = 0; finished = false; playing = true;
+    root.querySelector(".w-play").innerHTML = "&#10074;&#10074; Pause";
+  }
   function frontZ() {
     let zm = 1e9;
-    for (const a of atoms) if (a.alive && a.z < zm) zm = a.z;
+    for (const a of atoms) if (a.alive) { const u = a.z; if (u < zm) zm = u; }
     return zm;
   }
   function evaporateOne() {
-    // candidates: alive atoms within ~1.2 spacings of the current front;
-    // light matrix atoms evaporate a little more readily than heavy solute
     const zf = frontZ();
-    if (zf > DEPTH - 6) return false;   // tip consumed
+    if (zf > DEPTH - 8) return false;
+    // candidates: alive atoms whose evaporation coordinate is near the front
+    let uMin = 1e9;
+    for (const a of atoms) if (a.alive) { const u = evapU(a, zf); if (u < uMin) uMin = u; }
     const cand = [];
-    for (const a of atoms)
-      if (a.alive && a.z < zf + 1.3) cand.push(a);
+    for (const a of atoms) if (a.alive && evapU(a, zf) < uMin + 1.2) cand.push(a);
     if (!cand.length) return false;
-    let pick;
-    for (let tries = 0; tries < 10; tries++) {
-      pick = cand[Math.floor(Math.random() * cand.length)];
-      if (!pick.b || Math.random() < 0.4) break;   // solute held at higher field
-    }
+    let pick = cand[Math.floor(Math.random() * cand.length)];
     pick.alive = false; nEv++;
-    if (pick.b) nB++; else nA++;
-    // launch: field lines diverge radially from the apex region
-    const r = Math.max(2, R0 + Math.max(0, pick.z - R0) * CONE);
-    flying.push({ x: pick.x, z: pick.z, vx: 1.4 * pick.x / r + 0.15 * gauss(),
-                  vz: -(2.2 + Math.random()), b: pick.b, x0: pick.x });
+    if (pick.b) nB++;
+    const R = frontRadius(zf + 2);
+    flying.push({ x: pick.x, z: pick.z, vx: 0.9 * pick.x / R + 0.06 * gauss(),
+                  vz: -(2.4 + 0.6 * Math.random()), b: pick.b, x0: pick.x, z0: pick.z });
     return true;
   }
   function detect(f) {
-    const eff = f.b ? DET_B : DET_A;
-    if (Math.random() < eff) {
-      zSeq += 1;                          // depth from arrival order
-      detected.push({ xr: f.x0 + SIG_LAT * gauss(), zr: zSeq + SIG_Z * gauss() * 10, b: f.b });
+    const eff = +root.querySelector(".w-eff").value * (f.b ? 1.1 : 0.92);
+    if (Math.random() < Math.min(1, eff)) {
+      const sx = +root.querySelector(".w-sx").value, sz = +root.querySelector(".w-sz").value;
+      detected.push({ xr: f.x0 + sx * gauss(), zr: f.z0 + sz * gauss(), b: f.b });
       if (f.b) dB++; else dA++;
-    } else {
-      zSeq += 1;                          // volume still gone, atom just missing
     }
   }
-  function reset() {
-    atoms = buildTip(); flying = []; detected = [];
-    nEv = 0; nA = 0; nB = 0; dA = 0; dB = 0; zSeq = 0;
-    const g = cvR.getContext("2d");
-    g.clearRect(0, 0, cvR.width, cvR.height);
+  function geom(cv2) {
+    const w = cv2.clientWidth || 260, h = 330;
+    const sc = (h - 60) / DEPTH;
+    return { w, h, sc, X: x => w / 2 + x * sc, Y: z => 44 + z * sc };
   }
   function drawTip() {
     const dpr = window.devicePixelRatio || 1;
-    const w = cvT.clientWidth || 280, h = 400;
+    const { w, h, sc, X, Y } = geom(cvT);
     cvT.width = w * dpr; cvT.height = h * dpr;
     const g = cvT.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const isD = dark();
     g.fillStyle = isD ? "#0b0a0a" : "#f4f2ef";
     g.fillRect(0, 0, w, h);
-    // detector bar at top
+    // detector spans the full panel width
     g.fillStyle = isD ? "#444" : "#999";
-    g.fillRect(w * 0.15, 6, w * 0.7, 5);
+    g.fillRect(4, 5, w - 8, 5);
     g.fillStyle = isD ? "#bbb" : "#444"; g.font = "12px system-ui";
-    g.fillText("position-sensitive detector", w * 0.17, 24);
-    const sc = h * 0.75 / DEPTH;
-    const X = x => w / 2 + x * sc, Y = z => h * 0.2 + z * sc;
-    // remaining atoms
+    g.fillText("position-sensitive detector", 8, 24);
     for (const a of atoms) {
       if (!a.alive) continue;
       g.fillStyle = a.b ? "#e0a832" : (isD ? "#7a6ea8" : "#8a80b8");
-      g.beginPath(); g.arc(X(a.x), Y(a.z), sc * 0.44, 0, 6.3); g.fill();
+      g.beginPath(); g.arc(X(a.x), Y(a.z), sc * 0.45, 0, 6.3); g.fill();
     }
-    // evaporation front arc
+    // curved evaporation front: the surface of constant field
     const zf = frontZ();
-    if (zf < DEPTH) {
-      const rf = zf < R0 ? R0 : R0 + (zf - R0) * CONE;
+    if (zf < DEPTH - 8) {
+      const R = frontRadius(Math.max(zf, 2));
       g.strokeStyle = isD ? "rgba(240,122,158,0.9)" : "rgba(204,0,0,0.8)";
       g.lineWidth = 1.5; g.setLineDash([4, 3]);
-      g.beginPath(); g.moveTo(X(-rf - 2), Y(zf)); g.lineTo(X(rf + 2), Y(zf)); g.stroke();
-      g.setLineDash([]);
-      g.fillStyle = isD ? "rgb(240,122,158)" : "rgb(204,0,0)";
-      g.fillText("front", X(rf + 2) - 34, Y(zf) - 5);
+      g.beginPath();
+      let started = false;
+      for (let x = -R - 1; x <= R + 1; x += 0.25) {
+        const dz = R - Math.sqrt(Math.max(0, R * R - x * x));
+        const px = X(x), py = Y(zf + dz);
+        started ? g.lineTo(px, py) : g.moveTo(px, py);
+        started = true;
+      }
+      g.stroke(); g.setLineDash([]);
     }
-    // flying ions
     for (const f of flying) {
       g.fillStyle = f.b ? "#e0a832" : (isD ? "#9a90c8" : "#8a80b8");
       g.beginPath(); g.arc(X(f.x), Y(f.z), sc * 0.4, 0, 6.3); g.fill();
-      g.strokeStyle = f.b ? "rgba(224,168,50,0.35)" : "rgba(140,130,190,0.35)";
-      g.beginPath(); g.moveTo(X(f.x), Y(f.z)); g.lineTo(X(f.x - f.vx * 2), Y(f.z - f.vz * 2)); g.stroke();
     }
     g.fillStyle = isD ? "#bbb" : "#444";
-    g.fillText("specimen (+V, pulsed)", 10, h - 10);
+    g.fillText("specimen (+V, pulsed)", 8, h - 8);
   }
   function drawRecon() {
-    // persistent canvas: only new points are drawn each frame
     const dpr = window.devicePixelRatio || 1;
-    const w = cvR.clientWidth || 280, h = 400;
-    if (cvR.width !== w * dpr) {
-      cvR.width = w * dpr; cvR.height = h * dpr;
-      redrawRecon();
-      return;
-    }
-    const g = cvR.getContext("2d");
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawReconChrome(g, w, h);
-    // draw the most recent points
-    const sc = h * 0.75 / DEPTH;
-    const total = atoms.length;
-    for (let i = Math.max(0, detected.length - 12); i < detected.length; i++) {
-      const d = detected[i];
-      const zr = d.zr / total * DEPTH * 1.15;
-      const isD = dark();
-      g.fillStyle = d.b ? "#e0a832" : (isD ? "#7a6ea8" : "#8a80b8");
-      g.beginPath();
-      g.arc(w / 2 + d.xr * sc, h * 0.2 + zr * sc, sc * 0.4, 0, 6.3);
-      g.fill();
-    }
-  }
-  function drawReconChrome(g, w, h) {
-    const isD = dark();
-    g.fillStyle = isD ? "#bbb" : "#444"; g.font = "12px system-ui";
-    g.clearRect(0, 0, w, 28);
-    g.fillStyle = isD ? "#0b0a0a" : "#f4f2ef";
-    g.fillRect(0, 0, w, 28);
-    g.fillStyle = isD ? "#bbb" : "#444";
-    g.fillText("reconstruction: z from order, x noisy, atoms missing", 10, 18);
-  }
-  function redrawRecon() {
-    const dpr = window.devicePixelRatio || 1;
-    const w = cvR.clientWidth || 280, h = 400;
+    const { w, h, sc, X, Y } = geom(cvR);
+    cvR.width = w * dpr; cvR.height = h * dpr;
     const g = cvR.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const isD = dark();
     g.fillStyle = isD ? "#0b0a0a" : "#f4f2ef";
     g.fillRect(0, 0, w, h);
-    const sc = h * 0.75 / DEPTH, total = atoms.length;
-    for (const d of detected) {
-      const zr = d.zr / total * DEPTH * 1.15;
-      g.fillStyle = d.b ? "#e0a832" : (isD ? "#7a6ea8" : "#8a80b8");
-      g.beginPath();
-      g.arc(w / 2 + d.xr * sc, h * 0.2 + zr * sc, sc * 0.4, 0, 6.3);
-      g.fill();
+    // ground-truth shadow: tip silhouette
+    g.fillStyle = isD ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
+    g.beginPath();
+    let started = false;
+    for (let z = 0; z <= DEPTH; z += 0.5) {
+      const r = frontRadius(z);
+      const px = X(-r), py = Y(z);
+      started ? g.lineTo(px, py) : g.moveTo(px, py);
+      started = true;
     }
-    drawReconChrome(g, w, h);
+    for (let z = DEPTH; z >= 0; z -= 0.5) g.lineTo(X(frontRadius(z)), Y(z));
+    g.closePath(); g.fill();
+    // ground-truth solute regions, faint
+    g.fillStyle = "rgba(224,168,50,0.13)";
+    if (kind === "Multilayer") {
+      for (let z0 = 3; z0 < DEPTH; z0 += 9) {
+        const r = frontRadius(z0 + 1.1);
+        g.fillRect(X(-r), Y(z0), 2 * r * sc, 2.2 * sc);
+      }
+    } else if (kind === "Clusters") {
+      for (const [cx, cz, r] of [[-3, 9, 1.8], [2.5, 15, 2.2], [-1, 23, 1.9],
+        [4, 29, 1.7], [-4.5, 33, 2.0], [0.5, 36, 1.6]]) {
+        g.beginPath(); g.arc(X(cx), Y(cz), r * sc, 0, 6.3); g.fill();
+      }
+    } else if (kind === "Interface") {
+      const r = frontRadius(19);
+      g.fillRect(X(-r), Y(16.5), 2 * r * sc, 6 * sc);
+    }
+    for (const d of detected) {
+      g.fillStyle = d.b ? "#e0a832" : (isD ? "#7a6ea8" : "#8a80b8");
+      g.beginPath(); g.arc(X(d.xr), Y(d.zr), sc * 0.4, 0, 6.3); g.fill();
+    }
+    g.fillStyle = isD ? "#bbb" : "#444"; g.font = "12px system-ui";
+    g.fillText("reconstruction (ground truth shaded)", 8, 20);
   }
   function tick() {
-    if (visible && playing) {
-      const rate = +root.querySelector(".w-rate").value;
-      for (let k = 0; k < rate; k++) {
-        if (!evaporateOne()) {              // tip consumed: restart
-          if (flying.length === 0) reset();
+    if (visible && playing && !finished) {
+      for (let k = 0; k < 3; k++) {
+        if (!evaporateOne()) {
+          if (flying.length === 0) {
+            finished = true; playing = false;
+            root.querySelector(".w-play").innerHTML = "&#9654; Replay";
+          }
           break;
         }
       }
-      // advance flights
-      for (const f of flying) { f.x += f.vx * 0.5; f.z += f.vz * 0.5; }
+      for (const f of flying) { f.x += f.vx * 0.6; f.z += f.vz * 0.6; }
       const still = [];
-      for (const f of flying) (f.z < -10 ? detect(f) : still.push(f));
+      for (const f of flying) (f.z < -8 ? detect(f) : still.push(f));
       flying = still;
       drawTip(); drawRecon();
-      root.querySelector(".w-nev").textContent = nEv;
-      root.querySelector(".w-da").textContent = nA ? (100 * dA / Math.max(1, nA)).toFixed(0) + "%" : "–";
-      root.querySelector(".w-db").textContent = nB ? (100 * dB / Math.max(1, nB)).toFixed(0) + "%" : "–";
       root.querySelector(".w-ct").textContent = nEv ? (100 * nB / nEv).toFixed(1) + "%" : "–";
       root.querySelector(".w-cm").textContent = (dA + dB) ? (100 * dB / (dA + dB)).toFixed(1) + "%" : "–";
     }
+    root.querySelector(".w-effv").textContent = (+root.querySelector(".w-eff").value * 100).toFixed(0) + "%";
+    root.querySelector(".w-sxv").textContent = (+root.querySelector(".w-sx").value).toFixed(1);
+    root.querySelector(".w-szv").textContent = (+root.querySelector(".w-sz").value).toFixed(2);
     raf = requestAnimationFrame(tick);
   }
   root.querySelector(".w-play").addEventListener("click", function () {
+    if (finished) { reset(); return; }
     playing = !playing;
     this.innerHTML = playing ? "&#10074;&#10074; Pause" : "&#9654; Play";
   });
-  root.querySelector(".w-reset").addEventListener("click", reset);
   const io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; },
     { rootMargin: "100px" });
   io.observe(root);
-  new ResizeObserver(redrawRecon).observe(cvR);
-  tick();
+  reset(); tick();
   return () => { cancelAnimationFrame(raf); obs.disconnect(); io.disconnect(); };
 }
 
