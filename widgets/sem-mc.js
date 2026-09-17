@@ -17,8 +17,10 @@ const MATS = {
   Au: { z: 79, a: 196.97, rho: 19.3 },
 };
 
-// one trajectory; returns {pts (um, x lateral, z depth), bse}
-function trajectory(mat, E0) {
+// one trajectory; returns {pts (um, x lateral, z depth), bse, tr}
+// tFilm: film thickness in um (Infinity = bulk); electrons crossing the film
+// bottom leave as transmitted, with the exit segment clipped to the boundary
+function trajectory(mat, E0, tFilm = Infinity) {
   const { z: Z, a: A, rho } = mat;
   const J = (9.76 * Z + 58.5 * Math.pow(Z, -0.19)) * 1e-3;   // keV
   let E = E0, x = 0, y = 0, zz = 0, cx = 0, cy = 0, cz = 1;  // 3D direction cosines
@@ -35,7 +37,15 @@ function trajectory(mat, E0) {
     E -= dE;
     x += cx * s; y += cy * s; zz += cz * s;
     pts.push([x, zz, dE]);
-    if (zz < 0) return { pts, bse: true, E };
+    if (zz < 0) return { pts, bse: true, tr: false, E };
+    if (zz > tFilm) {
+      const p0 = pts[pts.length - 2], p1 = pts[pts.length - 1];
+      const f = (tFilm - p0[1]) / (p1[1] - p0[1]);
+      p1[0] = p0[0] + (p1[0] - p0[0]) * f;
+      p1[1] = tFilm;
+      p1[2] = dE * f;
+      return { pts, bse: false, tr: true, E };
+    }
     const R = Math.random();
     const ct = 1 - 2 * al * R / (1 + al - R);
     const st = Math.sqrt(Math.max(0, 1 - ct * ct));
@@ -50,7 +60,7 @@ function trajectory(mat, E0) {
       cx = nx; cy = ny; cz = nz;
     }
   }
-  return { pts, bse: false, E };
+  return { pts, bse: false, tr: false, E };
 }
 function koRange(mat, E0) { // Kanaya-Okayama, um
   return 0.0276 * mat.a * Math.pow(E0, 1.67) / (Math.pow(mat.z, 0.89) * mat.rho);
@@ -87,16 +97,19 @@ function render({ model, el }) {
 <div class="w-bar">
   <label>target <select class="w-mat">${Object.keys(MATS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
   <label>beam energy <input class="w-E" type="range" min="1" max="30" step="0.5" value="15"><b class="w-ev"></b></label>
+  <label>thickness <input class="w-th" type="range" min="-2" max="1.05" step="0.05" value="1.05"><b class="w-thv"></b></label>
   <label>trajectories <input class="w-N" type="range" min="2" max="4.3" step="0.05" value="3"><b class="w-nv"></b></label>
   <button class="w-go">Restart</button>
 </div>
 <div class="w-bar">
   <span>completed <b class="w-nt">0</b></span>
   <span>backscattered <b class="w-bse">&ndash;</b></span>
+  <span>transmitted <b class="w-tr">&ndash;</b></span>
   <span>K-O range <b class="w-ko"></b></span>
   <span>deepest so far <b class="w-md">&ndash;</b></span>
   <span><span style="color:#d04040">&#9644;</span> backscattered</span>
   <span><span style="color:#4060c0">&#9644;</span> absorbed</span>
+  <span><span style="color:#c98f00">&#9644;</span> transmitted</span>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
@@ -107,7 +120,9 @@ function render({ model, el }) {
   const cv = root.querySelector(".w-traj");
   const cvH = root.querySelector(".w-hist");
   const inE = root.querySelector(".w-E"), sel = root.querySelector(".w-mat");
-  let trajs = [], nBse = 0, nDone = 0, maxDepth = 0, raf = 0, visible = true, scale = 1;
+  const inTh = root.querySelector(".w-th");
+  let trajs = [], nBse = 0, nTr = 0, nDone = 0, maxDepth = 0, raf = 0, visible = true, scale = 1;
+  let tFilm = Infinity;                                    // um
   const HG = 110;
   let hist = new Float32Array(HG * HG);
   const inN = () => Math.round(Math.pow(10, +root.querySelector(".w-N").value));
@@ -118,15 +133,20 @@ function render({ model, el }) {
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
   function setup() {
-    trajs = []; nBse = 0; nDone = 0; maxDepth = 0;
+    trajs = []; nBse = 0; nTr = 0; nDone = 0; maxDepth = 0;
     hist = new Float32Array(HG * HG);
     root.querySelector(".w-nv").textContent = inN();
     const m = MATS[sel.value], E0 = +inE.value;
     const R = koRange(m, E0);
-    scale = 1.5 * R;                       // view half-width/depth in um
+    tFilm = +inTh.value >= 1.049 ? Infinity : Math.pow(10, +inTh.value);
+    // bulk: zoom to the pear. Finite film: lock the view to the film so the
+    // boundary stays put while the energy sweeps, for a direct comparison
+    scale = tFilm === Infinity ? 1.1 * R : 2.2 * tFilm;
+    root.querySelector(".w-thv").textContent = tFilm === Infinity ? "bulk"
+      : tFilm >= 1 ? tFilm.toFixed(1) + " µm" : (tFilm * 1000).toFixed(0) + " nm";
     root.querySelector(".w-ev").textContent = E0.toFixed(1) + " keV";
     root.querySelector(".w-ko").textContent = R >= 1 ? R.toFixed(2) + " µm" : (R * 1000).toFixed(0) + " nm";
-    redrawAll();
+    redrawAll(); drawHist();
   }
   function view(w, h) {
     // beam enters top center; sample occupies lower 85%
@@ -144,9 +164,11 @@ function render({ model, el }) {
     g.fillRect(0, 0, w, h);
     const { X, Y, zTop } = view(w, h);
     g.fillStyle = isD ? "#1c1a19" : "#efedea";
-    g.fillRect(0, zTop, w, h - zTop);
+    const yF = tFilm === Infinity ? h : Math.min(h, Y(tFilm));
+    g.fillRect(0, zTop, w, yF - zTop);
     g.strokeStyle = isD ? "#444" : "#bbb";
     g.beginPath(); g.moveTo(0, zTop); g.lineTo(w, zTop); g.stroke();
+    if (yF < h) { g.beginPath(); g.moveTo(0, yF); g.lineTo(w, yF); g.stroke(); }
     // beam arrow
     g.strokeStyle = isD ? "#eee" : "#222"; g.lineWidth = 1.6;
     g.beginPath(); g.moveTo(w / 2, 6); g.lineTo(w / 2, zTop - 2); g.stroke();
@@ -179,7 +201,8 @@ function render({ model, el }) {
     g.fillRect(0, 0, w, h);
     const zTop = h * 0.12;
     g.fillStyle = isD ? "#1c1a19" : "#efedea";
-    g.fillRect(0, zTop, w, h - zTop);
+    const yF = tFilm === Infinity ? h : Math.min(h, zTop + (tFilm / scale) * (h * 0.82));
+    g.fillRect(0, zTop, w, yF - zTop);
     let mx = 0;
     for (let i = 0; i < hist.length; i++) if (hist[i] > mx) mx = hist[i];
     if (mx > 0) {
@@ -197,12 +220,14 @@ function render({ model, el }) {
     }
     g.strokeStyle = isD ? "#444" : "#bbb";
     g.beginPath(); g.moveTo(0, zTop); g.lineTo(w, zTop); g.stroke();
+    if (yF < h) { g.beginPath(); g.moveTo(0, yF); g.lineTo(w, yF); g.stroke(); }
     g.fillStyle = isD ? "#ccc" : "#333"; g.font = "12px system-ui";
     g.fillText("deposited energy (log color scale)", 10, 16);
   }
   function drawTraj(g, t, X, Y) {
     g.strokeStyle = t.bse ? (dark() ? "rgba(255,63,63,0.85)" : "rgba(204,0,0,0.8)")
-                          : (dark() ? "rgba(160,190,255,0.28)" : "rgba(40,70,160,0.22)");
+                  : t.tr ? (dark() ? "rgba(224,168,50,0.6)" : "rgba(180,125,20,0.55)")
+                         : (dark() ? "rgba(160,190,255,0.28)" : "rgba(40,70,160,0.22)");
     g.lineWidth = 1;
     g.beginPath();
     g.moveTo(X(t.pts[0][0]), Y(t.pts[0][1]));
@@ -220,9 +245,10 @@ function render({ model, el }) {
       const { X, Y } = view(w, h);
       const batch = Math.min(40, inN() - nDone);
       for (let k = 0; k < batch; k++) {
-        const t = trajectory(m, E0);
+        const t = trajectory(m, E0, tFilm);
         nDone++;
         if (t.bse) nBse++;
+        if (t.tr) nTr++;
         accumulate(t);
         for (const p of t.pts) if (p[1] > maxDepth) maxDepth = p[1];
         if (trajs.length < 250) { trajs.push(t); drawTraj(g, t, X, Y); }
@@ -230,6 +256,7 @@ function render({ model, el }) {
       if (++sinceHist >= 8 || nDone >= inN()) { drawHist(); sinceHist = 0; }
       root.querySelector(".w-nt").textContent = nDone;
       root.querySelector(".w-bse").textContent = "η = " + (nBse / nDone).toFixed(3);
+      root.querySelector(".w-tr").textContent = "T = " + (nTr / nDone).toFixed(3);
       root.querySelector(".w-md").textContent =
         maxDepth >= 1 ? maxDepth.toFixed(2) + " µm" : (maxDepth * 1000).toFixed(0) + " nm";
     }
@@ -238,7 +265,7 @@ function render({ model, el }) {
   const io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; },
     { rootMargin: "100px" });
   io.observe(root);
-  for (const i of [inE, sel, root.querySelector(".w-N")]) i.addEventListener("input", setup);
+  for (const i of [inE, sel, inTh, root.querySelector(".w-N")]) i.addEventListener("input", setup);
   root.querySelector(".w-go").addEventListener("click", setup);
   new ResizeObserver(() => { redrawAll(); drawHist(); }).observe(cv);
   syncTheme(); setup(); tick();

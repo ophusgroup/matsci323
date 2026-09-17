@@ -9,7 +9,7 @@
 
 // lateral range (m), depth range (m)
 const DATA = [
-  { n: "XRD/GIXRD", x: [5e-4, 1e-2], y: [5e-8, 5e-6], f: "photons", q: "phases, texture, strain" },
+  { n: "XRD/GIXRD", x: [5e-4, 1e-2], y: [5e-9, 5e-6], f: "photons", q: "phases, texture, strain" },
   { n: "XRR", x: [1e-3, 1e-2], y: [1e-9, 3e-7], f: "photons", q: "thickness, density, roughness", lp: "in" },
   { n: "Ellipsometry", x: [2e-5, 1e-3], y: [3e-10, 1e-6], f: "photons", q: "thickness and optical constants" },
   { n: "Raman", x: [3e-7, 5e-6], y: [1e-7, 2e-6], f: "photons", q: "phase, strain, disorder" },
@@ -17,11 +17,11 @@ const DATA = [
   { n: "SIMS", x: [5e-8, 3e-4], y: [5e-10, 5e-9], f: "ions", q: "trace impurities, ppb" },
   { n: "LEIS", x: [1e-4, 5e-3], y: [2e-10, 3.5e-10], f: "ions", q: "the outermost atomic layer", lp: "below" },
   { n: "APT", x: [2e-10, 1e-9], y: [1e-10, 3e-10], f: "ions", q: "3D composition, atom by atom" },
-  { n: "XPS", x: [1e-5, 3e-3], y: [2e-9, 1e-8], f: "electron spectroscopy", q: "surface chemistry, oxidation states", lp: "in" },
+  { n: "XPS", x: [3e-6, 3e-3], y: [2e-9, 1e-8], f: "electron spectroscopy", q: "surface chemistry, oxidation states", lp: "in" },
   { n: "AES", x: [1e-8, 1e-5], y: [2e-9, 1e-8], f: "electron spectroscopy", q: "small-feature surface composition" },
   { n: "SEM", x: [1e-9, 2e-8], y: [1e-9, 5e-8], f: "electron microscopy", q: "morphology" },
   { n: "EDS (SEM)", x: [3e-7, 5e-6], y: [3e-7, 5e-6], f: "electron microscopy", q: "micron-scale composition" },
-  { n: "EBSD", x: [2e-8, 1e-7], y: [1e-8, 4e-8], f: "electron microscopy", q: "grain orientations" },
+  { n: "EBSD", x: [2e-8, 5e-8], y: [1e-8, 4e-8], f: "electron microscopy", q: "grain orientations" },
   { n: "STEM/EELS", x: [5e-11, 1e-9], y: [5e-9, 1e-7], f: "electron microscopy", q: "interfaces imaged directly" },
   { n: "LEED/RHEED", x: [1e-4, 1e-2], y: [3e-10, 2e-9], f: "diffraction", q: "surface order; growth monitoring", lp: "in" },
   { n: "AFM", x: [1e-9, 3e-8], y: [1e-10, 1e-9], f: "scanning probe", q: "topography and roughness", lp: "below" },

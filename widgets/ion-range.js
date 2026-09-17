@@ -13,8 +13,9 @@
 
 const IONS = {
   H:  { z: 1, m: 1.008 },  He: { z: 2, m: 4.003 },  B:  { z: 5, m: 10.81 },
-  N:  { z: 7, m: 14.007 }, P:  { z: 15, m: 30.97 }, Ar: { z: 18, m: 39.95 },
-  Ga: { z: 31, m: 69.72 }, As: { z: 33, m: 74.92 },
+  N:  { z: 7, m: 14.007 }, Ne: { z: 10, m: 20.18 }, P:  { z: 15, m: 30.97 },
+  Ar: { z: 18, m: 39.95 }, Ga: { z: 31, m: 69.72 }, As: { z: 33, m: 74.92 },
+  Xe: { z: 54, m: 131.29 },
 };
 const TARGETS = {
   C:  { z: 6, m: 12.011, n: 113 },   // atoms/nm^3
@@ -74,7 +75,8 @@ function seLS(ion, tgt, E_eV) {
 }
 // transport one particle (ion or recoil); returns {path, stopDepth, recoils[]}
 // projectile: {z,m}; positions in nm; dir is 3D unit vector, we draw x (depth), y
-function transport(prj, tgt, E0, x0, y0, z0, dir, collectRecoils, depth) {
+// tFilm (nm): particles crossing the film back surface leave as transmitted
+function transport(prj, tgt, E0, x0, y0, z0, dir, collectRecoils, depth, tFilm = Infinity) {
   const aU = 0.04685 / (Math.pow(prj.z, 0.23) + Math.pow(tgt.z, 0.23));  // nm
   const epsFac = 32.53 * tgt.m / (prj.z * tgt.z * (prj.m + tgt.m) *
     (Math.pow(prj.z, 0.23) + Math.pow(tgt.z, 0.23)));                    // per keV
@@ -90,8 +92,14 @@ function transport(prj, tgt, E0, x0, y0, z0, dir, collectRecoils, depth) {
     // electronic loss over the flight
     const dEe = seLS(prj, tgt, E) * tgt.n * L * 0.1;
     E -= Math.min(dEe, E); eEl += Math.min(dEe, E);
+    const xPrev = x, yPrev = y;
     x += cx * L; y += cy * L; z += cz * L;
-    if (x < 0) { path.push([x, y]); return { path, stopped: false, recoils, eNuc, eEl }; } // backscattered out
+    if (x < 0) { path.push([x, y]); return { path, stopped: false, transmitted: false, recoils, eNuc, eEl }; } // backscattered out
+    if (x > tFilm) {           // out through the film back surface
+      const f = (tFilm - xPrev) / (x - xPrev);
+      path.push([tFilm, yPrev + (y - yPrev) * f]);
+      return { path, stopped: false, transmitted: true, recoils, eNuc, eEl };
+    }
     path.push([x, y]);
     if (E <= ED) break;
     // nuclear collision
@@ -123,19 +131,20 @@ function transport(prj, tgt, E0, x0, y0, z0, dir, collectRecoils, depth) {
       cx = nx; cy = ny; cz = nz;
     }
   }
-  return { path, stopped: true, stopX: x, recoils, eNuc, eEl };
+  return { path, stopped: true, transmitted: false, stopX: x, stopY: y, recoils, eNuc, eEl };
 }
 // full displayed trajectory: primary + cascade (recursion depth limited)
-function cascade(ion, tgt, E0) {
+function cascade(ion, tgt, E0, tFilm = Infinity) {
   const segs = [];   // {pts, primary}
   let vac = 0;
   const queue = [{ prj: ion, E: E0, x: 0, y: 0, z: 0, dir: [1, 0, 0], primary: true, depth: 0 }];
-  let stopX = null;
+  let stopX = null, stopY = null, tr = false;
   while (queue.length) {
     const q = queue.pop();
-    const r = transport(q.prj, tgt, q.E, q.x, q.y, q.z, q.dir, true, q.depth);
-    segs.push({ pts: r.path, primary: q.primary });
-    if (q.primary && r.stopped) stopX = r.stopX;
+    const r = transport(q.prj, tgt, q.E, q.x, q.y, q.z, q.dir, true, q.depth, tFilm);
+    segs.push({ pts: r.path, primary: q.primary, tr: r.transmitted });
+    if (q.primary && r.stopped) { stopX = r.stopX; stopY = r.stopY; }
+    if (q.primary && r.transmitted) tr = true;
     for (const rec of r.recoils) {
       vac++;
       if (rec.E > 4 * ED && q.depth < 3) {
@@ -156,12 +165,13 @@ function cascade(ion, tgt, E0) {
       }
     }
   }
-  return { segs, stopX, vac };
+  return { segs, stopX, stopY, tr, vac };
 }
 // fast primary-only run for statistics
-function primaryStop(ion, tgt, E0) {
-  const r = transport(ion, tgt, E0, 0, 0, 0, [1, 0, 0], false, 9);
-  return { stopX: r.stopped ? r.stopX : null, eNuc: r.eNuc, eEl: r.eEl };
+function primaryStop(ion, tgt, E0, tFilm = Infinity) {
+  const r = transport(ion, tgt, E0, 0, 0, 0, [1, 0, 0], false, 9, tFilm);
+  return { stopX: r.stopped ? r.stopX : null, stopY: r.stopped ? r.stopY : null,
+    tr: !!r.transmitted, eNuc: r.eNuc, eEl: r.eEl };
 }
 
 function render({ model, el }) {
@@ -197,26 +207,30 @@ function render({ model, el }) {
   <label>ion <select class="w-ion">${Object.keys(IONS).map(k => `<option${k === "B" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
   <label>target <select class="w-tgt">${Object.keys(TARGETS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
   <label>energy <input class="w-E" type="range" min="0" max="2.48" step="0.02" value="1.7" style="width:110px"><b class="w-ev"></b></label>
+  <label>thickness <input class="w-th" type="range" min="0.7" max="4.05" step="0.05" value="4.05" style="width:110px"><b class="w-thv"></b></label>
+  <label>trajectories <input class="w-N" type="range" min="2" max="4.3" step="0.05" value="3.2" style="width:110px"><b class="w-nv"></b></label>
   <button class="w-go">Restart</button>
 </div>
 <div class="w-bar">
   <span>ions <b class="w-n">0</b></span>
   <span>range R&#8346; <b class="w-rp">&ndash;</b></span>
   <span>straggle &Delta;R&#8346; <b class="w-dr">&ndash;</b></span>
+  <span>transmitted <b class="w-trn">&ndash;</b></span>
   <span>energy to nuclei <b class="w-fn">&ndash;</b></span>
   <span>vacancies/ion <b class="w-vac">&ndash;</b></span>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> ZBL binary-collision Monte Carlo: cascades (left) and the range profile (right).";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> ZBL binary-collision Monte Carlo: cascades (left), the stopped-ion map and its aligned depth profile (right).";
   root.appendChild(cap);
 
   const cvT = root.querySelector(".w-traj"), cvH = root.querySelector(".w-hist");
   const selI = root.querySelector(".w-ion"), selT = root.querySelector(".w-tgt");
-  const inE = root.querySelector(".w-E");
-  let stops = [], eN = 0, eE = 0, vacSum = 0, vacIons = 0, nRun = 0;
-  let viewX = 100, raf = 0, visible = true, drawnTraj = 0;
+  const inE = root.querySelector(".w-E"), inTh = root.querySelector(".w-th");
+  const inN = () => Math.round(Math.pow(10, +root.querySelector(".w-N").value));
+  let stops = [], eN = 0, eE = 0, vacSum = 0, vacIons = 0, nRun = 0, nTr = 0;
+  let viewX = 100, tFilm = Infinity, raf = 0, visible = true, drawnTraj = 0;
 
   function dark() { return document.documentElement.classList.contains("dark"); }
   function syncTheme() { root.classList.toggle("w-dark", dark()); }
@@ -226,15 +240,21 @@ function render({ model, el }) {
 
   function energy() { return Math.pow(10, +inE.value) * 1000; } // eV, slider log10(keV)
   function setup() {
-    stops = []; eN = 0; eE = 0; vacSum = 0; vacIons = 0; nRun = 0; drawnTraj = 0;
+    stops = []; eN = 0; eE = 0; vacSum = 0; vacIons = 0; nRun = 0; nTr = 0; drawnTraj = 0;
     const ion = IONS[selI.value], tgt = TARGETS[selT.value];
+    tFilm = +inTh.value >= 4.049 ? Infinity : Math.pow(10, +inTh.value);  // nm
+    root.querySelector(".w-nv").textContent = inN();
     // quick scale estimate from a few primaries
     let m = 0;
     for (let i = 0; i < 12; i++) {
       const r = primaryStop(ion, tgt, energy());
       if (r.stopX) m = Math.max(m, r.stopX);
     }
-    viewX = Math.max(5, m * 1.35);
+    // bulk: zoom to the range. Finite film: lock the view to the film so the
+    // boundary stays put while the energy sweeps, for a direct comparison
+    viewX = tFilm === Infinity ? Math.max(5, m * 1.35) : 2.2 * tFilm;
+    root.querySelector(".w-thv").textContent = tFilm === Infinity ? "bulk"
+      : tFilm >= 1000 ? (tFilm / 1000).toFixed(1) + " µm" : Math.round(tFilm) + " nm";
     root.querySelector(".w-ev").textContent =
       energy() >= 1e6 ? (energy() / 1e6).toFixed(2) + " MeV" : (energy() / 1000).toFixed(1) + " keV";
     clearTraj();
@@ -249,10 +269,12 @@ function render({ model, el }) {
     const isD = dark();
     g.fillStyle = isD ? "#0b0a0a" : "#ffffff"; g.fillRect(0, 0, w, h);
     const sx = 46;
+    const xF = tFilm === Infinity ? w : Math.min(w, sx + tFilm / viewX * (w - sx - 10));
     g.fillStyle = isD ? "#1c1a19" : "#efedea";
-    g.fillRect(sx, 0, w - sx, h);
+    g.fillRect(sx, 0, xF - sx, h);
     g.strokeStyle = isD ? "#444" : "#bbb";
     g.beginPath(); g.moveTo(sx, 0); g.lineTo(sx, h); g.stroke();
+    if (xF < w) { g.beginPath(); g.moveTo(xF, 0); g.lineTo(xF, h); g.stroke(); }
     g.strokeStyle = isD ? "#eee" : "#222"; g.lineWidth = 1.6;
     g.beginPath(); g.moveTo(4, h / 2); g.lineTo(sx - 2, h / 2); g.stroke();
     g.fillStyle = isD ? "#ccc" : "#333"; g.font = "12px system-ui";
@@ -273,8 +295,10 @@ function render({ model, el }) {
     const X = xx => sx + xx / viewX * (w - sx - 10);
     const Y = yy => h / 2 + yy / viewX * (w - sx - 10);
     for (const seg of c.segs) {
-      g.strokeStyle = seg.primary ? (isD ? "rgba(255,63,63,0.9)" : "rgba(204,0,0,0.85)")
-                                  : (isD ? "rgba(150,180,255,0.35)" : "rgba(40,70,180,0.30)");
+      g.strokeStyle = seg.primary
+        ? (seg.tr ? (isD ? "rgba(224,168,50,0.9)" : "rgba(180,125,20,0.85)")
+                  : (isD ? "rgba(255,63,63,0.9)" : "rgba(204,0,0,0.85)"))
+        : (isD ? "rgba(150,180,255,0.35)" : "rgba(40,70,180,0.30)");
       g.lineWidth = seg.primary ? 1.6 : 1;
       g.beginPath();
       g.moveTo(X(seg.pts[0][0]), Y(seg.pts[0][1]));
@@ -288,6 +312,8 @@ function render({ model, el }) {
     }
   }
   function drawHist() {
+    // 2D map of stopped-ion positions (depth x lateral, isotropic) with the
+    // 1D depth profile aligned below it on the same depth axis
     const dpr = window.devicePixelRatio || 1;
     const w = cvH.clientWidth || 320, h = 360;
     cvH.width = w * dpr; cvH.height = h * dpr;
@@ -295,58 +321,98 @@ function render({ model, el }) {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const isD = dark();
     g.fillStyle = isD ? "#0b0a0a" : "#ffffff"; g.fillRect(0, 0, w, h);
+    const mL = 10, plotW = w - 20;
+    const mapTop = 26, mapH = 170;
+    const profTop = mapTop + mapH + 12, profBot = h - 34;
+    const Xp = xx => mL + xx / viewX * plotW;
+    // sample band in the map region, cut at the film boundary
+    const xF = tFilm === Infinity ? mL + plotW : Math.min(mL + plotW, Xp(tFilm));
+    g.fillStyle = isD ? "#1c1a19" : "#efedea";
+    g.fillRect(mL, mapTop, xF - mL, mapH);
+    g.strokeStyle = isD ? "#444" : "#bbb"; g.lineWidth = 1;
+    g.strokeRect(mL, mapTop, plotW, mapH);
     g.fillStyle = isD ? "#999" : "#777"; g.font = "12px system-ui";
-    g.fillText("implanted ion depth profile", 10, 16);
-    if (stops.length < 5) return;
-    const NB = 60;
-    const bins = new Float64Array(NB);
-    for (const sxp of stops) {
-      const b = Math.floor(sxp / viewX * NB);
-      if (b >= 0 && b < NB) bins[b]++;
+    g.fillText("stopped ions (beam axis at center)", mL, 16);
+    if (stops.length >= 5) {
+      // isotropic bins: the map's nm-per-pixel matches the depth axis
+      const NB = 60;
+      const latHalf = (mapH / 2) * viewX / plotW;
+      const NY = Math.max(8, Math.round(mapH / (plotW / NB)));
+      const grid = new Float64Array(NB * NY);
+      const bins = new Float64Array(NB);
+      for (const [sxp, syp] of stops) {
+        const bx = Math.floor(sxp / viewX * NB);
+        const by = Math.floor((syp + latHalf) / (2 * latHalf) * NY);
+        if (bx >= 0 && bx < NB) {
+          bins[bx]++;
+          if (by >= 0 && by < NY) grid[by * NB + bx]++;
+        }
+      }
+      let gmx = 0;
+      for (const v of grid) gmx = Math.max(gmx, v);
+      const cw = plotW / NB, ch = mapH / NY;
+      for (let by = 0; by < NY; by++)
+        for (let bx = 0; bx < NB; bx++) {
+          const v = grid[by * NB + bx];
+          if (!v) continue;
+          const a = Math.log1p(v) / Math.log1p(gmx);
+          g.fillStyle = isD ? `rgba(255,63,63,${(0.95 * a).toFixed(3)})`
+                            : `rgba(204,0,0,${(0.9 * a).toFixed(3)})`;
+          g.fillRect(mL + bx * cw, mapTop + by * ch, cw + 0.5, ch + 0.5);
+        }
+      // aligned 1D depth profile
+      let mx = 0;
+      for (const b of bins) mx = Math.max(mx, b);
+      for (let i = 0; i < NB; i++) {
+        const bh = bins[i] / mx * (profBot - profTop);
+        g.fillStyle = isD ? "rgba(255,63,63,0.75)" : "rgba(204,0,0,0.6)";
+        g.fillRect(mL + i * cw, profBot - bh, cw - 1, bh);
+      }
+      // mean and straggle, marked through both plots
+      const mean = stops.reduce((a, b) => a + b[0], 0) / stops.length;
+      const sd = Math.sqrt(stops.reduce((a, b) => a + (b[0] - mean) ** 2, 0) / stops.length);
+      g.strokeStyle = isD ? "#fff" : "#000"; g.setLineDash([4, 3]);
+      g.beginPath(); g.moveTo(Xp(mean), mapTop); g.lineTo(Xp(mean), profBot); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle = isD ? "#ccc" : "#333";
+      g.fillText("Rp", Xp(mean) + 4, mapTop + 12);
+      const fmt = v => v >= 1000 ? (v / 1000).toFixed(2) + " µm" : v.toFixed(0) + " nm";
+      root.querySelector(".w-rp").textContent = fmt(mean);
+      root.querySelector(".w-dr").textContent = fmt(sd);
     }
-    let mx = 0;
-    for (const b of bins) mx = Math.max(mx, b);
-    const mL = 10, mB2 = 34, mT2 = 26;
-    for (let i = 0; i < NB; i++) {
-      const bh = bins[i] / mx * (h - mT2 - mB2);
-      g.fillStyle = isD ? "rgba(255,63,63,0.75)" : "rgba(204,0,0,0.6)";
-      g.fillRect(mL + i / NB * (w - 20), h - mB2 - bh, (w - 20) / NB - 1, bh);
+    // film boundary through both plots
+    if (xF < mL + plotW) {
+      g.strokeStyle = isD ? "#444" : "#bbb";
+      g.beginPath(); g.moveTo(xF, mapTop); g.lineTo(xF, profBot); g.stroke();
     }
-    // mean and straggle
-    const mean = stops.reduce((a, b) => a + b, 0) / stops.length;
-    const sd = Math.sqrt(stops.reduce((a, b) => a + (b - mean) ** 2, 0) / stops.length);
-    const Xp = xx => mL + xx / viewX * (w - 20);
-    g.strokeStyle = isD ? "#fff" : "#000"; g.setLineDash([4, 3]);
-    g.beginPath(); g.moveTo(Xp(mean), mT2); g.lineTo(Xp(mean), h - mB2); g.stroke();
-    g.setLineDash([]);
-    g.fillStyle = isD ? "#ccc" : "#333";
-    g.fillText("Rp", Xp(mean) + 4, mT2 + 12);
+    g.fillStyle = isD ? "#999" : "#777";
+    g.fillText("depth profile", mL, profTop - 3);
     for (const f of [0, 0.5, 1]) {
       const xv = f * viewX;
       g.fillText(xv >= 1000 ? (xv / 1000).toFixed(1) + " µm" : Math.round(xv) + " nm",
-        Xp(xv) - (f === 1 ? 44 : 0), h - mB2 + 16);
+        Xp(xv) - (f === 1 ? 44 : 0), profBot + 16);
     }
     g.fillText("depth", w / 2 - 15, h - 4);
-    const fmt = v => v >= 1000 ? (v / 1000).toFixed(2) + " µm" : v.toFixed(0) + " nm";
     root.querySelector(".w-n").textContent = nRun;
-    root.querySelector(".w-rp").textContent = fmt(mean);
-    root.querySelector(".w-dr").textContent = fmt(sd);
+    root.querySelector(".w-trn").textContent = nRun ? (100 * nTr / nRun).toFixed(1) + "%" : "–";
     root.querySelector(".w-fn").textContent = (100 * eN / Math.max(1, eN + eE)).toFixed(0) + "%";
     root.querySelector(".w-vac").textContent = vacIons ? Math.round(vacSum / vacIons) : "–";
   }
   function tick() {
-    if (visible && nRun < 1500) {
+    if (visible && nRun < inN()) {
       const ion = IONS[selI.value], tgt = TARGETS[selT.value];
       // a few full cascades for display
       if (drawnTraj < 12) {
-        const c = cascade(ion, tgt, energy());
+        const c = cascade(ion, tgt, energy(), tFilm);
         drawCascade(c);
-        if (c.stopX !== null) stops.push(c.stopX);
+        if (c.stopX !== null) stops.push([c.stopX, c.stopY]);
+        if (c.tr) nTr++;
         vacSum += c.vac; vacIons++; nRun++; drawnTraj++;
       } else {
-        for (let k = 0; k < 25 && nRun < 1500; k++) {
-          const r = primaryStop(ion, tgt, energy());
-          if (r.stopX !== null) stops.push(r.stopX);
+        for (let k = 0; k < 25 && nRun < inN(); k++) {
+          const r = primaryStop(ion, tgt, energy(), tFilm);
+          if (r.stopX !== null) stops.push([r.stopX, r.stopY]);
+          if (r.tr) nTr++;
           eN += r.eNuc; eE += r.eEl; nRun++;
         }
         drawHist();
@@ -354,7 +420,7 @@ function render({ model, el }) {
     }
     raf = requestAnimationFrame(tick);
   }
-  for (const i of [selI, selT, inE]) i.addEventListener("input", setup);
+  for (const i of [selI, selT, inE, inTh, root.querySelector(".w-N")]) i.addEventListener("input", setup);
   root.querySelector(".w-go").addEventListener("click", setup);
   const io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; },
     { rootMargin: "100px" });

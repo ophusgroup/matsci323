@@ -10,7 +10,7 @@
 //   :::{anywidget} ./widgets/hero-techniques.js   (from index.md)
 //   :::
 
-const H = 118;
+const H = 92;
 const SPEED = 0.5;
 
 function render({ model, el }) {
@@ -18,15 +18,17 @@ function render({ model, el }) {
   const style = document.createElement("style");
   style.textContent = `
 .${uid} { display:block; margin:26px 0 30px 0; font-family:system-ui,sans-serif; }
-.${uid} .ht-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr));
-  gap:9px; }
+.${uid} .ht-grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:7px; }
+@media (max-width: 640px) {
+  .${uid} .ht-grid { grid-template-columns:repeat(3, 1fr); }
+}
 .${uid} .ht-tile { position:relative; border-radius:9px; overflow:hidden;
   background:#0b0b10; border:1px solid rgba(128,128,128,0.25); display:block;
   text-decoration:none; cursor:pointer; }
 .${uid} .ht-tile:hover { border-color:rgba(200,200,200,0.6); }
 .${uid} .ht-tile canvas { display:block; width:100%; height:${H}px; }
-.${uid} .ht-label { position:absolute; left:8px; bottom:5px; font-size:12.5px;
-  font-weight:650; letter-spacing:0.03em; color:#fff; text-shadow:0 0 6px rgba(0,0,0,0.9); }
+.${uid} .ht-label { position:absolute; left:7px; bottom:4px; font-size:11.5px;
+  font-weight:650; letter-spacing:0.02em; color:#fff; text-shadow:0 0 6px rgba(0,0,0,0.9); }
 `;
   const root = document.createElement("div");
   root.className = uid;
@@ -374,10 +376,13 @@ function render({ model, el }) {
     FIB: "modules/sem/ebsd-fib", STEM: "modules/stem/stem-imaging",
     RHEED: "modules/stem/leed-rheed", AFM: "modules/spm/afm",
   };
+  // link base: empty on the course site itself; other sites embedding this
+  // widget pass the deployed course URL via the JSON config
+  const base = (model && typeof model.get === "function" && model.get("base")) || "";
   const tiles = V.map((v, i) => {
     const d = document.createElement("a");
     d.className = "ht-tile";
-    if (HREF[v.name]) { d.href = HREF[v.name]; d.title = v.name + " in the course"; }
+    if (HREF[v.name]) { d.href = base + HREF[v.name]; d.title = v.name + " in the course"; }
     const c = document.createElement("canvas");
     d.appendChild(c);
     const lab = document.createElement("div");

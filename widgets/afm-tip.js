@@ -77,7 +77,10 @@ function tipProfile(d, R, ang) {
 function dilate(s, R, ang, doubleTip) {
   const dx = XMAX / NX;
   const out = new Float64Array(NX);
-  const reach = Math.ceil((R + YMAX * Math.tan(ang * Math.PI / 180)) / dx);
+  // a double tip is a damaged apex: two minima, each sharper than the
+  // nominal radius, which makes the ghost doubling stand out
+  const Rt = doubleTip ? R * 0.6 : R;
+  const reach = Math.ceil((Rt + YMAX * Math.tan(ang * Math.PI / 180)) / dx);
   const apexes = doubleTip ? [[0, 0], [Math.round(8 / dx), 1.2]] : [[0, 0]];
   for (let i = 0; i < NX; i++) {
     let m = -1e9;
@@ -85,7 +88,7 @@ function dilate(s, R, ang, doubleTip) {
       for (let j = -reach; j <= reach; j++) {
         const u = i + off + j;
         if (u < 0 || u >= NX) continue;
-        const v = s[u] - tipProfile(j * dx, R, ang) - drop;
+        const v = s[u] - tipProfile(j * dx, Rt, ang) - drop;
         if (v > m) m = v;
       }
     }
@@ -121,7 +124,7 @@ function render({ model, el }) {
   root.className = uid;
   root.innerHTML = `
 <canvas height="330"></canvas>
-<div class="w-controls"><span>sample:</span><span class="w-presets" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
+<div class="w-controls"><button class="w-playb">&#10074;&#10074; Pause</button><span>sample:</span><span class="w-presets" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
 <div class="w-controls"><span>tip:</span><span class="w-tips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
   <span>R <span class="w-stat w-rv"></span></span>
   <input class="w-R" type="range" min="1" max="50" step="0.5" value="7">
@@ -138,7 +141,13 @@ function render({ model, el }) {
   const inR = root.querySelector(".w-R");
   const dblBtn = root.querySelector(".w-dbl");
   let kind = "Particles", tipName = "Si", ang = TIPS["Si"].ang, dbl = false;
-  let hoverX = null, scanX = 0, raf = 0, visible = true;
+  let hoverX = null, scanX = 0, raf = 0, visible = true, playing = true;
+  const playBtn = root.querySelector(".w-playb");
+  playBtn.addEventListener("click", () => {
+    playing = !playing;
+    if (playing) hoverX = null;      // clear any stuck hover so the scan resumes
+    playBtn.innerHTML = playing ? "&#10074;&#10074; Pause" : "&#9654; Play";
+  });
 
   const presetBox = root.querySelector(".w-presets");
   for (const k of ["Particles", "Trench", "Steps", "Device", "Spikes", "Rough"]) {
@@ -211,26 +220,31 @@ function render({ model, el }) {
     const xnm = Math.max(0, Math.min(XMAX, (tipPx - mL) / scale));
     const i0 = Math.max(0, Math.min(NX - 1, Math.round(xnm / XMAX * NX)));
     const apex = m[i0];
-    const drawTip = (xc, apexH, ghost) => {
-      const cx = Xnm(xc), cyC = Y(apexH + R);
-      g.strokeStyle = ghost ? (isD ? "#777" : "#999") : (isD ? "#ddd" : "#333");
+    // a double tip draws its two (smaller) apex circles solid, with the
+    // tangent cone sides only on the outer edges of the pair
+    const Rt = dbl ? R * 0.6 : R;
+    const drawTip = (xc, apexH, sides) => {
+      const cx = Xnm(xc), cyC = Y(apexH + Rt);
+      g.strokeStyle = isD ? "#ddd" : "#333";
       g.lineWidth = 1.5;
-      g.beginPath(); g.arc(cx, cyC, R * scale, 0, 6.3); g.stroke();
+      g.beginPath(); g.arc(cx, cyC, Rt * scale, 0, 6.3); g.stroke();
       // cone sides tangent to the sphere, up to the top of the plot
       const al = ang * Math.PI / 180;
-      const dt = R * Math.cos(al), ht = R - R * Math.sin(al);
+      const dt = Rt * Math.cos(al), ht = Rt - Rt * Math.sin(al);
       const topY = 8;
       const hAtTop = apexH + (yBase - topY) / scale;
       const dTop = dt + Math.tan(al) * (hAtTop - apexH - ht);
-      for (const sgn of [-1, 1]) {
+      for (const sgn of sides) {
         g.beginPath();
         g.moveTo(Xnm(xc + sgn * dt), Y(apexH + ht));
         g.lineTo(Xnm(xc + sgn * Math.min(dTop, XMAX)), topY);
         g.stroke();
       }
     };
-    drawTip(xnm, apex, false);
-    if (dbl) drawTip(xnm - 8, apex + 1.2, true);
+    // the dilation samples the surface at x + 8 nm for the second apex, so
+    // the second circle sits to the RIGHT of the recorded position
+    drawTip(xnm, apex, dbl ? [-1] : [-1, 1]);
+    if (dbl) drawTip(xnm + 8, apex + 1.2, [1]);
     g.fillStyle = isD ? "#999" : "#777"; g.font = "13px system-ui";
     g.fillText("true surface (grey), measured trace (red) · hover to place the tip", mL + 4, 14);
     root.querySelector(".w-rv").textContent = R.toFixed(1) + " nm";
@@ -242,9 +256,10 @@ function render({ model, el }) {
     hoverX = ev.clientX - r.left;
   });
   cv.addEventListener("pointerleave", () => { hoverX = null; });
+  cv.addEventListener("pointercancel", () => { hoverX = null; });
   function tick() {
     if (visible) {
-      if (hoverX === null) {
+      if (hoverX === null && playing) {
         const w = cv.clientWidth || 500;
         scanX = (scanX + w / 560) % w;
       }

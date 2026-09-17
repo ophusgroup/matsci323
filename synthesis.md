@@ -6,18 +6,18 @@ This closing chapter organizes the whole quarter around the problem posed in [th
 
 | Technique | Question it answers best | Depth sampled | Lateral resolution | Detection limit | Destructive? |
 | --- | --- | --- | --- | --- | --- |
-| XRD / GIXRD | Which crystalline phases, texture, strain | Full film | mm | few vol% | No |
+| XRD / GIXRD | Which crystalline phases, texture, strain | Full film; nm up, tuned by grazing incidence | mm | few vol% | No |
 | XRR | Thickness, density, roughness of layers | Full stack | mm (average) | sub-nm layers | No |
 | Ellipsometry | Thickness and optical constants, fast | Full stack | tens of um | sub-nm thickness | No |
 | Raman | Phase, strain, disorder in Raman-active films | Optical depth | 0.5 um | monolayer (strong scatterers) | No |
 | RBS | Absolute composition and areal density | um | mm | 0.01 monolayer (heavy on light) | Nearly non |
 | SIMS | Trace impurity depth profiles | Profiles um | um (imaging 50 nm) | ppb | Yes |
 | LEIS | Composition of the outermost layer | 1 atomic layer | mm | ~1% of a monolayer | Slightly |
-| APT | 3D composition of a specific nanoscale volume | 100 nm needle | ~0.3 nm | tens of ppm | Fully |
-| XPS | Surface chemistry and oxidation states | 3 to 10 nm | 10 um to mm | 0.1 to 1 at% | No |
+| APT | 3D composition of a specific nanoscale volume | 100 nm needle | 0.1 to 0.3 nm in depth, coarser laterally | tens of ppm | Fully |
+| XPS | Surface chemistry and oxidation states | 3 to 10 nm | 10 um to mm; imaging to ~3 um | 0.1 to 1 at% | No |
 | AES | Surface composition of small features | 3 to 10 nm | 10 nm | ~0.1 at% | Beam-limited |
 | SEM / EDS | Morphology and micron-scale composition | nm to um | ~1 nm (image) | 0.1 to 1 wt% | No |
-| EBSD | Grain orientation and boundary character | ~50 nm | ~30 nm | n/a | No |
+| EBSD | Grain orientation and boundary character | 10 to 40 nm | 20 to 50 nm (TKD below 10 nm) | n/a | No |
 | STEM / EELS / EDS | Direct imaging and chemistry of interfaces | Foil thickness | sub-angstrom | single atoms (favorable) | Prep destroys site |
 | LEED / RHEED | Surface order; growth monitoring | few layers | mm (average) | n/a | No |
 | AFM | Topography and roughness | Surface | 1 to 10 nm | sub-angstrom heights | No |

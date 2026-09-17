@@ -52,6 +52,6 @@ See the [course outline](outline.md) for the module structure, grading, and the 
 
 ## Acknowledgements
 
-This course is adapted from MATSCI 323, Thin Film and Interface Microanalysis, developed and taught at Stanford for over two decades by Professor [Mark Brongersma](https://brongersma.stanford.edu/). The course structure and much of the treatment of ion beam analysis and electron spectroscopy build on his original course notes, and his framing of surface analysis as a puzzle to be solved with the right combination of tools survives throughout this site.
+This course is adapted from MATSCI 323, Thin Film and Interface Microanalysis, developed and taught at Stanford for over two decades by Professor [Mark Brongersma](https://brongersma.stanford.edu/). The course structure and much of the treatment of ion beam analysis and electron spectroscopy build on his original course notes, and his framing of surface analysis as a puzzle to be solved with the right combination of tools is used throughout this site.
 
 This site is built with [MyST Markdown](https://mystmd.org/) and deployed from [GitHub](https://github.com/ophusgroup/matsci323). The interactive figures and much of the site tooling were developed with the help of [Claude Code](https://claude.com/claude-code) from Anthropic.
