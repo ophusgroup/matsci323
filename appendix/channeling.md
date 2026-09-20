@@ -8,7 +8,7 @@ $$
 \psi_c \approx \sqrt{ \frac{2 Z_1 Z_2 e^2}{E d} },
 $$
 
-typically well under one degree at MeV energies, with $d$ the atomic spacing along the row.
+typically well under one degree at MeV energies. Here $\psi_c$ is the critical angle, $Z_1$ and $Z_2$ are the atomic numbers of the ion and the target atom, $e$ is the elementary charge, $E$ is the ion energy, and $d$ is the atomic spacing along the row.
 
 Three measurements follow from this steering effect:
 

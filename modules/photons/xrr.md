@@ -19,7 +19,7 @@ $$
 n = 1 - \delta + i\beta, \qquad \delta = \frac{r_e \lambda^2}{2\pi} n_e ,
 $$
 
-where $r_e = 2.82 \times 10^{-15}$ m is the classical electron radius and $n_e$ the electron density; $\beta$ encodes absorption. For Cu K$\alpha$ radiation $\delta$ is of order $10^{-5}$: solids are optically *thinner* than vacuum, but only just. Because $\delta \propto n_e \propto \rho$, the index is a direct, chemistry-independent measure of mass density, which is what makes XRR one of the very few density probes for thin films.
+where $n$ is the complex refractive index, $\delta$ the amount by which its real part falls below one, $\lambda$ the X-ray wavelength, $r_e = 2.82 \times 10^{-15}$ m the classical electron radius, and $n_e$ the electron density; $\beta$ encodes absorption. For Cu K$\alpha$ radiation $\delta$ is of order $10^{-5}$: solids are optically *thinner* than vacuum, but only just. Because $\delta \propto n_e \propto \rho$, the index is a direct, chemistry-independent measure of mass density, which is what makes XRR one of the very few density probes for thin films.
 
 An index below one has an important consequence. Just as light inside glass totally reflects at a glancing internal angle, X-rays arriving from vacuum totally reflect from any solid below a **critical angle**
 
@@ -33,7 +33,7 @@ $$
 R(\theta) \approx \left( \frac{\theta_c}{2\theta} \right)^4 .
 $$
 
-The $\theta^{-4}$ decay (equivalently $q^{-4}$, the same power law as Porod scattering from sharp interfaces) means the signal drops seven or eight decades across a measurement, which sets the instrumental demands discussed below.
+where $R(\theta)$ is the fraction of the incident intensity reflected at incidence angle $\theta$, and $\theta_c$ is the critical angle. The $\theta^{-4}$ decay (equivalently $q^{-4}$, the same power law as Porod scattering from sharp interfaces) means the signal drops seven or eight decades across a measurement, which sets the instrumental demands discussed below.
 
 ## One film: Kiessig fringes
 
@@ -43,7 +43,7 @@ $$
 \Delta\theta \approx \frac{\lambda}{2t},
 $$
 
-so a 50 nm film measured with Cu K$\alpha$ shows fringes about 0.09° apart, and the refraction correction compresses the first few fringes just above $\theta_c$ (the effect is visible in the simulator below). Reading the period gives the thickness immediately, with a precision that comes from counting many fringes; this is why XRR thickness values carry sub-percent error bars. The fringe *amplitude* is set by the electron-density contrast between film and substrate: a dense film on a light substrate (or vice versa) gives deep fringes, while a density-matched film gives almost none, and a film denser than its substrate shows its own higher critical angle as a visible shoulder.
+with $\Delta\theta$ the angular spacing of successive fringes, $\lambda$ the X-ray wavelength, and $t$ the film thickness, so a 50 nm film measured with Cu K$\alpha$ shows fringes about 0.09° apart, and the refraction correction compresses the first few fringes just above $\theta_c$ (the effect is visible in the simulator below). Reading the period gives the thickness immediately, with a precision that comes from counting many fringes; this is why XRR thickness values carry sub-percent error bars. The fringe *amplitude* is set by the electron-density contrast between film and substrate: a dense film on a light substrate (or vice versa) gives deep fringes, while a density-matched film gives almost none, and a film denser than its substrate shows its own higher critical angle as a visible shoulder.
 
 ## Multilayers, the master formula, and Parratt
 
@@ -53,7 +53,7 @@ $$
 R(q) \approx R_F(q) \left| \frac{1}{\rho_\infty}\int \frac{d\rho_e}{dz} \, e^{i q z} \, dz \right|^2 ,
 $$
 
-the Fresnel decay times the Fourier transform of the electron-density *gradient*. Everything about a reflectivity curve follows from this statement: sharp interfaces contribute strongly at all $q$ (hence $q^{-4}$ persists), a film of thickness $t$ has two gradient spikes separated by $t$ (hence fringes of period $2\pi/t$ in $q$), and any smearing of an interface kills the high-$q$ signal (hence the roughness damping next).
+where $q$ is the momentum transfer normal to the surface, $R_F(q)$ the Fresnel reflectivity of an ideally sharp surface, $\rho_e(z)$ the electron density at depth $z$, and $\rho_\infty$ its value deep in the substrate. The reflectivity is the Fresnel decay times the Fourier transform of the electron-density *gradient*. Everything about a reflectivity curve follows from this statement: sharp interfaces contribute strongly at all $q$ (hence $q^{-4}$ persists), a film of thickness $t$ has two gradient spikes separated by $t$ (hence fringes of period $2\pi/t$ in $q$), and any smearing of an interface kills the high-$q$ signal (hence the roughness damping next).
 
 ## Roughness and diffuse scattering
 

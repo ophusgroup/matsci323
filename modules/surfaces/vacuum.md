@@ -10,13 +10,13 @@ $$
 \Phi = \frac{1}{4} n \bar{v} = \frac{P}{\sqrt{2\pi m k_B T}},
 $$
 
-and the **mean free path** between molecule-molecule collisions is
+where $\Phi$ is the number of molecules striking unit area per unit time, $n$ the gas number density, $\bar{v}$ the mean molecular speed, $P$ the pressure, $m$ the mass of one molecule, $k_B$ the Boltzmann constant, and $T$ the temperature. The **mean free path** between molecule-molecule collisions is
 
 $$
 \lambda = \frac{k_B T}{\sqrt{2}\, \pi d^2 P},
 $$
 
-with $d$ the molecular diameter (0.37 nm for N$_2$): about 70 nm at atmosphere, roughly 5 cm at $10^{-3}$ Torr, and 50 km at $10^{-9}$ Torr. Note what appears in each: the flux measures how often gas molecules strike the sample, the mean free path measures how far they travel between collisions with each other, and the two answer different experimental questions.
+with $\lambda$ the mean distance a molecule travels between collisions and $d$ the molecular diameter (0.37 nm for N$_2$): about 70 nm at atmosphere, roughly 5 cm at $10^{-3}$ Torr, and 50 km at $10^{-9}$ Torr. Note what appears in each: the flux measures how often gas molecules strike the sample, the mean free path measures how far they travel between collisions with each other, and the two answer different experimental questions.
 
 The conventional regimes:
 
@@ -36,7 +36,7 @@ $$
 t_{\mathrm{ML}} \approx \frac{3 \times 10^{-6}}{P}\ \text{seconds, with } P \text{ in Torr}.
 $$
 
-At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are. Real sticking coefficients are below one and depend on the gas and surface, so these are worst-case times; they are still the right planning numbers, because the residual gas in a UHV system is dominated by exactly the reactive species (water, CO, hydrogen) that stick well. The calculator below carries the full arithmetic across the pressure range; sliding from atmosphere to UHV, fourteen orders of magnitude, is the fastest way to internalize why vacuum hardware dominates surface analysis.
+with $t_{\mathrm{ML}}$ the time to accumulate one monolayer. At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are. Real sticking coefficients are below one and depend on the gas and surface, so these are worst-case times; they are still the right planning numbers, because the residual gas in a UHV system is dominated by exactly the reactive species (water, CO, hydrogen) that stick well. The calculator below carries the full arithmetic across the pressure range; sliding from atmosphere to UHV, fourteen orders of magnitude, is the fastest way to internalize why vacuum hardware dominates surface analysis.
 
 :::{anywidget} ../../widgets/vacuum-calc.js
 :::

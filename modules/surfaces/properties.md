@@ -6,9 +6,62 @@ We start with the single most important concept of the module, [surface energy](
 
 ## Surface energy in two dimensions
 
-Consider atoms that interact through pairwise bonds of strength $\varepsilon$, arranged in a two-dimensional close-packed crystal. An atom in the interior has six neighbors and energy near $-3\varepsilon$ (one half of six bonds, since each bond is shared). An atom on a flat close-packed edge keeps only four neighbors, an atom at a corner three, and an isolated atom none. The total energy of a finite crystal is therefore the bulk value plus a positive correction proportional to the length of its perimeter, and that correction is the surface energy: the energy cost of the bonds broken to create the boundary. Everything else on this page follows from atoms rearranging to reduce this cost.
+Atoms in this model interact through the Lennard-Jones pair potential,
 
-The simulation below makes the idea concrete. Atoms interact through a Lennard-Jones potential cut off at twice the bond length, evolve by Langevin dynamics at a temperature you control with the slider, and are colored by their energy: interior atoms sit at the bottom of the scale and appear dark, while undercoordinated atoms at surfaces, edges, corners, and grain boundaries glow. The box is periodic, so nothing is lost off the edges.
+$$
+v(r) = 4\varepsilon \left[ \left( \frac{\sigma}{r} \right)^{12} - \left( \frac{\sigma}{r} \right)^{6} \right],
+$$
+
+where $r$ is the separation of two atoms, $\varepsilon$ is the depth of the energy minimum, and $\sigma$ is the separation at which the potential crosses zero. The $r^{-12}$ term is the repulsion of overlapping electron clouds and the $r^{-6}$ term is the attractive van der Waals tail. The minimum sits at
+
+$$
+r_0 = 2^{1/6}\sigma \approx 1.122\,\sigma, \qquad v(r_0) = -\varepsilon,
+$$
+
+so $r_0$ is the equilibrium bond length and $\varepsilon$ is the bond strength. The total energy of a configuration of $N$ atoms is the sum over distinct pairs,
+
+$$
+E = \sum_{i<j} v(r_{ij}),
+$$
+
+with $r_{ij}$ the distance between atoms $i$ and $j$. The simulation truncates the potential at $2r_0$, so each atom feels its nearest neighbors strongly and the next shell weakly.
+
+:::{figure} ../../assets/figures/lj-coordination.svg
+:alt: Lennard-Jones pair potential and coordination numbers on a close-packed patch
+:width: 100%
+
+The Lennard-Jones potential and the bond counting it produces. Left: the pair energy $v(r)$, with the well depth $\varepsilon$, the zero crossing $\sigma$, the equilibrium bond length $r_0 = 2^{1/6}\sigma$, and the cutoff used in the simulation. Right: a 37-atom close-packed patch labeled by coordination number $Z$. Interior atoms have $Z = 6$, atoms on a straight close-packed edge have $Z = 4$, and the six corners have $Z = 3$.
+:::
+
+Bond counting follows from the potential. If every neighbor sits at $r_0$ and everything beyond the first shell is neglected, each bond contributes $-\varepsilon$, and each bond is shared between two atoms, so an atom with coordination number $Z$ carries
+
+$$
+E_{\mathrm{atom}} = -\frac{Z}{2}\,\varepsilon .
+$$
+
+The two-dimensional close-packed lattice has $Z = 6$, giving the bulk value $E_{\mathrm{bulk}} = -3\varepsilon$ per atom. An atom on a straight close-packed edge keeps $Z = 4$ and costs $-2\varepsilon$, a corner atom keeps $Z = 3$ and costs $-1.5\varepsilon$, and an isolated atom costs nothing. Each edge atom therefore sits $\varepsilon$ above the bulk value, and with edge atoms spaced $r_0$ apart the energy per unit length of a straight edge is
+
+$$
+\gamma_{1\mathrm{D}} = \frac{\varepsilon}{r_0},
+$$
+
+the two-dimensional analogue of the surface energy, measured in energy per length rather than energy per area.
+
+The 37-atom patch in the figure works the example through. It has 19 interior atoms, 12 edge atoms, and 6 corner atoms, so
+
+$$
+E = \left[ 19(-3) + 12(-2) + 6(-1.5) \right] \varepsilon = -90\,\varepsilon,
+$$
+
+against a bulk reference of $37 \times (-3\varepsilon) = -111\,\varepsilon$. The difference, $21\,\varepsilon$, is the surface energy of the patch, and it is 19% of the bulk energy for a crystal only seven atoms across. Dividing by the perimeter of 18 bond lengths gives $1.17\,\varepsilon/r_0$, slightly above the straight-edge value because the corners are more undercoordinated than the edges. Writing the total as
+
+$$
+E(N) \approx -3N\varepsilon + \gamma_{1\mathrm{D}} P,
+$$
+
+with $P$ the perimeter, shows the general result: a compact patch has $P \propto \sqrt{N}$, so the surface term falls only as $N^{-1/2}$ and stays significant to large sizes. Everything else on this page follows from atoms rearranging to reduce this term.
+
+The simulation below simulates example surfaces in two dimensions. Atoms evolve by Langevin dynamics at a temperature you control with the slider, and are colored by their energy: interior atoms sit at the bottom of the scale and appear dark, while undercoordinated atoms at surfaces, edges, corners, and grain boundaries glow. The box is periodic, so nothing is lost off the edges.
 
 :::{anywidget} ../../widgets/surface-energy.js
 :::
@@ -28,23 +81,86 @@ The energy trace in the right panel is the quantitative summary: every spontaneo
 
 ## Surface energy in three dimensions
 
-The real quantity is defined thermodynamically: the surface energy $\gamma$ is the reversible work required to create a unit area of new surface,
+Nothing changes in three dimensions except the bookkeeping. The two-dimensional argument had three steps: count the bonds a surface atom has lost, convert that count into an energy using the bond strength, and divide by the size of the boundary. Take the same three steps with an area in place of a length.
+
+An atom that has lost $Z_s$ of its bonds carries half the energy of each broken bond, because a bond belongs equally to the two atoms it joins, so it sits
+
+$$
+\Delta E_{\mathrm{atom}} = \frac{Z_s}{2}\,\varepsilon
+$$
+
+above a bulk atom, where $Z_s$ is the number of bonds broken per surface atom and $\varepsilon$ is the bond strength. The bond strength is not usually tabulated, but the cohesive energy is: $E_c$ is the energy needed to remove one atom from the bulk to infinity, which breaks all $Z$ of its bonds at $\varepsilon/2$ each, where $Z$ is the bulk coordination number. That fixes $\varepsilon$ in terms of measured quantities,
+
+$$
+E_c = \frac{Z}{2}\,\varepsilon, \qquad \varepsilon = \frac{2E_c}{Z}.
+$$
+
+Substituting, and dividing the excess energy by the area $A_s$ that each surface atom occupies, gives the surface energy
+
+$$
+\gamma \approx \frac{\Delta E_{\mathrm{atom}}}{A_s} = \frac{Z_s}{Z}\,\frac{E_c}{A_s}.
+$$
+
+The two-dimensional result is this same expression with a length in place of the area. There $Z = 6$, an edge atom loses $Z_s = 2$ bonds, $E_c = 3\varepsilon$, and the boundary per atom is $r_0$ rather than $A_s$, which returns $\gamma_{1\mathrm{D}} = (2/6)(3\varepsilon)/r_0 = \varepsilon/r_0$, the line tension found above.
+
+The quantity this estimates is defined thermodynamically as the reversible work required to create a unit area of new surface,
 
 $$
 \gamma = \left( \frac{\partial G}{\partial A} \right)_{T,P,n},
 $$
 
-with units of J/m$^2$ (equivalently N/m; values are often quoted in mJ/m$^2$). The two-dimensional bond counting generalizes directly. For a crystal with cohesive energy $E_c$ per atom and coordination number $Z$ in the bulk, a surface that breaks $Z_s$ bonds per surface atom of area $A_s$ costs approximately
+where $G$ is the Gibbs free energy of the system in J, $A$ is the surface area in m$^2$, and the subscripts fix the temperature $T$, the pressure $P$, and the number of atoms of each species $n$ while the area is changed. The units are J/m$^2$, equivalently N/m, and values are often quoted in mJ/m$^2$.
+
+Only two numbers are needed to apply the estimate to a real crystal face: how many bonds the cut breaks per surface atom, and how closely those atoms are packed in the plane. Both follow from the geometry of the plane.
+
+:::{figure} ../../assets/figures/fcc-broken-bonds.svg
+:alt: broken bonds on the low-index fcc surfaces
+:width: 100%
+
+Bond counting on the three low-index fcc surfaces, drawn in cross-section with the broken bonds as stubs. The more open the plane, the more bonds each surface atom loses and the more area it occupies. The bar chart evaluates $\gamma = (Z_s/Z)(E_c/A_s)$ for copper, with $Z = 12$, $E_c = 3.49$ eV per atom, and $a = 0.3615$ nm.
+:::
+
+### Worked example: cleaving diamond
+
+Diamond is the cleanest case to work through, because every carbon is tetrahedrally bonded to four neighbors and the bonds are strong, short, and unambiguous. Cleaving splits the crystal along a plane, breaking every bond that crosses it, and the energy released is shared between the *two* new surfaces that appear:
 
 $$
-\gamma \approx \frac{Z_s}{Z} \frac{E_c}{A_s}.
+\gamma = \frac{1}{2}\, n_s Z_s\, \varepsilon,
 $$
 
-The cleanest way to see where the formula comes from is a cleaving thought experiment: split a crystal along a plane, and the work done equals the number of bonds crossing that plane times the bond energy, shared between the *two* new surfaces created. Diamond makes a concrete worked example, because its bonds are well defined. Cleaving on (111) breaks one bond per surface atom; with the (111) packing density of $1.8 \times 10^{15}$ atoms/cm$^2$ and a C-C bond energy of about 6.2 x $10^{-19}$ J, the estimate gives $\gamma_{(111)} \approx 5.6$ J/m$^2$. Cleaving on (100) breaks *two* bonds per atom at a slightly lower packing density, roughly doubling the answer. Both numbers are far larger than every entry in the table below, which is why diamond is hard to cleave and why its surfaces reconstruct strongly, and the factor of two between them is why cleavage selects (111).
+where $n_s$ is the number of surface atoms per unit area in m$^{-2}$, $Z_s$ is the number of bonds each of those atoms loses, $\varepsilon$ is the bond energy in J, and the factor of one half divides the work between the two faces.
+
+Diamond has the cubic lattice parameter $a = 0.3567$ nm, bulk coordination $Z = 4$, and cohesive energy $E_c = 7.37$ eV per atom, so the bond energy is
+
+$$
+\varepsilon = \frac{2E_c}{Z} = \frac{2 \times 7.37\ \mathrm{eV}}{4} = 3.69\ \mathrm{eV} = 5.90 \times 10^{-19}\ \mathrm{J},
+$$
+
+close to the tabulated C-C single-bond dissociation energy of about 3.6 eV. For the (111) plane, the surface atom density is
+
+$$
+n_s = \frac{4}{\sqrt{3}\,a^2} = \frac{4}{1.732 \times (3.567 \times 10^{-10}\ \mathrm{m})^2} = 1.82 \times 10^{19}\ \mathrm{m^{-2}},
+$$
+
+which is $1.82 \times 10^{15}$ atoms/cm$^2$, and the (111) cut passes through the single bond that points along the surface normal, so $Z_s = 1$. Putting the three numbers together,
+
+$$
+\gamma_{(111)} = \tfrac{1}{2} \times 1.82 \times 10^{19}\ \mathrm{m^{-2}} \times 1 \times 5.90 \times 10^{-19}\ \mathrm{J} = 5.4\ \mathrm{J/m^2}.
+$$
+
+Measured cleavage energies for diamond (111) fall between about 5 and 6 J/m$^2$, so the bond count is doing real work here.
+
+The (100) plane is more open, $n_s = 2/a^2 = 1.57 \times 10^{19}$ m$^{-2}$, and the cut passes through two bonds per surface atom, $Z_s = 2$:
+
+$$
+\gamma_{(100)} = \tfrac{1}{2} \times 1.57 \times 10^{19}\ \mathrm{m^{-2}} \times 2 \times 5.90 \times 10^{-19}\ \mathrm{J} = 9.3\ \mathrm{J/m^2},
+$$
+
+1.7 times the (111) value. Both numbers are far larger than every entry in the table below, which is why diamond is hard to cleave and why its surfaces reconstruct strongly, and the factor of 1.7 between the two planes is why cleavage selects (111).
 
 The broken-bond picture also predicts a useful correlation: the same bonds that hold a surface together must be broken completely to sublime an atom, so the surface energy per atom should be a fixed fraction (the fraction of bonds lost, typically one quarter to one half) of the sublimation energy per atom. Plotting measured surface energies against tabulated heats of sublimation confirms it across the periodic table, which is practically valuable because sublimation heats are measured easily and surface energies are not: when you need a $\gamma$ that is not in the tables, the sublimation heat gets you within tens of percent.
 
-This crude estimate captures the correct magnitudes and, more importantly, the trends: surface energy scales with cohesive energy, so bond type organizes the table. Van der Waals solids sit lowest, hydrogen-bonded liquids next, then metals in proportion to their cohesion, and covalent networks highest. Representative values:
+This crude estimate captures both the magnitudes and the trends: surface energy scales with cohesive energy, so bond type organizes the table. Van der Waals solids sit lowest, hydrogen-bonded liquids next, then metals in proportion to their cohesion, and covalent networks highest. Representative values:
 
 | Material | Bonding | $\gamma$ (J/m$^2$) |
 | --- | --- | --- |
@@ -112,7 +228,7 @@ $$
 \Phi = \frac{P}{\sqrt{2\pi m k_B T}},
 $$
 
-where $P$ is the pressure and $m$ the molecular mass. At atmospheric pressure this flux is about $3 \times 10^{23}$ molecules per cm$^2$ per second for nitrogen, enough to deliver a complete monolayer in a few nanoseconds if every molecule stuck. Even at $10^{-6}$ Torr, a good high vacuum, a monolayer arrives roughly every second. Keeping a surface atomically clean for the duration of an experiment, one hour say, requires pressures near $10^{-10}$ Torr. This single estimate explains why surface analysis instruments are built around ultrahigh vacuum, and we treat the technology on the [next page](vacuum.md).
+where $\Phi$ is the number of molecules striking unit area per unit time, $P$ is the pressure, $m$ is the mass of one molecule, $k_B$ is the Boltzmann constant, and $T$ is the temperature. At atmospheric pressure this flux is about $3 \times 10^{23}$ molecules per cm$^2$ per second for nitrogen, enough to deliver a complete monolayer in a few nanoseconds if every molecule stuck. Even at $10^{-6}$ Torr, a good high vacuum, a monolayer arrives roughly every second. Keeping a surface atomically clean for the duration of an experiment, one hour say, requires pressures near $10^{-10}$ Torr. This single estimate explains why surface analysis instruments are built around ultrahigh vacuum, and we treat the technology on the [next page](vacuum.md).
 
 Adsorption itself comes in two flavors. Physisorption binds molecules weakly through van der Waals forces, with binding energies below about 0.3 eV; chemisorption forms true chemical bonds, with energies of 1 eV or more. The residence time of an adsorbed molecule scales as $\tau = \tau_0 \exp(E_a / k_B T)$ with $\tau_0$ a vibrational period of order $10^{-13}$ s, so modest temperature changes swing surface coverage by orders of magnitude: a physisorbed molecule at room temperature leaves almost immediately, while a chemisorbed one is effectively permanent.
 
@@ -122,7 +238,7 @@ $$
 \theta = \frac{bP}{1 + bP},
 $$
 
-which rises linearly at low pressure and saturates at one monolayer, with $b(T)$ containing the binding energy. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline, and temperature-programmed desorption (an appendix-list technique) measures the binding energies directly by ramping the temperature and watching molecules leave.
+where $\theta$ is the fraction of sites occupied, $P$ is the pressure, and $b(T)$ is the adsorption equilibrium constant, which carries the binding energy and the temperature. The coverage rises linearly at low pressure and saturates at one monolayer. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline, and temperature-programmed desorption (an appendix-list technique) measures the binding energies directly by ramping the temperature and watching molecules leave.
 
 Adsorbed atoms also move. Surface diffusion is thermally activated hopping between sites, with barriers typically a few tenths of an electron-volt on close-packed metal terraces, far below bulk diffusion barriers; this is why surfaces equilibrate at temperatures where bulks are frozen, and why every annealing behavior in the simulation above is dominated by atoms skating along edges rather than moving through the interior. One subtlety with large consequences for film growth: an atom approaching a descending step often faces an extra barrier to hopping down over the edge (the Ehrlich-Schwoebel barrier), which traps atoms on top of islands and can tip growth from smooth layer-by-layer toward three-dimensional mounds, a kinetic effect we will meet again in the [RHEED discussion](../stem/leed-rheed.md) of growth modes.
 
@@ -134,7 +250,7 @@ $$
 \frac{C_{surf}}{C_{bulk}} \propto \exp\!\left( \frac{-f\, \Delta E_{sub}}{RT} \right),
 $$
 
-and the species with the smaller sublimation energy (the lower-$\gamma$ component) segregates to the surface. Because the energies in the exponent are electron-volts against a thermal energy of hundredths of an electron-volt, the enrichment factors are large: segregation of a dilute impurity can be dramatic, and a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition very different from the bulk, and both numbers are correct.
+where $C_{surf}$ and $C_{bulk}$ are the concentrations of that species at the surface and in the bulk, $f$ is the fraction of bonds a surface site lacks, $\Delta E_{sub}$ is the sublimation energy per mole of that species, $R$ is the gas constant, and $T$ is the temperature. The species with the smaller sublimation energy, which is the lower-$\gamma$ component, segregates to the surface. Because the energies in the exponent are electron-volts against a thermal energy of hundredths of an electron-volt, the enrichment factors are large: segregation of a dilute impurity can be dramatic, and a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition very different from the bulk, and both numbers are correct.
 
 ## The electronic surface
 
