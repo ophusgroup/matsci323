@@ -19,7 +19,7 @@ for theta, c in [(90, st.GOLD), (120, st.GREEN), (150, st.BLUE), (170, st.ACCENT
 for el, m in [("C", 12), ("O", 16), ("Si", 28), ("Fe", 56), ("Ag", 108), ("Au", 197)]:
     ax.axvline(m, color=st.GRAY, alpha=0.25, lw=0.8)
     dx = {"C": -2.5, "O": 2.5}.get(el, 0)      # keep the close C/O labels apart
-    ax.text(m + dx, 1.015, el, ha="center", fontsize=10)
+    ax.text(m + dx, 1.015, el, ha="center", fontsize=11)
 ax.set_xlabel("target mass $M_2$ (u)")
 ax.set_ylabel("kinematic factor $K$")
 ax.set_ylim(0, 1.06); ax.set_xlim(0, 220)
@@ -36,7 +36,7 @@ ax.plot(Z, wK, color=st.ACCENT, lw=2.2, label="X-ray emission  $\\omega_K$")
 ax.plot(Z, 1 - wK, color=st.BLUE, lw=2.2, label="Auger emission  $1-\\omega_K$")
 for el, z in [("C", 6), ("O", 8), ("Si", 14), ("Ti", 22), ("Cu", 29), ("Ge", 32), ("Zr", 40)]:
     ax.axvline(z, color=st.GRAY, alpha=0.25, lw=0.8)
-    ax.text(z, 1.03, el, ha="center", fontsize=10)
+    ax.text(z, 1.03, el, ha="center", fontsize=11)
 ax.set_xlabel("atomic number $Z$")
 ax.set_ylabel("K-shell yield per core hole")
 ax.set_ylim(0, 1.1); ax.set_xlim(4, 79)
@@ -57,11 +57,11 @@ for k, ls in [(0.15, "-"), (0.4, "--")]:
     ax.loglog(eps, k*np.sqrt(eps), color=st.BLUE, lw=2, ls=ls,
               label=f"electronic, $k$ = {k} (LSS)")
 ax.axvspan(1e-3, 0.3, color=st.GOLD, alpha=0.08)
-ax.text(2.2e-3, 0.62, "sputtering,\nimplantation,\nFIB", fontsize=10)
-ax.text(70, 0.62, "RBS regime\n(electronic\ndominates)", fontsize=10)
+ax.text(2.2e-3, 0.62, "sputtering,\nimplantation,\nFIB", fontsize=11)
+ax.text(70, 0.62, "RBS regime\n(electronic\ndominates)", fontsize=11)
 ax.set_xlabel("reduced energy  $\\varepsilon$")
 ax.set_ylabel("reduced stopping  $S(\\varepsilon)$")
-ax.set_ylim(3e-3, 3); ax.legend(loc="lower left", fontsize=10)
+ax.set_ylim(3e-3, 3); ax.legend(loc="lower left", fontsize=11)
 ax.set_title("one universal curve for every ion-target pair")
 st.save(fig, "reduced-stopping.svg"); plt.close(fig)
 
@@ -77,7 +77,7 @@ ax.scatter(xs, ys, s=46, color=st.ACCENT, zorder=3)
 OFF = {"Fe": (-24, 2), "Ni": (8, -6), "Cu": (7, 4)}
 for name, g, h in data:
     dx, dy = OFF.get(name, (7, -3))
-    ax.annotate(name, (h, g), textcoords="offset points", xytext=(dx, dy), fontsize=11)
+    ax.annotate(name, (h, g), textcoords="offset points", xytext=(dx, dy), fontsize=12)
 p = np.polyfit(xs, ys, 1)
 xf = np.linspace(150, 900, 10)
 ax.plot(xf, np.polyval(p, xf), color=st.GRAY, lw=1.2, ls="--", zorder=2)

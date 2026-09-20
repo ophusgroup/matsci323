@@ -111,7 +111,7 @@ $$
 
 where $G$ is the Gibbs free energy of the system in J, $A$ is the surface area in m$^2$, and the subscripts fix the temperature $T$, the pressure $P$, and the number of atoms of each species $n$ while the area is changed. The units are J/m$^2$, equivalently N/m, and values are often quoted in mJ/m$^2$.
 
-Only two numbers are needed to apply the estimate to a real crystal face: how many bonds the cut breaks per surface atom, and how closely those atoms are packed in the plane. Both follow from the geometry of the plane.
+Applying the estimate to a real crystal face needs two numbers, and the geometry of the plane gives both: how many bonds the cut breaks, and how closely the surface atoms are packed.
 
 :::{figure} ../../assets/figures/fcc-broken-bonds.svg
 :alt: broken bonds on the low-index fcc surfaces
@@ -122,7 +122,7 @@ Bond counting on the three low-index fcc surfaces, drawn in cross-section with t
 
 ### Worked example: cleaving diamond
 
-Diamond is the cleanest case to work through, because every carbon is tetrahedrally bonded to four neighbors and the bonds are strong, short, and unambiguous. Cleaving splits the crystal along a plane, breaking every bond that crosses it, and the energy released is shared between the *two* new surfaces that appear:
+Cleaving splits the crystal along a plane, breaking every bond that crosses it, and the energy is shared between the *two* new surfaces that appear:
 
 $$
 \gamma = \frac{1}{2}\, n_s Z_s\, \varepsilon,
@@ -148,7 +148,7 @@ $$
 \gamma_{(111)} = \tfrac{1}{2} \times 1.82 \times 10^{19}\ \mathrm{m^{-2}} \times 1 \times 5.90 \times 10^{-19}\ \mathrm{J} = 5.4\ \mathrm{J/m^2}.
 $$
 
-Measured cleavage energies for diamond (111) fall between about 5 and 6 J/m$^2$, so the bond count is doing real work here.
+Measured cleavage energies for diamond (111) fall between about 5 and 6 J/m$^2$.
 
 The (100) plane is more open, $n_s = 2/a^2 = 1.57 \times 10^{19}$ m$^{-2}$, and the cut passes through two bonds per surface atom, $Z_s = 2$:
 
@@ -158,37 +158,13 @@ $$
 
 1.7 times the (111) value. Both numbers are far larger than every entry in the table below, which is why diamond is hard to cleave and why its surfaces reconstruct strongly, and the factor of 1.7 between the two planes is why cleavage selects (111).
 
-The broken-bond picture also predicts a useful correlation: the same bonds that hold a surface together must be broken completely to sublime an atom, so the surface energy per atom should be a fixed fraction (the fraction of bonds lost, typically one quarter to one half) of the sublimation energy per atom. Plotting measured surface energies against tabulated heats of sublimation confirms it across the periodic table, which is practically valuable because sublimation heats are measured easily and surface energies are not: when you need a $\gamma$ that is not in the tables, the sublimation heat gets you within tens of percent.
+The same bond count predicts a correlation with the heat of sublimation. The **heat of sublimation** $\Delta H_{sub}$ is the energy needed to take one mole of atoms from the solid straight into the vapor, which breaks every bond each atom has:
 
-This crude estimate captures both the magnitudes and the trends: surface energy scales with cohesive energy, so bond type organizes the table. Van der Waals solids sit lowest, hydrogen-bonded liquids next, then metals in proportion to their cohesion, and covalent networks highest. Representative values:
+$$
+\Delta H_{sub} = N_A E_c = N_A \frac{Z}{2}\varepsilon,
+$$
 
-| Material | Bonding | $\gamma$ (J/m$^2$) |
-| --- | --- | --- |
-| PTFE | van der Waals | 0.02 |
-| Polyethylene | van der Waals | 0.03 |
-| Water (liquid) | hydrogen bonding | 0.072 |
-| Mercury (liquid) | metallic | 0.49 |
-| Al | metallic | 1.1 |
-| Au | metallic | 1.5 |
-| Cu | metallic | 1.8 |
-| Fe | metallic | 2.4 |
-| W | metallic | 3.7 |
-| MgO (100) | ionic | 1.2 |
-| Si | covalent | 1.2 |
-| Diamond (111) | covalent | about 5.7 |
-
-One more comparison with large practical consequences: metal *oxides* generally have far lower surface energies than their parent metals, often by a factor of five or more. Energetically, an oxide skin is therefore a way for a metal surface to buy down its surface energy, one reason oxide films spread over and passivate metals, and a standing warning that the surface you measure on any air-exposed metal is an oxide surface unless you cleaned it in vacuum.
-
-Solid surface energies are measured only with difficulty (typically from high-temperature zero-creep experiments or liquid-metal extrapolations) and calculated values differ between methods, so treat any single number as approximate; the values above follow the compilations of Tyson and Miller ([doi.org/10.1016/0039-6028(77)90442-3](https://doi.org/10.1016/0039-6028(77)90442-3)) and the calculations of Vitos et al. ([doi.org/10.1016/S0039-6028(98)00363-X](https://doi.org/10.1016/S0039-6028(98)00363-X)). Wikipedia's [surface energy](wiki:Surface_energy) article maintains a longer table with sources.
-
-% TODO: verify the table values against the two cited compilations before deploy.
-
-Because $\gamma$ depends on orientation, a crystal free to choose its shape minimizes total surface energy rather than total area, giving the faceted equilibrium shapes of the [Wulff construction](wiki:Wulff_construction), exactly the physics that turned the simulated disk into a hexagon. Surface energy balances also decide whether a deposited film wets its substrate or balls up into islands, set the driving forces for grain growth and sintering, and drive the segregation and adsorption phenomena below.
-
-The construction below computes both cases. On the left, the polar plot of $\gamma(\theta)$ and the equilibrium shape it generates: with no anisotropy the shape is a circle (a liquid drop), and as anisotropy grows, facets appear and sharpen. On the right, the Winterbottom extension puts the same crystal on a substrate: the balance of surface, interface, and substrate energies truncates the shape, and sweeping the wetting parameter moves the island continuously from a barely attached particle to a spread film. This is the equilibrium framework behind island growth, dewetting, and why deposited films ball up on substrates they do not wet.
-
-:::{anywidget} ../../widgets/wulff.js
-:::
+with $N_A$ the Avogadro constant, so it is the cohesive energy per mole. A surface breaks $Z_s$ of those $Z$ bonds instead of all of them, so the surface energy per atom is the fraction $Z_s/Z$ of the sublimation energy per atom, typically one quarter to one half. Measured surface energies plotted against tabulated heats of sublimation follow that line across the periodic table. This is useful in practice: sublimation heats are tabulated for everything and surface energies are not, so when a $\gamma$ is missing the sublimation heat gets within tens of percent.
 
 :::{figure} ../../assets/figures/gamma-vs-sublimation.svg
 :alt: Surface energies of metals plotted against their heats of sublimation, showing a linear correlation
@@ -197,7 +173,52 @@ The construction below computes both cases. On the left, the polar plot of $\gam
 **Surface energy tracks sublimation.** For representative metals: the same bonds are broken partially by a surface and completely by sublimation, so the two track each other. Values are approximate.
 :::
 
-% TODO: static figure still wanted: broken-bond counting on fcc (111), (100), (110).
+This crude estimate captures both the magnitudes and the trends: surface energy scales with cohesive energy, so bond type organizes the table. Van der Waals solids sit lowest, hydrogen-bonded liquids next, then oxides, then metals in proportion to their cohesion, and covalent networks highest. Representative values, sorted by $\gamma$:
+
+| Material | Bonding | $\gamma$ (J/m$^2$) |
+| --- | --- | --- |
+| PTFE | van der Waals | 0.02 |
+| Polyethylene | van der Waals | 0.03 |
+| Water (liquid) | hydrogen bonding | 0.07 |
+| SiO$_2$ (fused silica) | oxide | 0.26 |
+| TiO$_2$ (110, rutile) | oxide | 0.44 |
+| Mercury (liquid) | metallic | 0.49 |
+| Pb | metallic | 0.60 |
+| Mg | metallic | 0.79 |
+| Al | metallic | 1.1 |
+| MgO (100) | oxide | 1.2 |
+| Si (111) | covalent | 1.2 |
+| Ag | metallic | 1.3 |
+| Al$_2$O$_3$ (0001) | oxide | 1.4 |
+| Au | metallic | 1.5 |
+| Cu | metallic | 1.8 |
+| Ti | metallic | 2.1 |
+| Fe | metallic | 2.4 |
+| Ni | metallic | 2.4 |
+| Pt | metallic | 2.5 |
+| Mo | metallic | 3.0 |
+| W | metallic | 3.7 |
+| Diamond (111) | covalent | about 5.7 |
+
+The metal and oxide pairs in that table decide whether a native oxide spreads. Three energies are involved: $\gamma_m$ for the clean metal surface, $\gamma_{mo}$ for the buried metal-oxide interface, and $\gamma_o$ for the oxide surface. A continuous oxide film removes the metal surface and creates two new boundaries in its place, so it lowers the total energy when
+
+$$
+\gamma_m > \gamma_{mo} + \gamma_o .
+$$
+
+Silicon and titanium satisfy this with room to spare, since $\gamma_o$ alone is four to five times below $\gamma_m$, and their oxides wet the metal completely rather than balling up into islands. That is why native oxides are continuous and passivating, and why the surface measured on any air-exposed metal is an oxide surface unless it was cleaned in vacuum. Aluminium is the case to watch: a clean Al$_2$O$_3$ surface is not far below clean aluminium, and it is the hydroxyl and adsorbate coverage that any oxide picks up in air that lowers $\gamma_o$ enough.
+
+Solid surface energies are measured only with difficulty (typically from high-temperature zero-creep experiments or liquid-metal extrapolations) and calculated values differ between methods, so treat any single number as approximate; the values above follow the compilations of Tyson and Miller ([doi.org/10.1016/0039-6028(77)90442-3](https://doi.org/10.1016/0039-6028(77)90442-3)) and the calculations of Vitos et al. ([doi.org/10.1016/S0039-6028(98)00363-X](https://doi.org/10.1016/S0039-6028(98)00363-X)). Wikipedia's [surface energy](wiki:Surface_energy) article maintains a longer table with sources.
+
+% TODO: verify the table values against the two cited compilations before deploy.
+% The oxide rows and the added metals still need checking against a source.
+
+Because $\gamma$ depends on orientation, a crystal free to choose its shape minimizes total surface energy rather than total area, giving the faceted equilibrium shapes of the [Wulff construction](wiki:Wulff_construction), exactly the physics that turned the simulated disk into a hexagon. Surface energy balances also decide whether a deposited film wets its substrate or balls up into islands, set the driving forces for grain growth and sintering, and drive the segregation and adsorption phenomena below.
+
+The construction below computes both cases. On the left, the polar plot of $\gamma(\theta)$ and the equilibrium shape it generates: with no anisotropy the shape is a circle (a liquid drop), and as anisotropy grows, facets appear and sharpen. On the right, the Winterbottom extension puts the same crystal on a substrate: the balance of surface, interface, and substrate energies truncates the shape, and sweeping the wetting parameter moves the island continuously from a barely attached particle to a spread film. This is the equilibrium framework behind island growth, dewetting, and why deposited films ball up on substrates they do not wet.
+
+:::{anywidget} ../../widgets/wulff.js
+:::
 
 ## Terraces, steps, and kinks
 
@@ -260,10 +281,10 @@ The electronic structure also changes at the surface. The conduction electron de
 
 Every characterization problem in this course reduces to the same set of questions:
 
-- **What do you want to know?** Composition, chemical bonding state, crystal structure, thickness, roughness, morphology, defect content, or a depth profile of any of these.
-- **Where is the information?** The top atomic layer, the top few nanometers, a buried interface, or the full film.
-- **What resolution and sensitivity do you need?** Lateral resolution from millimeters to angstroms; detection limits from percent to parts per billion.
-- **What can the sample tolerate?** Vacuum exposure, electron or ion beam damage, the destruction of the analyzed region, or the effort of preparing a thin cross-section.
+1. **What do you want to know?** Composition, chemical bonding state, crystal structure, thickness, roughness, morphology, defect content, or a depth profile of any of these.
+2. **Where is the information?** The top atomic layer, the top few nanometers, a buried interface, or the full film.
+3. **What resolution and sensitivity do you need?** Lateral resolution from millimeters to angstroms, detection limits from percent to parts per billion.
+4. **What can the sample tolerate?** Vacuum exposure, electron or ion beam damage, the destruction of the analyzed region, or the effort of preparing a thin cross-section.
 
 No single technique answers all of these at once. XPS gives chemical states but averages over a large spot; atom probe gives three-dimensional composition with atomic resolution but destroys the sample; STEM sees a buried interface directly but only after the interface has been cut out and thinned. Learning the strengths and limits of each technique, well enough to design a characterization strategy for a problem you have never seen before, is the goal of this course. We return to this puzzle explicitly in the [final synthesis lecture](../../synthesis.md).
 

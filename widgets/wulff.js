@@ -13,17 +13,23 @@
 function gammaFn(a4, a6) {
   return th => 1 + a4 * Math.cos(4 * th) + a6 * Math.cos(6 * th);
 }
-// Wulff shape: r(phi) = min over th of gamma(th)/cos(phi-th)
+// Wulff shape: r(phi) = min over th of gamma(th)/cos(phi-th). Both angles sit
+// on the same n-point grid, so gamma and 1/cos are tabulated once and the inner
+// loop is lookups rather than two trig calls per step.
 function wulffShape(gam, n) {
+  const gamT = new Float64Array(n);
+  for (let k = 0; k < n; k++) gamT[k] = gam(k / n * 2 * Math.PI);
+  const jmax = Math.floor(n / 4) - 1;               // keep |phi - th| below 90 degrees
+  const inv = new Float64Array(jmax + 1);
+  for (let j = 0; j <= jmax; j++) inv[j] = 1 / Math.cos(j / n * 2 * Math.PI);
   const pts = [];
   for (let i = 0; i < n; i++) {
-    const phi = i / n * 2 * Math.PI;
-    let r = 1e9;
-    for (let j = -80; j <= 80; j++) {
-      const th = phi + j / 80 * (Math.PI / 2 - 0.02);
-      const c = Math.cos(phi - th);
-      if (c > 0.02) r = Math.min(r, gam(th) / c);
+    let r = Infinity;
+    for (let j = -jmax; j <= jmax; j++) {
+      const v = gamT[(i + j + n) % n] * inv[j < 0 ? -j : j];
+      if (v < r) r = v;
     }
+    const phi = i / n * 2 * Math.PI;
     pts.push([r * Math.cos(phi), r * Math.sin(phi)]);
   }
   return pts;
@@ -101,17 +107,29 @@ function render({ model, el }) {
   const obs = new MutationObserver(syncTheme);
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
+  let cachedShape = null, cacheKey = "";
+  function shapeFor(a4, a6) {
+    const key = a4 + "|" + a6;
+    if (key !== cacheKey) { cachedShape = wulffShape(gammaFn(a4, a6), 720); cacheKey = key; }
+    return cachedShape;
+  }
+  let pending = 0;
+  function schedule() {                       // one redraw per frame, not per input event
+    if (pending) return;
+    pending = requestAnimationFrame(() => { pending = 0; draw(); });
+  }
   function draw() {
     const dpr = window.devicePixelRatio || 1;
     const isD = dark();
     const acc = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     const a4 = +inA4.value, a6 = +inA6.value;
     const gam = gammaFn(a4, a6);
-    const shape = wulffShape(gam, 720);
+    const shape = shapeFor(a4, a6);           // the wetting slider never recomputes this
     // ---------- left: gamma plot + free Wulff shape ----------
     {
       const w = cvF.clientWidth || 260, h = 300;
-      cvF.width = w * dpr; cvF.height = h * dpr;
+      const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+      if (cvF.width !== bw || cvF.height !== bh) { cvF.width = bw; cvF.height = bh; }
       const g = cvF.getContext("2d");
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.clearRect(0, 0, w, h);
@@ -142,7 +160,8 @@ function render({ model, el }) {
     // ---------- right: Winterbottom island on the substrate ----------
     {
       const w = cvS.clientWidth || 260, h = 300;
-      cvS.width = w * dpr; cvS.height = h * dpr;
+      const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+      if (cvS.width !== bw || cvS.height !== bh) { cvS.width = bw; cvS.height = bh; }
       const g = cvS.getContext("2d");
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.clearRect(0, 0, w, h);
@@ -174,10 +193,10 @@ function render({ model, el }) {
     root.querySelector(".w-a6v").textContent = a6.toFixed(2);
     root.querySelector(".w-wv").textContent = (+inWet.value).toFixed(2);
   }
-  for (const i of [inA4, inA6, inWet]) i.addEventListener("input", draw);
-  new ResizeObserver(draw).observe(cvF);
+  for (const i of [inA4, inA6, inWet]) i.addEventListener("input", schedule);
+  new ResizeObserver(schedule).observe(cvF);
   syncTheme();
-  return () => obs.disconnect();
+  return () => { cancelAnimationFrame(pending); obs.disconnect(); };
 }
 
 export default { render, wulffShape, gammaFn };

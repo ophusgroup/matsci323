@@ -20,11 +20,13 @@ with $\lambda$ the mean distance a molecule travels between collisions and $d$ t
 
 The conventional regimes:
 
-| Regime | Pressure (Torr) | Character |
-| --- | --- | --- |
-| Rough vacuum | 760 to $10^{-3}$ | Viscous flow: molecules collide with each other; pump-down and load locks |
-| High vacuum (HV) | $10^{-3}$ to $10^{-8}$ | Molecular flow: molecules collide only with walls; electron microscopes, deposition tools |
-| Ultrahigh vacuum (UHV) | below $10^{-8}$ | Surfaces stay clean for hours; surface analysis |
+| Regime | Torr | mbar | Pa | Character |
+| --- | --- | --- | --- | --- |
+| Rough vacuum | 760 to $10^{-3}$ | $10^{3}$ to $10^{-3}$ | $10^{5}$ to $10^{-1}$ | Viscous flow: molecules collide with each other; pump-down and load locks |
+| High vacuum (HV) | $10^{-3}$ to $10^{-8}$ | $10^{-3}$ to $10^{-8}$ | $10^{-1}$ to $10^{-6}$ | Molecular flow: molecules collide only with walls; electron microscopes, deposition tools |
+| Ultrahigh vacuum (UHV) | below $10^{-8}$ | below $10^{-8}$ | below $10^{-6}$ | Surfaces stay clean for hours; surface analysis |
+
+Three units are in daily use and you will meet all of them: 1 Torr = 1.333 mbar = 133.3 Pa, and 1 atm = 760 Torr = 1013 mbar = 101325 Pa. Torr and mbar are within a third of each other, which is why the regime boundaries look the same in both.
 
 The crossover from viscous to molecular flow happens when $\lambda$ exceeds the chamber dimensions (the Knudsen criterion). In the molecular regime, gas has no collective behavior: each molecule flies ballistically between wall bounces, "pumping" means capturing molecules at surfaces rather than pushing a fluid, and gas moves through tubes only by the random chance of a molecule finding the far end. For any charged-particle instrument the beam path is effectively collision-free once the pressure is below roughly $10^{-5}$ Torr; the much harder UHV requirement comes entirely from surface cleanliness, and instruments that do not care about surface contamination (a conventional SEM, for example) run comfortably at high vacuum.
 
@@ -34,7 +36,7 @@ The single most useful number in vacuum practice is the time to form one monolay
 
 $$
 t_{\mathrm{ML}} \approx \frac{3 \times 10^{-6}}{P}\ \text{seconds, with } P \text{ in Torr}.
-$$
+$$ (eq-monolayer-time)
 
 with $t_{\mathrm{ML}}$ the time to accumulate one monolayer. At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are. Real sticking coefficients are below one and depend on the gas and surface, so these are worst-case times; they are still the right planning numbers, because the residual gas in a UHV system is dominated by exactly the reactive species (water, CO, hydrogen) that stick well. The calculator below carries the full arithmetic across the pressure range; sliding from atmosphere to UHV, fourteen orders of magnitude, is the fastest way to internalize why vacuum hardware dominates surface analysis.
 

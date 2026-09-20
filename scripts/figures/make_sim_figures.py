@@ -54,7 +54,7 @@ for el, t in stack:
     axs.barh(0, wdt, left=x0, color=colors[el], edgecolor="none", height=0.7)
     axs.text(x0 + wdt/2, 0, el, ha="center", va="center", color="white", fontsize=13, weight="bold")
     x0 += wdt
-axs.annotate("2 MeV He beam", xy=(0, 0), xytext=(-2.6, 0), fontsize=11,
+axs.annotate("2 MeV He beam", xy=(0, 0), xytext=(-2.6, 0), fontsize=12,
              va="center", arrowprops=dict(arrowstyle="->", color=st.ACCENT, lw=2))
 axs.set_xlim(-2.8, x0+0.2); axs.set_ylim(-0.8, 0.8)
 axs.axis("off"); axs.set_title("60 nm Au / 150 nm Cu / Si substrate", fontsize=12)
@@ -65,13 +65,13 @@ axp.plot(E, sp, color=st.ACCENT, lw=1.8)
 for el, (M, Zt, n, eps) in ELEM.items():
     KE = kfac(M)*2000
     axp.plot([KE, KE], [0, 0.97], color=st.GRAY, lw=0.9, ls="--", alpha=0.7)
-    axp.text(KE, 1.04, f"$K_{{{el}}}E_0$", ha="center", fontsize=11)
+    axp.text(KE, 1.04, f"$K_{{{el}}}E_0$", ha="center", fontsize=12)
 axp.set_xlabel("detected energy (keV)")
 axp.set_ylabel("yield (arb.)")
 axp.set_xlim(300, 2000); axp.set_ylim(0, 1.15)
-axp.text(1925, 0.55, "Au\n(width =\n60 nm)", ha="center", fontsize=10)
-axp.text(1300, 0.75, "Cu\n(shifted below $K_{Cu}E_0$\nby the Au overlayer)", ha="center", fontsize=10)
-axp.text(700, 0.55, "Si substrate\n(continuum)", ha="center", fontsize=10)
+axp.text(1925, 0.55, "Au\n(width =\n60 nm)", ha="center", fontsize=11)
+axp.text(1300, 0.75, "Cu\n(shifted below $K_{Cu}E_0$\nby the Au overlayer)", ha="center", fontsize=11)
+axp.text(700, 0.55, "Si substrate\n(continuum)", ha="center", fontsize=11)
 st.save(fig, "rbs-formation.svg"); plt.close(fig)
 
 # ---- 2. SEM interaction volumes at 5, 15, 30 kV in Si (validated MC port) ----
@@ -115,7 +115,7 @@ for ax, E0 in zip(axes, [5, 15, 30]):
                 alpha=0.75 if bse else 0.22, lw=0.7)
     ax.axhline(0, color=st.GRAY, lw=1)
     ax.set_xlim(-lim, lim); ax.set_ylim(lim, -0.12*lim)
-    ax.set_title(f"{E0} kV   ($R_{{KO}}$ = {RKO:.2f} µm)", fontsize=11)
+    ax.set_title(f"{E0} kV   ($R_{{KO}}$ = {RKO:.2f} µm)", fontsize=12)
     ax.set_xlabel("µm"); ax.grid(alpha=0.12)
 axes[0].set_ylabel("depth (µm)")
 fig.suptitle("electron trajectories in silicon (red = backscattered)", y=1.04, fontsize=12)
@@ -158,11 +158,11 @@ ax.set_ylabel("force on tip (nN)")
 ax.invert_xaxis()
 ax.legend(loc="lower left")
 ax.annotate("snap-in\n(gradient exceeds k)", xy=(2.0, -0.55), xytext=(6.5, -1.15),
-            fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+            fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 ax.annotate("pull-off = adhesion", xy=(4.4, -2.45), xytext=(7.6, -2.75),
-            fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+            fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.75, 0.75), xytext=(9.5, 1.5),
-            fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+            fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 ax.set_ylim(-3, 2.6)
 st.save(fig, "force-curve.svg"); plt.close(fig)
 
@@ -197,7 +197,7 @@ for ax, (e0, e1, unit, xl) in zip(axs, wins):
     E = np.linspace(e0, e1, 4000)
     ax.semilogy(E*unit, model(E), color=st.ACCENT, lw=1.6)
     ax.set_xlim(e0*unit, e1*unit)
-    ax.set_xlabel(xl, fontsize=10.5)
+    ax.set_xlabel(xl, fontsize=11.5)
     ax.spines["left"].set_visible(ax is axs[0])
     if ax is not axs[0]: ax.tick_params(left=False)
 axs[0].set_ylim(1e-5, 3)
@@ -212,15 +212,15 @@ for axL, axR in [(axs[0], axs[1]), (axs[1], axs[2])]:
                 lw=1.2, clip_on=False)
         ax.plot([x-0.015, x+0.015], [-0.025, 0.025], transform=ax.transAxes,
                 color=st.GRAY, lw=1.2, clip_on=False)
-axs[0].annotate("zero-loss peak", xy=(0.5, 0.55), xytext=(8, 1.1), fontsize=10,
+axs[0].annotate("zero-loss peak", xy=(0.5, 0.55), xytext=(8, 1.1), fontsize=11,
     arrowprops=dict(arrowstyle="->", color=st.GRAY))
 axs[0].annotate("phonon\nlosses", xy=(21, 1.6e-2), xytext=(33, 0.08),
-    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+    fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 axs[1].annotate("plasmon multiples\n(Poisson in t/λ)", xy=(17.5, 0.13), xytext=(21, 0.6),
-    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+    fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 axs[2].annotate("core-loss edge\n(Si L, with ELNES)", xy=(104, 4.7e-4), xytext=(180, 8e-3),
-    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+    fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 axs[2].annotate("power-law\nbackground $AE^{-r}$", xy=(330, 2.3e-5), xytext=(330, 4e-4),
-    fontsize=10, arrowprops=dict(arrowstyle="->", color=st.GRAY))
+    fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 st.save(fig, "eels-anatomy.svg"); plt.close(fig)
 print("batch 2 done")

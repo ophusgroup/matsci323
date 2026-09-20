@@ -20,7 +20,7 @@ def apply():
         "savefig.facecolor": "none",
         "savefig.transparent": True,
         "font.family": "sans-serif",
-        "font.size": 12,
+        "font.size": 13,
         "axes.edgecolor": GRAY,
         "axes.labelcolor": TEXT,
         "axes.titlecolor": TEXT,
