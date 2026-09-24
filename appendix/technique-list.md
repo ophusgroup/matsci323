@@ -24,7 +24,7 @@ The course covers the techniques a thin film scientist reaches for most often, b
 - **Particle-induced X-ray emission (PIXE)**: trace element mapping with MeV protons.
 - **X-ray fluorescence (XRF/TXRF)***: fast, standards-capable composition and areal density; TXRF monitors wafer contamination at 10^10 atoms/cm2.
 - **Glow discharge spectroscopies (GD-OES/GDMS)***: rapid depth profiling through many micrometers, coatings-industry standard.
-- **Electron probe microanalysis (EPMA/WDS)**: the quantitative standard for micron-scale composition.
+- **Electron probe microanalysis (EPMA/WDS)**, colloquially the microprobe: the quantitative standard for micron-scale composition.
 - **Raman variants (TERS, SERS)***: near-field and plasmon-enhanced chemical mapping down to nanometer scales.
 - **Sum-frequency generation spectroscopy***: vibrational spectroscopy that is interface-selective by symmetry, for buried and liquid interfaces.
 
