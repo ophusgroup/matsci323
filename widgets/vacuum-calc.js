@@ -103,19 +103,15 @@ function render({ model, el }) {
     const X = l => mL + (l + 12) / 14.9 * (w - mL - mR);
     const ltMin = -10, ltMax = 8;
     const Y = lt => mT + (ltMax - lt) / (ltMax - ltMin) * (h - mT - mB);
-    // regime bands, labels at the bottom of each band
+    // regime bands, then gridlines, then every label on top of both
     const bands = [[2.9, -3, "rough vacuum", 0.05], [-3, -8, "high vacuum", 0.10], [-8, -12, "UHV", 0.16]];
-    for (const [a, b, name, al] of bands) {
+    for (const [a, b, , al] of bands) {
       g.fillStyle = isD ? `rgba(255,63,63,${al})` : `rgba(204,0,0,${al * 0.7})`;
       g.fillRect(X(b), mT, X(a) - X(b), h - mT - mB);
-      g.fillStyle = isD ? "#ccc" : "#555"; g.font = "12px system-ui";
-      g.fillText(name, X(b) + 5, h - mB - 7);
     }
-    g.strokeStyle = isD ? "#333" : "#eee"; g.fillStyle = isD ? "#999" : "#777";
-    g.font = "12px system-ui";
+    g.strokeStyle = isD ? "#333" : "#eee"; g.lineWidth = 1;
     for (let e = -12; e <= 2; e += 2) {
       g.beginPath(); g.moveTo(X(e), mT); g.lineTo(X(e), h - mB); g.stroke();
-      g.fillText("1e" + e, X(e) - 12, h - mB + 15);
     }
     for (let lt = -10; lt <= 8; lt += 2) {
       g.beginPath(); g.moveTo(mL, Y(lt)); g.lineTo(w - mR, Y(lt)); g.stroke();
@@ -125,12 +121,22 @@ function render({ model, el }) {
     g.strokeStyle = isD ? "#777" : "#999"; g.setLineDash([4, 3]);
     g.beginPath(); g.moveTo(X(lAtm), mT); g.lineTo(X(lAtm), h - mB); g.stroke();
     g.setLineDash([]);
+    // labels last, each on a panel-coloured pad so no gridline runs through it
+    g.font = "12px system-ui";
+    const pad = (txt, x, y) => {
+      const wTxt = g.measureText(txt).width;
+      const fs = g.fillStyle;
+      g.fillStyle = isD ? "#221f1e" : "#fff";
+      g.fillRect(x - 2, y - 10, wTxt + 4, 13);
+      g.fillStyle = fs; g.fillText(txt, x, y);
+    };
     g.fillStyle = isD ? "#ccc" : "#555";
-    g.fillText("1 atm", X(lAtm) - 34, mT + 13);
-    // y labels: human time units on the left
+    for (const [, b, name] of bands) pad(name, X(b) + 5, h - mB - 7);
+    pad("1 atm", X(lAtm) - 34, mT + 13);
     g.fillStyle = isD ? "#999" : "#777";
+    for (let e = -12; e <= 2; e += 2) g.fillText("1e" + e, X(e) - 12, h - mB + 15);
     for (const [lt, lab] of [[-6, "µs"], [-3, "ms"], [0, "1 s"], [2, "min"], [4, "hours"], [6, "weeks"]])
-      g.fillText(lab, 5, Y(lt) + 4);
+      pad(lab, 5, Y(lt) + 4);
     g.fillText("pressure (Torr)", mL + (w - mL - mR) / 2 - 45, h - 4);
     // monolayer-time line
     g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; g.lineWidth = 2;
@@ -145,7 +151,9 @@ function render({ model, el }) {
     // marker
     g.fillStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     g.beginPath(); g.arc(X(lp), Y(Math.min(ltMax, Math.max(ltMin, Math.log10(tml)))), 6, 0, 6.3); g.fill();
-    root.querySelector(".w-pv").textContent = pT.toExponential(1) + " Torr";
+    const atm = pT / 760;
+    root.querySelector(".w-pv").textContent = pT.toExponential(1) + " Torr = " +
+      (atm >= 0.01 ? atm.toPrecision(2) : atm.toExponential(1)) + " atm";
     root.querySelector(".w-tv").textContent = TK + " K";
     root.querySelector(".w-n").textContent = n.toExponential(1) + " m⁻³";
     root.querySelector(".w-f").textContent = (flux / 1e4).toExponential(1) + " cm⁻²s⁻¹";

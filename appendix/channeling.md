@@ -12,7 +12,7 @@ typically well under one degree at MeV energies. Here $\psi_c$ is the critical a
 
 Three measurements follow from this steering effect:
 
-- **Crystalline quality.** The minimum yield $\chi_{min}$, the ratio of aligned to random backscattering just below the surface, is a direct figure of merit: about 2 to 3% for a perfect crystal, rising with defect density. Depth-resolved aligned spectra profile damage, the classic application being implantation damage and its annealing recovery, including the crystalline-to-amorphous transition and epitaxial regrowth.
+- **Crystalline quality.** The minimum yield $\chi_{\mathrm{min}}$, the ratio of aligned to random backscattering just below the surface, is a direct figure of merit: about 2 to 3% for a perfect crystal, rising with defect density. Depth-resolved aligned spectra profile damage, the classic application being implantation damage and its annealing recovery, including the crystalline-to-amorphous transition and epitaxial regrowth.
 - **Impurity lattice location.** An impurity on substitutional sites is shadowed exactly like the host and disappears from the aligned spectrum; an interstitial impurity sits in the open channels and keeps scattering. Comparing aligned and random yields for host and impurity, across several axes, triangulates where in the unit cell an impurity sits, how it was determined that implanted-and-annealed dopants in silicon are substitutional.
 - **Surface and interface structure.** The first atomic layer is never shadowed, so the aligned spectrum retains a surface peak whose area counts the atoms visible to the beam; reconstruction, relaxation, and adsorbates change this count, and a thin amorphous or strained interface layer adds to it.
 

@@ -28,7 +28,16 @@ The conventional regimes:
 
 Three units are in daily use and you will meet all of them: 1 Torr = 1.333 mbar = 133.3 Pa, and 1 atm = 760 Torr = 1013 mbar = 101325 Pa. Torr and mbar are within a third of each other, which is why the regime boundaries look the same in both.
 
-The crossover from viscous to molecular flow happens when $\lambda$ exceeds the chamber dimensions (the Knudsen criterion). In the molecular regime, gas has no collective behavior: each molecule flies ballistically between wall bounces, "pumping" means capturing molecules at surfaces rather than pushing a fluid, and gas moves through tubes only by the random chance of a molecule finding the far end. For any charged-particle instrument the beam path is effectively collision-free once the pressure is below roughly $10^{-5}$ Torr; the much harder UHV requirement comes entirely from surface cleanliness, and instruments that do not care about surface contamination (a conventional SEM, for example) run comfortably at high vacuum.
+The crossover from viscous to molecular flow happens when $\lambda$ exceeds the chamber dimensions (the Knudsen criterion). In the molecular regime, gas has no collective behavior: each molecule flies ballistically between wall bounces, "pumping" means capturing molecules at surfaces rather than pushing a fluid, and gas moves through tubes only by the random chance of a molecule finding the far end.
+
+:::{figure} ../../assets/figures/flow-regimes.svg
+:alt: viscous flow against molecular flow in a tube
+:width: 100%
+
+The two flow regimes. When the mean free path is short against the tube, molecules collide with each other and the gas behaves as a fluid; when it is long, each molecule flies wall to wall on its own.
+:::
+
+For any charged-particle instrument the beam path is effectively collision-free once the pressure is below roughly $10^{-5}$ Torr; the much harder UHV requirement comes entirely from surface cleanliness, and instruments that do not care about surface contamination (a conventional SEM, for example) run comfortably at high vacuum.
 
 ## The monolayer formation time
 
@@ -45,13 +54,20 @@ with $t_{\mathrm{ML}}$ the time to accumulate one monolayer. At $10^{-6}$ Torr a
 
 ## Conductance, pumping speed, and gas load
 
-Vacuum systems are described by an Ohm's-law-like bookkeeping. A pump is rated by its **pumping speed** $S$ (volume per unit time, liters per second), and the steady-state pressure follows from the **gas load** $Q$ (throughput, in Torr·L/s) entering the chamber:
+:::{figure} ../../assets/figures/conductance-network.svg
+:alt: pumping as a resistor network, in series and in parallel
+:width: 100%
+
+Pumping arithmetic as a resistor network. Left: a pipe and a pump in series, so their reciprocals add. Middle: two paths in parallel, so their conductances add. Right: conductance goes as the cube of the bore, which is why a wider pipe beats a bigger pump.
+:::
+
+Vacuum systems are bookkept exactly like resistor networks. A pipe passes a throughput $Q = C\,\Delta P$, where $Q$ is the **gas load** in Torr·L/s, $\Delta P$ the pressure difference across the pipe, and $C$ its **conductance** in L/s, so the gas load plays the part of the current, the pressure difference the part of the voltage, and the conductance the part of $1/R$. A pump is rated by its **pumping speed** $S$ (volume per unit time, liters per second) and is simply one more element in the chain, so conductances in a line add as reciprocals while conductances side by side add directly:
 
 $$
-P = \frac{Q}{S_{\mathrm{eff}}} .
+P = \frac{Q}{S_{\mathrm{eff}}},\qquad \frac{1}{S_{\mathrm{eff}}} = \frac{1}{S} + \frac{1}{C},\qquad C_{\mathrm{parallel}} = C_1 + C_2,
 $$
 
-The subtlety is $S_{\mathrm{eff}}$: gas must travel through tubes and apertures to reach the pump, and in molecular flow each element has a **conductance** $C$ that combines with the pump speed like series resistors, $1/S_{\mathrm{eff}} = 1/S + 1/C$. Molecular-flow conductance is set by geometry alone (for an orifice, proportional to area times the mean molecular speed; for a tube, falling as the tube gets longer and narrower), which teaches the cardinal design rule: short, fat connections to pumps, because a long thin bellows can throttle an expensive pump to a fraction of its rated speed, and no larger pump can fix a conductance-limited system.
+with $P$ the steady-state pressure the chamber settles at and $S_{\mathrm{eff}}$ the effective speed the chamber actually sees, which the smaller of $S$ and $C$ controls. Molecular-flow conductance is set by geometry alone: for an orifice it is proportional to the area times the mean molecular speed, and for a long tube carrying air at room temperature it is $C \approx 12\,d^3/L$ L/s with the diameter $d$ and the length $L$ in cm. The cube is the part worth remembering, since doubling the bore multiplies the conductance by eight while a second identical pipe alongside only doubles it. Hence the cardinal design rule: short, fat connections to pumps, because a long thin bellows can throttle an expensive pump to a fraction of its rated speed, and no larger pump can fix a conductance-limited system.
 
 The gas load $Q$ has several sources, and which one dominates changes with pressure. Initial pumpdown removes the chamber volume (fast, exponential). What remains is **outgassing**: gas desorbing from every internal surface, overwhelmingly water in an unbaked chamber, which desorbs so slowly at room temperature that an unbaked system stalls near $10^{-8}$ Torr no matter how long it pumps. This is why UHV systems are **baked**, typically at 120 to 200 °C for many hours while pumping, to drive the water off the walls; after cooldown the residual gas is dominated by hydrogen diffusing out of the bulk of the stainless steel itself, the ultimate background of most UHV systems. Beyond outgassing sit true leaks (openings to atmosphere), virtual leaks (trapped volumes such as unvented screw holes that release gas slowly), and permeation through elastomer seals, which is why UHV practice replaces elastomer O-rings with knife-edge copper-gasket (ConFlat) seals, uses low-vapor-pressure materials throughout, and treats fingerprints as a contamination source on par with a leak.
 
@@ -64,18 +80,47 @@ No single pump spans from atmosphere to UHV, so real systems chain several:
 - **Ion pumps** ionize gas molecules in a magnetically confined discharge and bury the ions in sputtered titanium. They have no moving parts, no oil, and no vibration, making them the standard for UHV analysis chambers and for vibration-sensitive instruments such as STM; their pump current even doubles as a pressure reading.
 - **Capture pumps**: cryopumps condense and trap gas on surfaces at tens of kelvin (enormous speed for water), titanium sublimation pumps periodically deposit a fresh chemically reactive Ti film that getters active gases, and non-evaporable getter (NEG) coatings extend the same idea to distributed pumping. Capture pumps saturate and need regeneration, so they always operate alongside throughput pumps.
 
-A typical analysis system combines a load lock (so samples enter without venting the analysis chamber), turbo plus dry roughing on the transfer line, and ion plus titanium sublimation pumping on the baked UHV chamber.
+A typical analysis system combines a load lock (so samples enter without venting the analysis chamber), turbo plus dry roughing on the transfer line, and ion plus titanium sublimation pumping on the baked UHV chamber. What each level of hardware reaches, with rough costs for the vacuum hardware alone (chamber, pumps, and gauges, not the instrument mounted on it):
+
+| Hardware | Base pressure (Torr) | Rough cost |
+| --- | --- | --- |
+| Elastomer seals, scroll or rotary pump only | $10^{-3}$ | a few thousand |
+| Elastomer seals, turbo backed by a dry pump, unbaked | $10^{-6}$ to $10^{-7}$ | ten to thirty thousand |
+| ConFlat metal seals, turbo, unbaked | $10^{-8}$ | fifty thousand and up |
+| ConFlat, baked, turbo plus ion pump and TSP | $10^{-10}$ to $10^{-11}$ | one to several hundred thousand |
+| Baked, vacuum-fired or NEG-coated steel, all-metal valves | below $10^{-12}$ | specialist research systems |
+
+The expensive stretch is $10^{-7}$ to $10^{-10}$, and most of what the money buys there is not pumping speed: it is metal seals, materials chosen for low outgassing, and a bakeout that takes the chamber out of service for a day or two every time it is opened. That is the real price of surface sensitivity, and it is why a technique that tolerates high vacuum costs so much less to run.
 
 ## Gauges and residual gas analysis
 
 Pressure measurement changes physics across fourteen decades. Near atmosphere, capacitance manometers measure the actual force on a diaphragm (gas-species independent, the metrology standard). In rough vacuum, Pirani gauges infer pressure from the thermal conductivity of the gas. From high vacuum down, **ionization gauges** take over: a hot filament emits electrons that ionize residual gas, and the collected ion current is proportional to density. The Bayard-Alpert design, with its fine-wire collector, reads reliably to below $10^{-10}$ Torr, with two caveats worth remembering: readings are species-dependent (calibrated for N$_2$), and the hot filament itself pumps and outgasses slightly.
 
-The most informative vacuum instrument is the **residual gas analyzer (RGA)**, a small quadrupole mass spectrometer (the same analyzer physics as [SIMS](../ions/sims.md)) that reports which gases remain. Reading an RGA spectrum is a core lab skill: mass 18 with 17 (water and its OH fragment) dominates an unbaked chamber; mass 28 could be N$_2$ or CO, and the tell is the companion peaks (mass 32 O$_2$ in atmospheric ratio means a leak; mass 12 and 16 fragments point to CO); mass 2 (H$_2$) dominates a well-baked system; and a ladder of hydrocarbon fragments spaced 14 mass units apart means oil contamination. A leak shows N$_2$ and O$_2$ in their 4:1 atmospheric ratio, while outgassing shows water, and this single diagnostic separates the two most common vacuum problems in minutes.
+:::{figure} ../../assets/figures/rga-spectra.svg
+:alt: three residual gas spectra: air leak, unbaked chamber, baked chamber with oil
+:width: 100%
+
+Three residual gas spectra, drawn as peak height against mass-to-charge ratio. An air leak puts masses 28 and 32 in the 4:1 ratio of air with argon at 40; an unbaked chamber is water at 18 with its 17 and 16 fragments; a baked system sits on hydrogen at 2, and the ladder at 41, 43, 55, 57 is pump oil.
+:::
+
+The most informative vacuum instrument is the **residual gas analyzer (RGA)**, a small quadrupole mass spectrometer (the same analyzer physics as [SIMS](../ions/sims.md)) that reports which gases remain. Reading an RGA spectrum is a core lab skill, and one thing has to be understood before the spectrum makes sense: the ionizer uses electrons of about 70 eV, which both ionize molecules and break them apart, so each gas gives a fixed pattern of fragment peaks rather than a single line. That pattern is the **cracking pattern**, and it is what separates two gases at the same nominal mass.
+
+| Gas | Peaks at $m/z$ | What it tells you |
+| --- | --- | --- |
+| H$_2$ | 2 | The floor of a well-baked stainless system: hydrogen diffusing out of the steel |
+| H$_2$O | 18, with 17 (OH) and 16 (O) | Wall outgassing in an unbaked chamber, the dominant load below $10^{-6}$ Torr |
+| N$_2$ | 28, with a small 14 (N) | Air, if 32 and 40 come with it |
+| O$_2$ | 32 | Only comes from air |
+| Ar | 40 | 1% of air, so about 1% of the 28 peak |
+| CO | 28, with 12 (C) and 16 (O) | Baked systems and electron-stimulated desorption, not a leak |
+| CO$_2$ | 44, with 28, 16, 12 | Bake product |
+| Hydrocarbons | ladder at 41, 43, 55, 57 and up | Pump oil backstreaming, or a dirty part |
+
+Mass 28 is the one to be careful with, because N$_2$ and CO sit on top of each other: the 12 and 16 fragments with no 32 say CO, while 32 and 40 companions say air. A leak shows N$_2$ and O$_2$ in their 4:1 atmospheric ratio, while outgassing shows water, and this single diagnostic separates the two most common vacuum problems in minutes.
 
 % TODO: figure of a generic UHV analysis chamber cross-section labeling load lock,
 % transfer arm, pumps, gauges, and analysis position. Mark's Lecture 2 has a version;
-% we should redraw a cleaner one. Add a second small figure: example RGA spectra
-% (leak vs unbaked vs baked).
+% we should redraw a cleaner one.
 
 ## References and further reading
 

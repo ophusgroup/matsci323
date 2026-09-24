@@ -20,7 +20,7 @@ r_p = \frac{n_2\cos\theta_1 - n_1\cos\theta_2}{n_2\cos\theta_1 + n_1\cos\theta_2
 r_s = \frac{n_1\cos\theta_1 - n_2\cos\theta_2}{n_1\cos\theta_1 + n_2\cos\theta_2},
 $$
 
-where $n_1$ and $n_2$ are the refractive indices of the incident medium and the material, $\theta_1$ is the angle of incidence, and $\theta_2$ is the refraction angle inside the material, with complex $n$ for absorbing media. Near the Brewster angle $r_p$ passes through a minimum (zero for a transparent material), which is why ellipsometers work at incidence angles of 65° to 75°, where the p-s difference, and hence the sensitivity, is largest. A film on the substrate adds interference: each coefficient becomes the familiar two-interface sum $r = (r_{01} + r_{12}e^{2i\beta})/(1 + r_{01}r_{12}e^{2i\beta})$ with the film phase thickness $\beta = 2\pi n_1 t \cos\theta_{film}/\lambda$, the same physics as the [Kiessig fringes of XRR](xrr.md) transposed to optical wavelengths.
+where $n_1$ and $n_2$ are the refractive indices of the incident medium and the material, $\theta_1$ is the angle of incidence, and $\theta_2$ is the refraction angle inside the material, with complex $n$ for absorbing media. Near the Brewster angle $r_p$ passes through a minimum (zero for a transparent material), which is why ellipsometers work at incidence angles of 65° to 75°, where the p-s difference, and hence the sensitivity, is largest. A film on the substrate adds interference: each coefficient becomes the familiar two-interface sum $r = (r_{01} + r_{12}e^{2i\beta})/(1 + r_{01}r_{12}e^{2i\beta})$ with the film phase thickness $\beta = 2\pi n_1 t \cos\theta_{\mathrm{film}}/\lambda$, the same physics as the [Kiessig fringes of XRR](xrr.md) transposed to optical wavelengths.
 
 ## Spectroscopic ellipsometry
 

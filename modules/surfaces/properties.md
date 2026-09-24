@@ -89,17 +89,21 @@ $$
 \Delta E_{\mathrm{atom}} = \frac{Z_s}{2}\,\varepsilon
 $$
 
-above a bulk atom, where $Z_s$ is the number of bonds broken per surface atom and $\varepsilon$ is the bond strength. The bond strength is not usually tabulated, but the cohesive energy is: $E_c$ is the energy needed to remove one atom from the bulk to infinity, which breaks all $Z$ of its bonds at $\varepsilon/2$ each, where $Z$ is the bulk coordination number. That fixes $\varepsilon$ in terms of measured quantities,
+above a bulk atom, where $Z_s$ is the number of bonds broken per surface atom and $\varepsilon$ is the bond strength, meaning the energy needed to break one bond completely.
+
+The bond strength is not usually tabulated, but the cohesive energy is. A crystal of $N$ atoms with $Z$ neighbours each contains $NZ/2$ bonds rather than $NZ$, because every bond is shared by the two atoms it joins, so the binding energy per atom is
 
 $$
-E_c = \frac{Z}{2}\,\varepsilon, \qquad \varepsilon = \frac{2E_c}{Z}.
+E_c = \frac{Z}{2}\,\varepsilon, \qquad \varepsilon = \frac{2E_c}{Z},
 $$
 
-Substituting, and dividing the excess energy by the area $A_s$ that each surface atom occupies, gives the surface energy
+where $E_c$ is the cohesive energy per atom and $Z$ is the bulk coordination number. Substituting, and dividing the excess energy by the area $A_s$ that each surface atom occupies, gives the surface energy
 
 $$
 \gamma \approx \frac{\Delta E_{\mathrm{atom}}}{A_s} = \frac{Z_s}{Z}\,\frac{E_c}{A_s}.
 $$
+
+The two factors of two cancel, and no factor of a half survives into the result. They are the same rule applied in opposite directions: the first splits each broken bond between the two surfaces the cut creates, and the second undoes the sharing that made the cohesive energy per atom $Z\varepsilon/2$ rather than $Z\varepsilon$. What is left says that a surface atom costs the same fraction of the cohesive energy as the fraction of its bonds it has lost, which is $3/12$ of $E_c$ for fcc (111), and that sentence can be written down without counting halves at all.
 
 The two-dimensional result is this same expression with a length in place of the area. There $Z = 6$, an edge atom loses $Z_s = 2$ bonds, $E_c = 3\varepsilon$, and the boundary per atom is $r_0$ rather than $A_s$, which returns $\gamma_{1\mathrm{D}} = (2/6)(3\varepsilon)/r_0 = \varepsilon/r_0$, the line tension found above.
 
@@ -158,10 +162,10 @@ $$
 
 1.7 times the (111) value. Both numbers are far larger than every entry in the table below, which is why diamond is hard to cleave and why its surfaces reconstruct strongly, and the factor of 1.7 between the two planes is why cleavage selects (111).
 
-The same bond count predicts a correlation with the heat of sublimation. The **heat of sublimation** $\Delta H_{sub}$ is the energy needed to take one mole of atoms from the solid straight into the vapor, which breaks every bond each atom has:
+The same bond count predicts a correlation with the heat of sublimation. The **heat of sublimation** $\Delta H_{\mathrm{sub}}$ is the energy needed to take one mole of atoms from the solid straight into the vapor, which breaks every bond each atom has:
 
 $$
-\Delta H_{sub} = N_A E_c = N_A \frac{Z}{2}\varepsilon,
+\Delta H_{\mathrm{sub}} = N_A E_c = N_A \frac{Z}{2}\varepsilon,
 $$
 
 with $N_A$ the Avogadro constant, so it is the cohesive energy per mole. A surface breaks $Z_s$ of those $Z$ bonds instead of all of them, so the surface energy per atom is the fraction $Z_s/Z$ of the sublimation energy per atom, typically one quarter to one half. Measured surface energies plotted against tabulated heats of sublimation follow that line across the periodic table. This is useful in practice: sublimation heats are tabulated for everything and surface energies are not, so when a $\gamma$ is missing the sublimation heat gets within tens of percent.
@@ -200,10 +204,10 @@ This crude estimate captures both the magnitudes and the trends: surface energy 
 | W | metallic | 3.7 |
 | Diamond (111) | covalent | about 5.7 |
 
-The metal and oxide pairs in that table decide whether a native oxide spreads. Three energies are involved: $\gamma_m$ for the clean metal surface, $\gamma_{mo}$ for the buried metal-oxide interface, and $\gamma_o$ for the oxide surface. A continuous oxide film removes the metal surface and creates two new boundaries in its place, so it lowers the total energy when
+The metal and oxide pairs in that table decide whether a native oxide spreads. Three energies are involved: $\gamma_m$ for the clean metal surface, $\gamma_{\mathrm{mo}}$ for the buried metal-oxide interface, and $\gamma_o$ for the oxide surface. A continuous oxide film removes the metal surface and creates two new boundaries in its place, so it lowers the total energy when
 
 $$
-\gamma_m > \gamma_{mo} + \gamma_o .
+\gamma_m > \gamma_{\mathrm{mo}} + \gamma_o .
 $$
 
 Silicon and titanium satisfy this with room to spare, since $\gamma_o$ alone is four to five times below $\gamma_m$, and their oxides wet the metal completely rather than balling up into islands. That is why native oxides are continuous and passivating, and why the surface measured on any air-exposed metal is an oxide surface unless it was cleaned in vacuum. Aluminium is the case to watch: a clean Al$_2$O$_3$ surface is not far below clean aluminium, and it is the hydroxyl and adsorbate coverage that any oxide picks up in air that lowers $\gamma_o$ enough.
@@ -259,23 +263,64 @@ $$
 \theta = \frac{bP}{1 + bP},
 $$
 
-where $\theta$ is the fraction of sites occupied, $P$ is the pressure, and $b(T)$ is the adsorption equilibrium constant, which carries the binding energy and the temperature. The coverage rises linearly at low pressure and saturates at one monolayer. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline, and temperature-programmed desorption (an appendix-list technique) measures the binding energies directly by ramping the temperature and watching molecules leave.
+where $\theta$ is the fraction of sites occupied, $P$ is the pressure, and $b(T)$ is the adsorption equilibrium constant, which carries the binding energy and the temperature. The coverage rises linearly at low pressure and saturates at one monolayer. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline.
+
+An isotherm is measured at one fixed temperature, which is what the word means, and it says where the coverage settles rather than how long it takes to get there. How fast a clean surface fills is the separate kinetic question, and surface science quotes it as an **exposure**, pressure times time, in langmuir: 1 L is $10^{-6}$ Torr for 1 s, which at unit sticking delivers $3.8 \times 10^{14}$ molecules per cm$^2$, so one langmuir is roughly one monolayer. That is the monolayer-time arithmetic of the [next page](vacuum.md) in different units.
+
+**Temperature-programmed desorption** measures binding energies directly. Dose a cold surface with a known exposure, then heat it at a constant rate while a mass spectrometer records what leaves; each bound state empties over a narrow temperature window and appears as a peak, so several peaks mean several distinct binding sites. The peak temperature fixes the desorption energy through the Redhead relation, which for first-order desorption is
+
+$$
+E_a \approx k_B T_p\,\left[\ln\!\left(\frac{\nu T_p}{\beta}\right) - 3.64\right],
+$$
+
+with $E_a$ the desorption energy, $T_p$ the peak temperature, $\beta$ the heating rate in K/s, $\nu \approx 10^{13}$ s$^{-1}$ the attempt frequency, and $k_B$ the Boltzmann constant. The rule of thumb that follows is about 2.7 meV of binding per kelvin of peak temperature, so a peak at 300 K means roughly 0.8 eV. The area under the peak gives the coverage that was there.
 
 Adsorbed atoms also move. Surface diffusion is thermally activated hopping between sites, with barriers typically a few tenths of an electron-volt on close-packed metal terraces, far below bulk diffusion barriers; this is why surfaces equilibrate at temperatures where bulks are frozen, and why every annealing behavior in the simulation above is dominated by atoms skating along edges rather than moving through the interior. One subtlety with large consequences for film growth: an atom approaching a descending step often faces an extra barrier to hopping down over the edge (the Ehrlich-Schwoebel barrier), which traps atoms on top of islands and can tip growth from smooth layer-by-layer toward three-dimensional mounds, a kinetic effect we will meet again in the [RHEED discussion](../stem/leed-rheed.md) of growth modes.
+
+:::{figure} ../../assets/figures/es-barrier.svg
+:alt: energy landscape for terrace hopping and for stepping down off an island
+:width: 100%
+
+Diffusion across a terrace against stepping down off an island, with the energy landscape drawn under the atoms. Hopping along the terrace pays the terrace barrier $E_d$ each time, while crossing the descending edge pays the Ehrlich-Schwoebel barrier on top of it, which traps atoms on the island and tips growth toward mounds.
+:::
 
 ## Segregation
 
 The composition of a surface is not the composition of the bulk. In an alloy, the component that lowers the total energy, generally the one with the lower surface energy or the larger size mismatch, enriches at the surface. The equilibrium enrichment follows Boltzmann statistics: moving an atom to the surface costs the fraction $f$ of its bonds that a surface site lacks, so each species distributes as
 
 $$
-\frac{C_{surf}}{C_{bulk}} \propto \exp\!\left( \frac{-f\, \Delta E_{sub}}{RT} \right),
+\frac{C_{\mathrm{surf}}}{C_{\mathrm{bulk}}} \propto \exp\!\left( \frac{-f\, \Delta E_{\mathrm{sub}}}{RT} \right),
 $$
 
-where $C_{surf}$ and $C_{bulk}$ are the concentrations of that species at the surface and in the bulk, $f$ is the fraction of bonds a surface site lacks, $\Delta E_{sub}$ is the sublimation energy per mole of that species, $R$ is the gas constant, and $T$ is the temperature. The species with the smaller sublimation energy, which is the lower-$\gamma$ component, segregates to the surface. Because the energies in the exponent are electron-volts against a thermal energy of hundredths of an electron-volt, the enrichment factors are large: segregation of a dilute impurity can be dramatic, and a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition very different from the bulk, and both numbers are correct.
+where $C_{\mathrm{surf}}$ and $C_{\mathrm{bulk}}$ are the concentrations of that species at the surface and in the bulk, $f$ is the fraction of bonds a surface site lacks, $\Delta E_{\mathrm{sub}}$ is the sublimation energy per mole of that species, $R$ is the gas constant, and $T$ is the temperature. The species with the smaller sublimation energy, which is the lower-$\gamma$ component, segregates to the surface. Because the energies in the exponent are electron-volts against a thermal energy of hundredths of an electron-volt, the enrichment factors are large: segregation of a dilute impurity can be dramatic, and a bulk concentration of parts per million can produce near-monolayer surface coverage at equilibrium. Segregation also takes time, and the kinetics are set by bulk diffusion. For arrival at an initially clean surface, the surface excess after a time $t$ is
+
+$$
+\Gamma(t) \approx 2\,C_{\mathrm{bulk}}\sqrt{\frac{D t}{\pi}},
+$$
+
+where $\Gamma$ is the number of segregated atoms per unit area, $C_{\mathrm{bulk}}$ is the bulk concentration per unit volume, $D$ is the bulk diffusion coefficient, and $t$ is the time at temperature. The structure is concentration times the diffusion length $\sqrt{Dt}$: the surface collects everything within a diffusion length of it, so a ppm impurity can reach a tenth of a monolayer during a routine anneal, and any heat treatment inside the analysis chamber changes the surface you were about to measure. :::{figure} ../../assets/figures/segregation-kinetics.svg
+:alt: equilibrium enrichment against temperature, and coverage building as the square root of time
+:width: 100%
+
+Left: the equilibrium enrichment of the Boltzmann form above, which falls as the temperature rises. Right: the diffusion-limited buildup for 5 ppm sulfur in nickel, which reaches a tenth of a monolayer in about 25 minutes at $D = 10^{-10}$ cm$^2$/s.
+:::
+
+This is the working principle behind temper embrittlement of steels, the poisoning of catalysts, and many adhesion failures. It is also a warning for us as analysts: a technique that samples the top one or two atomic layers, such as low-energy ion scattering or grazing-emission XPS, can report a composition very different from the bulk, and both numbers are correct.
 
 ## The electronic surface
 
-The electronic structure also changes at the surface. The conduction electron density of a metal does not stop abruptly at the last atomic plane: it spills a fraction of an angstrom into the vacuum and, inside the crystal, relaxes back toward the bulk density through decaying (Friedel) oscillations. The spillout separates negative charge from the positive ion cores, creating a surface dipole layer, and that dipole is part of the work function, which is why the work function of a single metal differs measurably from facet to facet and why adsorbates that donate or withdraw charge shift it strongly. Localized electronic states that exist only at the surface (surface states, and the dangling bonds of semiconductors) pin Fermi levels at interfaces and drive the reconstructions above. These electronic differences matter directly for characterization: they set the contrast mechanism of [scanning tunneling microscopy](../spm/spm-modes.md), the signal of [Kelvin probe microscopy](../spm/spm-modes.md), and the reason work functions appear throughout the electron spectroscopies of [Module 4](../espec/xps.md).
+The electronic structure also changes at the surface. The conduction electron density of a metal does not stop abruptly at the last atomic plane: it spills a fraction of an angstrom into the vacuum and, inside the crystal, relaxes back toward the bulk density through decaying (Friedel) oscillations. The spillout separates negative charge from the positive ion cores, creating a surface dipole layer that every escaping electron must cross.
+
+The **work function** $\phi$ is the energy needed to take an electron from the Fermi level of the solid to rest in the vacuum just outside the surface, a few eV for a metal. Part of it is bulk, the chemical potential of the electrons, and part is the work done crossing that dipole, which is what makes $\phi$ a surface property rather than a bulk one: different facets of the same metal differ by up to about 1 eV because they pack differently and so spill differently. An adsorbate that donates charge to the metal shrinks the dipole and lowers $\phi$, and one that withdraws charge raises it; submonolayer caesium drops the work function of tungsten by more than 2 eV, which is how thermionic cathodes are made.
+
+On a semiconductor the broken bonds at the surface leave electronic states in the band gap, and those states trap charge until the Fermi level at the surface sits at a fixed position in the gap. That is **Fermi level pinning**, and it is why a metal contact on many semiconductors gives a barrier height that hardly depends on which metal is used. The same dangling bonds drive the reconstructions above, because pairing them into dimers removes states from the gap and lowers the energy. :::{figure} ../../assets/figures/electron-spillout.svg
+:alt: electron density across a metal surface, showing spillout and the dipole layer
+:width: 100%
+
+The electron density across a metal surface. The electrons leak past the edge of the positive background, leaving a charge deficit just inside and an excess just outside, and that pair is the surface dipole every escaping electron must cross. Inside, the density rings as it settles to the bulk value.
+:::
+
+These electronic differences matter directly for characterization: they set the contrast mechanism of [scanning tunneling microscopy](../spm/spm-modes.md), the signal of [Kelvin probe microscopy](../spm/spm-modes.md), and the reason work functions appear throughout the electron spectroscopies of [Module 4](../espec/xps.md).
 
 ## The analytical puzzle
 
