@@ -45,6 +45,13 @@ $$
 
 with $\Delta\theta$ the angular spacing of successive fringes, $\lambda$ the X-ray wavelength, and $t$ the film thickness, so a 50 nm film measured with Cu K$\alpha$ shows fringes about 0.09° apart, and the refraction correction compresses the first few fringes just above $\theta_c$ (the effect is visible in the simulator below). Reading the period gives the thickness immediately, with a precision that comes from counting many fringes; this is why XRR thickness values carry sub-percent error bars. The fringe *amplitude* is set by the electron-density contrast between film and substrate: a dense film on a light substrate (or vice versa) gives deep fringes, while a density-matched film gives almost none, and a film denser than its substrate shows its own higher critical angle as a visible shoulder.
 
+:::{figure} ../../assets/figures/xrr-anatomy.svg
+:alt: anatomy of an X-ray reflectivity curve
+:width: 100%
+
+Every feature of a reflectivity curve and what sets it: the total-reflection plateau, the critical angle from electron density, the $q^{-4}$ Fresnel tail, the fringe period from thickness, and the roughness damping.
+:::
+
 ## Multilayers, the master formula, and Parratt
 
 For an arbitrary stack the exact reflectivity is computed by the **Parratt recursion**: starting from the substrate, the reflection amplitude of each interface is combined with the phase accumulated crossing each layer, exactly as in thin-film optics. This is the calculation every fitting program (and the simulator below) performs. A complementary approximation carries most of the intuition: in the kinematic limit (weak reflection, valid above roughly $3\theta_c$),
@@ -60,6 +67,13 @@ where $q$ is the momentum transfer normal to the surface, $R_F(q)$ the Fresnel r
 A rough or graded interface spreads the density gradient over a width $\sigma$, damping its reflection amplitude by a Gaussian factor, in the standard Névot-Croce form $\exp(-2 k_{z,1} k_{z,2} \sigma^2)$. Two distinct signatures let a fit separate the interfaces: roughness of the **top surface** accelerates the decay of the whole curve, while roughness of a **buried interface** damps the fringe amplitude without changing the overall envelope. Crucially, specular XRR cannot distinguish true roughness from compositional grading; both smear the density profile, and only the diffuse scattering can tell them apart, since grading scatters nothing off-specular while roughness does.
 
 That diffuse scattering is a measurement in its own right. Rocking the sample at fixed detector angle separates the sharp specular ridge from the diffuse background, whose shape encodes the lateral correlation length of the roughness, and which characteristically peaks when the incidence or exit angle passes through $\theta_c$ (the **Yoneda wings**, an enhancement caused by the standing-wave field at the critical angle). For most film metrology the practical point is simpler: fit the specular curve, and treat $\sigma$ as an interface width that lumps roughness and grading together.
+
+:::{figure} ../../assets/figures/xrr-roughness-vs-grading.svg
+:alt: roughness against grading in XRR
+:width: 100%
+
+A rough interface and a graded interface of the same width give the same averaged density profile and nearly the same specular curve. Only the rough one scatters diffusely, which is what breaks the degeneracy.
+:::
 
 ## Accurate measurements
 

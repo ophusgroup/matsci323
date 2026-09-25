@@ -12,6 +12,13 @@ Tilt a polished sample to 70 degrees and place a phosphor screen with a camera a
 
 Indexing is automated: the software detects the bands (via a Hough transform, which turns bands into peaks), measures the interband angles, matches them against the candidate crystal structure, and returns the orientation, all in well under a millisecond on modern systems. Scanning the beam then produces an **orientation map**: crystal orientation at every pixel, from which follow grain size distributions measured properly (a grain defined as a region enclosed by boundaries above a chosen misorientation angle, not estimated from image contrast), grain-boundary character including the twin fractions that dominate many FCC films, local texture that complements the ensemble [pole figure](../photons/xrd.md), phase maps distinguishing polymorphs by their differing band geometry, and plastic strain estimates from within-grain orientation gradients (kernel average misorientation), which map stored dislocation content. Orientations are conventionally stored as Euler angles or quaternions; what matters practically is the *misorientation* across each boundary, the quantity that classifies boundaries (low angle versus high angle, twin versus general).
 
+:::{figure} ../../assets/figures/kikuchi-formation.svg
+:alt: formation of a Kikuchi band
+:width: 100%
+
+Inelastic scattering makes a divergent source inside the crystal, one plane set diffracts into two cones at $\pm\theta_B$, and the cones cut the flat screen as the two edges of a band of width $2\theta_B$.
+:::
+
 For thin films, EBSD is the grain-by-grain complement to the ensemble texture measurement of XRD: XRD texture measurements give the fraction of the film in each orientation; EBSD gives the orientation of each individual grain, its size, and its neighbors. The diffracted signal originates in roughly the top 10 to 40 nm of the sample, so EBSD is a near-surface probe of crystallography rather than a surface technique in the chemical sense, and it is unforgiving of surface preparation: a few nanometers of polishing damage or oxide blurs the patterns. The practical demands are therefore a flat, damage-free, conductive surface and a crystal structure known well enough to index. Spatial resolution of roughly 20 to 50 nm bounds standard EBSD to films with grains above that scale; **transmission Kikuchi diffraction (TKD)**, which runs the same detector with an electron-transparent sample so the patterns form in transmission from a much smaller volume, pushes resolution below 10 nm for nanocrystalline films at the cost of [TEM-style sample preparation](../stem/stem-imaging.md).
 
 % TODO: figures: (a) EBSD geometry and an indexed Kikuchi pattern; (b) an
@@ -20,6 +27,13 @@ For thin films, EBSD is the grain-by-grain complement to the ensemble texture me
 
 % TODO: EBSD pattern-formation simulation widget: Colin will provide a worked
 % code example to adapt.
+
+:::{figure} ../../assets/figures/ipf-coloring.svg
+:alt: inverse pole figure coloring
+:width: 100%
+
+The cubic standard triangle and what its colors mean on a map. A fibre-textured film collapses to one color because one axis is fixed along the normal, while the in-plane rotation the color cannot show is still random.
+:::
 
 ## The focused ion beam
 
@@ -38,6 +52,13 @@ FIB damage is the standing caveat, and it is exactly the [ion-solid physics](../
 % TODO: figure: the lift-out sequence as a strip of SEM images (deposit, trench,
 % undercut, weld, thin), plus an APT needle-sharpening panel shared with the APT
 % page. We have plenty of in-house images for this.
+
+:::{figure} ../../assets/figures/liftout-steps.svg
+:alt: the FIB lift-out sequence
+:width: 100%
+
+The lift-out sequence, with a representative voltage and current at each stage and the final thinning that sets both the thickness and the amorphous damage layer.
+:::
 
 ## References and further reading
 

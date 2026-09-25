@@ -25,6 +25,13 @@ Reading the pattern is immediate: the spot geometry gives the surface mesh and i
 
 Two caveats define the technique's scope. It requires UHV and a conductive, ordered surface. And spot *positions* give only the mesh, not where atoms sit within it: extracting atomic coordinates requires measuring spot intensities as a function of energy (I-V curves) and comparing them against full multiple-scattering calculations, because at these energies electrons scatter far too strongly for the single-scattering approximation to hold. This dynamical LEED analysis, iterating trial structures until calculated and measured I-V curves agree, is how the classic surface structures (including Si(111) 7x7) were confirmed quantitatively; it remains a specialist technique, and for this course the working knowledge is the pattern-level reading above.
 
+:::{figure} ../../assets/figures/leed-patterns.svg
+:alt: LEED patterns of four surface structures
+:width: 100%
+
+Four surface structures in real space and the LEED patterns they give. Integer spots come from the substrate mesh; the smaller fractional spots are the signature of the superstructure and their order names it.
+:::
+
 ## RHEED
 
 RHEED sends 10 to 30 keV electrons at grazing incidence, one to three degrees, onto the surface. The high energy would probe deeply at normal incidence, but the grazing geometry restores surface sensitivity: at grazing angles the beam's path through the material stays within the top few atomic layers. The diffraction pattern appears on a phosphor screen across the chamber, and its geometry follows from the widget above: the Ewald sphere of a 30 keV electron ($\lambda \approx 0.07$ Å) is enormous compared to the rod spacing, so it grazes along the rods, and the intersections fall on a series of circles on the screen (the Laue zones), with the zeroth zone closest to the shadow edge of the sample itself. Streaks rather than points appear whenever the rods have finite width, from finite terraces, mosaic, or disorder, because the near-tangent sphere then intersects a long segment of each broadened rod. A perfectly flat surface gives *spots on the Laue circles*; the long streaks of most real RHEED patterns come from surface disorder, and their length carries information about it.

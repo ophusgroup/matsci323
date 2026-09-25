@@ -40,6 +40,13 @@ The same landscape as a map: each technique plotted by its lateral resolution an
 
 **Cross-check model-dependent numbers.** Thickness from ellipsometry, XRR, and a step-height AFM measurement are three nearly independent routes; when they agree, each model is validated. The same holds for composition by XPS against RBS, or roughness by AFM against XRR, once the bandwidth caveats from the [AFM page](modules/spm/afm.md) are respected.
 
+:::{figure} assets/figures/technique-decision.svg
+:alt: choosing a technique from the question asked
+:width: 100%
+
+The course on one decision chart: start from the question, branch on the length scale and on whether the sample may be destroyed, and land on the technique.
+:::
+
 ## Worked scenarios
 
 The lecture develops several end-to-end scenarios; they make good exam practice.

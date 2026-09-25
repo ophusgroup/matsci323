@@ -11,13 +11,41 @@ The electron energy loss spectrometer sits after the sample: a magnetic prism be
 - **Low-loss spectra** measure the local dielectric response: plasmon energies track valence electron density (and, through it, composition and even local mechanical properties in some alloys), band gaps can be read from the loss onset in insulators, and surface-plasmon modes of nanostructures are mapped directly. The low-loss region also provides the standard **thickness measurement**: the probability of $n$ plasmon losses is Poissonian, so $t/\lambda_{\mathrm{in}} = \ln(I_{\mathrm{total}}/I_{zero loss})$ gives thickness in units of the inelastic mean free path from a single spectrum, the routine normalization for quantitative work.
 - **Monochromated instruments** narrow the beam's energy spread to a few meV, extending EELS to phonons and molecular vibrations, vibrational spectroscopy at nanometer scale, a capability that did not exist before 2014.
 
+:::{figure} ../../assets/figures/core-loss-shapes.svg
+:alt: the shapes core-loss edges take
+:width: 100%
+
+Three edge shapes on the same falling background, with the power-law fit window, the extrapolated background, and the integration window drawn on the O K edge. Shifting the fitted exponent by only 0.3 moves the integrated signal by 8%.
+:::
+
 The constraints are dose and thickness. Core-loss cross sections are small, so atomic-resolution chemical maps push against beam damage, and samples much thicker than about one inelastic mean free path (roughly 100 nm at typical conditions) bury the edges under multiple scattering ("plural scattering"), correctable in part by deconvolution but best avoided: thin, well-prepared samples are not optional for EELS.
+
+:::{figure} ../../assets/figures/spectrum-imaging-datacube.svg
+:alt: the spectrum image as a data cube
+:width: 100%
+
+One energy slab through the cube is an elemental map and one column is a spectrum. The numbers on the figure are the dose budget: 537 MB, eleven minutes, and $2.5 \times 10^{5}$ electrons per square angstrom.
+:::
 
 ## STEM-EDS
 
 The same characteristic X-rays used in [SEM-EDS](../sem/sem.md) are collected in STEM by large solid-angle silicon drift detectors placed close around the sample. Because the sample is a thin foil, the micrometer interaction volume of bulk EDS collapses to essentially the probe diameter plus modest beam broadening through the foil: nanometer-scale X-ray mapping. Thin-foil quantification also simplifies considerably, since the ZAF matrix corrections of bulk analysis largely vanish. The classical **Cliff-Lorimer** method converts intensity ratios to composition ratios with a single factor per element pair ($C_A/C_B = k_{AB}\, I_A/I_B$), calibrated on standards; the modern **zeta-factor** method works with absolute intensities and measured beam current, handling absorption of soft X-rays within the foil self-consistently, which matters for light elements and thicker lamellae. One crystalline-sample subtlety inherited from [dynamical diffraction](stem-imaging.md): when the beam channels along atomic columns, X-ray production is enhanced on whichever sublattice the beam channels through, so quantitative EDS of zone-axis crystals either tilts slightly off axis or accounts for channeling explicitly.
 
+:::{figure} ../../assets/figures/beam-broadening.svg
+:alt: beam broadening through a foil
+:width: 100%
+
+Elastic scattering spreads the probe as it crosses the foil, so the analysed volume is wider than the probe. Past about 15 nm of copper the probe size stops mattering and the thickness sets the resolution.
+:::
+
 In modern practice STEM-EDS and STEM-EELS run simultaneously and are complementary: EDS covers heavy elements and full-stack overview maps with simple quantification and no thickness ceiling, EELS covers light elements, bonding, and the finest spatial detail. An elemental map of a complete device cross-section, every layer labeled, in under an hour, is now a routine measurement.
+
+:::{figure} ../../assets/figures/eds-vs-eels.svg
+:alt: STEM-EDS against STEM-EELS
+:width: 100%
+
+The fraction of ionization events each technique actually records, against atomic number, with the criteria side by side. EELS wins by four decades on the light elements and EDS pulls ahead near $Z = 76$.
+:::
 
 ## Strain and structure mapping
 

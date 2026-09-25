@@ -2,6 +2,13 @@
 
 The AFM feedback loop holds one interaction constant while scanning; add a second measurement channel and the same platform maps almost any local property alongside topography. These functional modes have made scanning probe microscopy the property-mapping counterpart to everything else in this course: the other techniques measure the structure and composition of a film, and SPM modes map its functional properties point by point. This page surveys the modes that matter most for thin films, then closes with scanning tunneling microscopy, the original scanning probe and still the highest-resolution imaging technique in existence.
 
+:::{figure} ../../assets/figures/spm-mode-map.svg
+:alt: the scanning probe modes compared
+:width: 100%
+
+The scanning probe family on one chart: what each mode measures, what the tip or the electronics has to provide, and the lateral resolution it reaches.
+:::
+
 ## Electrical and functional modes
 
 - **Conductive AFM (c-AFM)** applies a bias through a conductive (metal-coated or solid-metal) tip in contact and maps the resulting current, from picoamps up, resolving conduction nanoscale feature by feature: leakage hot spots and soft-breakdown sites in gate dielectrics, conductive filaments in resistive-switching oxides, grain-versus-boundary conduction in polycrystalline solar absorbers. Its close relative, scanning spreading resistance microscopy, presses harder through the native oxide with a diamond tip and converts the local spreading resistance to carrier concentration, the 2D dopant-profiling complement to [SIMS](../ions/sims.md).
@@ -10,12 +17,26 @@ The AFM feedback loop holds one interaction constant while scanning; add a secon
 - **Magnetic force microscopy (MFM)** senses magnetostatic force gradients with a magnetized tip, usually in a two-pass scheme: each line is first traced for topography, then retraced at a fixed lift height of tens of nanometers where van der Waals forces have died off and the long-range magnetic gradient dominates, read out as a resonance phase shift. Domain structures in magnetic films resolve at roughly 30 to 50 nm, in air, with no preparation; the tip's own stray field can perturb soft magnetic structures, the mode's known systematic.
 - **Nanomechanical modes** (force-curve mapping, contact resonance) extract modulus, adhesion, and dissipation at every pixel, mapping mechanical heterogeneity in polymer blends, composites, and low-k dielectrics.
 
+:::{figure} ../../assets/figures/kpfm-levels.svg
+:alt: Kelvin probe energy levels
+:width: 100%
+
+Tip and sample isolated, wired, and biased. Wiring aligns the Fermi levels and steps the vacuum levels by the contact potential difference; the applied bias that flattens them again is what KPFM records.
+:::
+
 The shared caveat across all functional modes: the measured signal mixes the property of interest with topography, tip condition, and contact quality. Cross-talk from topography is the universal artifact (any feature that changes the contact area changes most signals), so the discipline is to compare the property map against topography for suspicious correlations, and quantitative claims require even more skepticism than [AFM topography](afm.md) requires.
 
 % TODO: figures: one panel per major mode showing a real thin film example
 % (c-AFM leakage map, KPFM of a polycrystalline absorber, PFM domains, MFM
 % domains). Published examples exist for all; request permissions or use
 % in-house data.
+
+:::{figure} ../../assets/figures/pfm-response.svg
+:alt: piezoresponse and the switching loops
+:width: 100%
+
+An AC bias drives a surface displacement that is in phase over one domain and 180 degrees out of phase over the other, which is the contrast. The DC sweep gives the butterfly amplitude loop and the square phase loop.
+:::
 
 ## Scanning tunneling microscopy
 
@@ -35,6 +56,13 @@ The demonstration below runs the feedback loop. The tip follows a contour of con
 :::
 
 The requirements keep STM a research instrument rather than a routine metrology tool: conductive samples, atomically clean surfaces (hence UHV, and frequently cryogenic temperatures for drift stability and spectroscopic resolution), and vibration isolation good enough for picometer signals. In this course's decision framework, STM answers questions about the atomic and electronic structure of a conductive surface that nothing else can answer at all, and AFM handles everything else.
+
+:::{figure} ../../assets/figures/sts-dIdV.svg
+:alt: scanning tunneling spectroscopy
+:width: 100%
+
+Which states each bias polarity probes, and the $dI/dV$ curve that follows the sample density of states, with the band gap appearing as a region of vanishing conductance.
+:::
 
 ## References and further reading
 

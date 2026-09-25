@@ -18,6 +18,13 @@ The same escape-depth physics measures overlayer thickness, one of the most-used
 % factor table and have them extract composition; second part uses the attenuation
 % equation for oxide thickness.
 
+:::{figure} ../../assets/figures/overlayer-growth-modes.svg
+:alt: substrate attenuation for layer and island growth
+:width: 100%
+
+The same nominal thickness in three morphologies, and the substrate signal each one produces. Layer growth gives a straight line on a log axis; islands level off at the uncovered fraction.
+:::
+
 ## Auger electron spectroscopy
 
 When a core hole is filled, the released energy can eject a second electron instead of an X-ray: the Auger process, a three-level transition labeled by the shells involved (KLL, LMM, MNN, ...). Its kinetic energy is approximately the core-level energy minus the binding energies of the two outer participants (with a correction for the doubly ionized final state), a property of the atom alone, independent of how the initial hole was made and of the excitation energy. Auger electrons therefore appear in every XPS spectrum; **Auger electron spectroscopy (AES)** as a standalone technique excites them with an electron beam instead of X-rays, and that one change defines its niche. An electron beam focuses to nanometers, so AES delivers surface chemical analysis with lateral resolution some three orders of magnitude better than laboratory XPS: about 10 nm in a modern field-emission scanning Auger microprobe, with secondary-electron imaging built in to find the feature of interest.
@@ -25,6 +32,13 @@ When a core hole is filled, the released energy can eject a second electron inst
 The [fluorescence-yield branching](electron-solid.md) makes the Auger channel dominant for light elements, exactly where EDS is weakest, and the detected electrons obey the same escape-depth physics as XPS, sampling a few nanometers. Because the Auger peaks ride on the large, sloping secondary-electron background, spectra were historically recorded in derivative mode, $dN(E)/dE$, and much of the literature and the standard sensitivity-factor sets are built on derivative peak-to-peak heights; modern instruments record direct spectra and integrate. Quantification with sensitivity factors is semiquantitative (10 to 20%) unless matrix-matched standards are used; chemical-state information exists (the carbon KLL lineshape famously distinguishes carbide, graphite, and diamond) but is less systematic than XPS shifts. The electron beam also brings limitations: charging restricts AES to reasonably conductive samples far more strictly than XPS, and the focused beam's current density can damage or modify sensitive surfaces during the measurement.
 
 The applications that exploit these strengths involve identifying small features: particle and defect identification on wafers (the historical backbone of semiconductor failure analysis), grain-boundary chemistry on fracture surfaces exposed in situ (the classic measurements of temper embrittlement, where segregated phosphorus monolayers at boundaries were measured directly), and small-area depth profiles of metallization stacks.
+
+:::{figure} ../../assets/figures/auger-vs-photoemission.svg
+:alt: photoemission against Auger emission
+:width: 100%
+
+Why the Auger lines move when you change the anode and the photoelectron lines do not: the photoelectron energy carries $h\nu$ and the Auger energy does not.
+:::
 
 ## Sputter depth profiling
 

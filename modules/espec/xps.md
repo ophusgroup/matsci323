@@ -23,7 +23,21 @@ with $E_B$ the binding energy of the level the electron came from, $h\nu$ the ph
 
 Several systematics organize a real spectrum. Core levels with orbital angular momentum $l > 0$ split into **spin-orbit doublets** ($2p_{1/2}$/$2p_{3/2}$, $3d_{3/2}$/$3d_{5/2}$, ...) whose intensity ratios are fixed by degeneracy (1:2, 2:3, 3:4) and whose splittings are characteristic of the element, a built-in consistency check when assigning overlapped chemistry. Peak intensities scale with the **photoionization cross section** of each level at the photon energy used (tabulated by Scofield; they vary by orders of magnitude across the periodic table, the physical core of the sensitivity factors used in [quantification](quantification.md)). Auger peaks appear in every XPS spectrum too, at kinetic energies independent of $h\nu$, so switching anodes moves them on a binding-energy plot, the classic trick for untangling an Auger-photoelectron overlap. And every sharp line drags behind it (at higher binding energy) an inelastic background of electrons that lost energy on the way out; the background step across each peak is itself informative, since deeply buried emitters produce more background than surface emitters.
 
+:::{figure} ../../assets/figures/spin-orbit-doublets.svg
+:alt: spin-orbit doublets for p, d, and f levels
+:width: 100%
+
+Every level with $l > 0$ splits into a doublet whose area ratio is fixed by the degeneracies $2j+1$ and whose splitting grows with atomic number.
+:::
+
 The surface sensitivity comes entirely from the [escape-depth physics](electron-solid.md) of the outgoing photoelectron: the X-rays penetrate micrometers, but only photoelectrons born in the top few nanometers escape unscattered.
+
+:::{figure} ../../assets/figures/xps-survey.svg
+:alt: annotated XPS survey spectrum
+:width: 100%
+
+A survey spectrum of an oxidized silicon wafer with adventitious carbon, with the core lines, the Auger group, the valence band, and the stepped inelastic background labelled.
+:::
 
 ## Chemical shifts
 
@@ -37,6 +51,13 @@ Reading shifts quantitatively requires care with referencing. Insulating samples
 % Si showing metal/oxide doublet structure; (c) C 1s of a functionalized polymer;
 % (d) Cu 2p satellite comparison of Cu/Cu2O/CuO. The Stanford SNSF instruments
 % can produce (a), (b), (d) in one afternoon.
+
+:::{figure} ../../assets/figures/xps-chemical-shift.svg
+:alt: the Si 2p chemical shift ladder
+:width: 100%
+
+The Si 2p region of a partly oxidised surface, resolved into the elemental line and the four suboxide and oxide states. The 3.9 eV span is about 1 eV per Si-O bond, which is why XPS reports chemical state and not only composition.
+:::
 
 ## Instrumentation
 

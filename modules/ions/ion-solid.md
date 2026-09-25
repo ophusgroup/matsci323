@@ -38,6 +38,13 @@ $$
 
 where $E_2$ is the recoil energy and $\phi$ the recoil angle measured from the beam direction. The transfer reaches the full $4M_1M_2/(M_1+M_2)^2$ fraction in a head-on collision, which for comparable masses approaches complete energy transfer. These energetic recoils drive the collision cascades responsible for sputtering, treated with [SIMS](sims.md), and for implantation damage below.
 
+:::{figure} ../../assets/figures/kinematic-factor.svg
+:alt: Kinematic factor versus target mass for a helium projectile at four scattering angles
+:width: 80%
+
+**The kinematic factor.** Computed for a He projectile. The steep region at low mass gives ion scattering its excellent light-element mass resolution; the flattening toward heavy masses is why W and Ta are indistinguishable. Larger scattering angles separate the masses best, which is why detectors sit as far backward as geometry allows.
+:::
+
 ## The scattering cross section
 
 How often collisions happen, and how hard they are, is set by the force between the nuclei. For a bare Coulomb repulsion, the classical orbit calculation relates impact parameter to deflection angle and yields Rutherford's differential cross section, which in the center-of-mass frame is
@@ -59,6 +66,13 @@ Between the rare large-angle collisions, an ion moving through a solid loses ene
 
 The total stopping power $dE/dx$ is tabulated to few-percent accuracy for essentially all ion-target combinations; the SRIM package, discussed in the [simulation appendix](../../appendix/simulation-tools.md), is the community standard, and for a compound target the stopping contributions add in proportion to composition (Bragg's rule). A 2 MeV He ion in silicon loses roughly 240 eV per nanometer, almost all electronically, and this steady, predictable loss is what converts a measured energy into a depth in RBS and the other ion beam methods. A useful unit habit: because films are better characterized by atoms per area than by thickness, stopping is often quoted as a **stopping cross section** $\varepsilon = (dE/dx)/n$ in eV·cm$^2$/10$^{15}$ atoms, which removes the density from the bookkeeping.
 
+:::{figure} ../../assets/figures/reduced-stopping.svg
+:alt: Universal reduced nuclear stopping curve and velocity-proportional electronic stopping lines versus reduced energy
+:width: 80%
+
+**Universal stopping curves.** Stopping in Lindhard's reduced units, where one nuclear-stopping curve serves every ion-target pair. Nuclear stopping dominates at low reduced energy (the sputtering and implantation regime) and electronic stopping, rising as the square root of energy, dominates at high reduced energy (the RBS regime).
+:::
+
 ## Range, straggling, and damage
 
 Stopping ends in a range. Ions implanted at energy $E_0$ come to rest in a roughly Gaussian depth distribution with **projected range** $R_p$ and **straggle** $\Delta R_p$, from a few nanometers at keV energies to micrometers at MeV energies. The statistics matter as much as the mean: straggling arises because each ion's sequence of collisions is random, and light ions in heavy targets also backscatter out entirely. Skewness appears when nuclear stopping dominates (heavy slow ions pile up short of the Gaussian prediction). Ion implantation doping of semiconductors is built on these distributions, stacking implants at several energies to synthesize flat profiles.
@@ -68,20 +82,6 @@ Along the way, every nuclear collision that transfers more than the **displaceme
 The simulator below is a working TRIM-style calculation running in the page: binary collisions with the universal ZBL potential, electronic stopping, and full collision cascades. Watch the character of the trajectories change with the physics: a light, fast ion (He at high energy) travels in a nearly straight line losing energy to electrons, then scatters violently only near the end of its range, while a heavy, slow ion (As, Ga) rattles through dense nuclear collisions from the moment it enters. The right panel accumulates the stopped-ion positions as a 2D map with the depth profile aligned below it, giving both the projected range and straggle along the beam and the lateral spread that limits how sharply an implant can be masked. The thickness slider turns the target into a free-standing film: once the range exceeds the thickness, ions pass through and the transmitted fraction climbs, which is the fraction that reaches the substrate when an implant is done through a surface layer. The vacancy estimate connects directly to the sputtering and damage discussion ahead. Ranges here agree with SRIM at the tens-of-percent level; use SRIM itself for quantitative work.
 
 :::{anywidget} ../../widgets/ion-range.js
-:::
-
-:::{figure} ../../assets/figures/kinematic-factor.svg
-:alt: Kinematic factor versus target mass for a helium projectile at four scattering angles
-:width: 80%
-
-**The kinematic factor.** Computed for a He projectile. The steep region at low mass gives ion scattering its excellent light-element mass resolution; the flattening toward heavy masses is why W and Ta are indistinguishable. Larger scattering angles separate the masses best, which is why detectors sit as far backward as geometry allows.
-:::
-
-:::{figure} ../../assets/figures/reduced-stopping.svg
-:alt: Universal reduced nuclear stopping curve and velocity-proportional electronic stopping lines versus reduced energy
-:width: 80%
-
-**Universal stopping curves.** Stopping in Lindhard's reduced units, where one nuclear-stopping curve serves every ion-target pair. Nuclear stopping dominates at low reduced energy (the sputtering and implantation regime) and electronic stopping, rising as the square root of energy, dominates at high reduced energy (the RBS regime).
 :::
 
 ## References and further reading

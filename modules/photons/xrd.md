@@ -68,6 +68,13 @@ $$
 
 estimates the coherently diffracting domain size $t$ from the peak width $\beta$ (in radians, corrected for instrumental broadening), with $\lambda$ the X-ray wavelength, $\theta$ the Bragg angle, and $K \approx 0.9$ a shape factor. Two cautions apply. Domain size and microstrain both broaden peaks, but with different angle dependence: size broadening goes as $1/\cos\theta$ while strain broadening goes as $\tan\theta$, and the **Williamson-Hall** construction (plotting $\beta\cos\theta$ against $\sin\theta$) separates the two, with the intercept giving size and the slope giving microstrain. And the coherent domain is not the grain: subgrain boundaries, stacking faults, and columnar growth all cut coherence, so Scherrer sizes below the film thickness usually signal defected or columnar growth rather than literal grains. Grain-by-grain confirmation belongs to [EBSD](../sem/ebsd-fib.md) and [TEM](../stem/stem-imaging.md).
 
+:::{figure} ../../assets/figures/williamson-hall.svg
+:alt: Williamson-Hall plot
+:width: 100%
+
+The Williamson-Hall construction separates the two broadening mechanisms: size broadening is the same at every peak and sets the intercept, microstrain grows with $\sin\theta$ and sets the slope.
+:::
+
 ## Texture and stress
 
 Most sputtered and evaporated films are textured: their grains share a preferred out-of-plane orientation while remaining random in-plane (a fiber texture). A **pole figure** maps the intensity of one reflection over all sample tilts $\psi$ and rotations $\phi$, revealing fiber textures as rings and epitaxial relationships as discrete spots; quantitative work reduces pole figures to an orientation distribution function. Texture controls properties from electromigration resistance in interconnects to the coercivity of magnetic films, and connects directly to the grain-by-grain orientation maps of [EBSD](../sem/ebsd-fib.md).

@@ -28,11 +28,25 @@ A **force-distance curve**, deflection versus tip approach, is the technique's c
 - **Frequency-modulation (non-contact) AFM** tracks the resonance frequency shift caused by the force *gradient*, without touching; in UHV with careful technique this achieves true atomic resolution, and with CO-functionalized tips at cryogenic temperature it famously resolves the internal bond architecture of single molecules.
 - **Force-curve mapping** modes record a complete force-distance curve at every pixel at kHz rates, extracting topography, modulus, adhesion, and deformation simultaneously, the quantitative-nanomechanics workhorse for polymers and composites.
 
+:::{figure} ../../assets/figures/afm-modes-on-curve.svg
+:alt: AFM modes on the force curve
+:width: 100%
+
+Module 7 in one figure. Every scanning probe mode is a choice of what to hold constant on this curve, or of what second quantity to record alongside the height.
+:::
+
 ## Quantitative roughness metrology
 
 The AFM's headline number for thin films is roughness, and using it well takes more care than reading the RMS value off the screen. The standard statistics, average roughness $R_a$ and RMS roughness $R_q$ (the standard deviation of heights), characterize the height distribution only; two surfaces with identical $R_q$ can be morphologically different, one gently undulating, one sharply jagged. The **power spectral density (PSD)** of the height map resolves roughness by lateral wavelength, separating measurement noise, grain-scale texture, and long-range waviness, and is the right basis for comparing films or feeding roughness into optical and XRR models. Any reported roughness is a bandwidth-limited quantity: the scan size sets the longest wavelength included and the pixel spacing the shortest, so $R_q$ *grows with scan size* on most real surfaces, and a roughness value reported without its scan size is incomplete. Comparing an AFM $R_q$ against an [XRR](../photons/xrr.md) roughness, which averages a millimeter footprint with its own bandwidth weighting, requires exactly this thinking, and agreement within tens of percent is success.
 
 Step-height measurement is the other precision use: an AFM profile across a masked or etched step measures film thickness absolutely, to sub-nanometer accuracy, with no optical model at all, which is why step-height standards calibrate the instrument's z axis and why a deliberately patterned step is the fastest arbiter when [ellipsometry](../photons/optical.md) and XRR disagree.
+
+:::{figure} ../../assets/figures/roughness-psd.svg
+:alt: roughness against measurement bandwidth
+:width: 100%
+
+One surface measured two ways. The scan size sets the longest wavelength included and the pixel size the shortest, so $R_q$ without both numbers is not a measurement.
+:::
 
 ## Artifacts
 

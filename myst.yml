@@ -37,6 +37,7 @@ project:
     ERD: elastic recoil detection
     EXAFS: extended X-ray absorption fine structure
     FIB: focused ion beam
+    FIM: field ion microscopy
     GDMS: glow discharge mass spectrometry
     GD-OES: glow discharge optical emission spectroscopy
     GISAXS: grazing-incidence small-angle X-ray scattering

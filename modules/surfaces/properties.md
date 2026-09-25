@@ -257,6 +257,13 @@ where $\Phi$ is the number of molecules striking unit area per unit time, $P$ is
 
 Adsorption itself comes in two flavors. Physisorption binds molecules weakly through van der Waals forces, with binding energies below about 0.3 eV; chemisorption forms true chemical bonds, with energies of 1 eV or more. The residence time of an adsorbed molecule scales as $\tau = \tau_0 \exp(E_a / k_B T)$ with $\tau_0$ a vibrational period of order $10^{-13}$ s, so modest temperature changes swing surface coverage by orders of magnitude: a physisorbed molecule at room temperature leaves almost immediately, while a chemisorbed one is effectively permanent.
 
+:::{figure} ../../assets/figures/adsorption-potential.svg
+:alt: one-dimensional adsorption potential
+:width: 100%
+
+Physisorption and chemisorption as one-dimensional potentials. Where the two curves cross sets whether chemisorption is activated: below the gas level the molecule dissociates on contact, above it there is a barrier to pay.
+:::
+
 The simplest quantitative model of equilibrium coverage is the **Langmuir isotherm**: assume a fixed number of equivalent sites, one molecule per site, and no interactions between adsorbates. Balancing the arrival rate (proportional to pressure, from the flux formula above, times the fraction of empty sites) against the thermally activated desorption rate gives a coverage
 
 $$
@@ -266,6 +273,13 @@ $$
 where $\theta$ is the fraction of sites occupied, $P$ is the pressure, and $b(T)$ is the adsorption equilibrium constant, which carries the binding energy and the temperature. The coverage rises linearly at low pressure and saturates at one monolayer. Real systems decorate this picture with adsorbate interactions, multilayer condensation, and site heterogeneity, but the Langmuir form remains the working baseline.
 
 An isotherm is measured at one fixed temperature, which is what the word means, and it says where the coverage settles rather than how long it takes to get there. How fast a clean surface fills is the separate kinetic question, and surface science quotes it as an **exposure**, pressure times time, in langmuir: 1 L is $10^{-6}$ Torr for 1 s, which at unit sticking delivers $3.8 \times 10^{14}$ molecules per cm$^2$, so one langmuir is roughly one monolayer. That is the monolayer-time arithmetic of the [next page](vacuum.md) in different units.
+
+:::{figure} ../../assets/figures/langmuir-isotherm.svg
+:alt: Langmuir isotherm and coverage against exposure
+:width: 100%
+
+Left: the Langmuir isotherm at three adsorption energies, saturating at one monolayer with half coverage at $P = 1/b$. Right: coverage against exposure in langmuir, for three sticking coefficients.
+:::
 
 **Temperature-programmed desorption** measures binding energies directly. Dose a cold surface with a known exposure, then heat it at a constant rate while a mass spectrometer records what leaves; each bound state empties over a narrow temperature window and appears as a peak, so several peaks mean several distinct binding sites. The peak temperature fixes the desorption energy through the Redhead relation, which for first-order desorption is
 

@@ -13,9 +13,44 @@ Atom probe tomography (APT) is the logical endpoint of the mass spectrometry ide
 
 ## Field evaporation
 
-Electric fields at surfaces are amplified by curvature: a voltage $V$ applied to a needle of apex radius $r$ produces an apex field of order $V/(k r)$ with $k \approx 5$ a geometry factor, so 5 to 10 kV on a 50 to 100 nm tip reaches fields of tens of volts per nanometer, the scale required to ionize surface atoms. At such fields, a surface atom can be removed as an ion: the field tilts the energy landscape until the barrier separating the bound atom from the ionic state (in the classical picture, the maximum of the atom's image-charge potential) falls to the order of thermal energies, and the atom escapes, a process called **field evaporation**. Because the escape is thermally activated over a field-lowered barrier, evaporation rate depends extremely steeply on field, which is what makes controlled, one-atom-at-a-time removal possible: the specimen is held just below threshold and a small perturbation triggers evaporation preferentially at the most protruding, highest-field atoms, so the tip disassembles in an orderly way from its apex. Each element has its own evaporation field (roughly 10 to 60 V/nm across the periodic table), a fact that returns below as an artifact. The technique's ancestor, field ion microscopy, used the same tip geometry with an imaging gas to produce the first images of individual atoms in the 1950s; the atom probe added the mass spectrometer.
+Electric fields at surfaces are amplified by curvature: a voltage $V$ applied to a needle of apex radius $r$ produces an apex field of order $V/(k r)$ with $k \approx 5$ a geometry factor, so 5 to 10 kV on a 50 to 100 nm tip reaches fields of tens of volts per nanometer, the scale required to ionize surface atoms. At such fields, a surface atom can be removed as an ion: the field tilts the energy landscape until the barrier separating the bound atom from the ionic state (in the classical picture, the maximum of the atom's image-charge potential) falls to the order of thermal energies, and the atom escapes, a process called **field evaporation**. Because the escape is thermally activated over a field-lowered barrier, evaporation rate depends extremely steeply on field, which is what makes controlled, one-atom-at-a-time removal possible: the specimen is held just below threshold and a small perturbation triggers evaporation preferentially at the most protruding, highest-field atoms, so the tip disassembles in an orderly way from its apex. Each element has its own evaporation field (roughly 10 to 60 V/nm across the periodic table), a fact that returns below as an artifact. Holding the tip below that threshold, rather than at it, is what makes the section that follows possible.
 
 The perturbation that triggers evaporation is the pulse, and its two forms define the instrument families. **Voltage pulsing** adds a nanosecond high-voltage pulse to the standing voltage; it gives the sharpest timing but requires a conductive specimen to transmit the pulse. **Laser pulsing** focuses picosecond laser pulses onto the apex, whose brief thermal excitation triggers evaporation at the standing field; it works for semiconductors and insulators, which is what opened APT to microelectronics, oxides, and geology, essentially all thin film work. The cost of laser pulsing is thermal: the tip must cool between pulses, and slow cooling smears evaporation times and hence the mass spectrum. Specimens are held at cryogenic temperature (tens of kelvin) throughout, both to suppress surface diffusion that would scramble positions and to keep the thermally activated evaporation under the pulse's control.
+
+## Field ion microscopy
+
+**Field ion microscopy (FIM)** is the ancestor of the atom probe and still the way an atom probe specimen is inspected before it is consumed. Erwin Müller built the first one in 1951, and by 1955 it was resolving individual atoms on a tungsten surface, the first images of single atoms ever made. It uses the same needle as APT and the same field amplification by curvature, but instead of removing the surface atoms it uses them to ionize a gas.
+
+The chamber is backfilled with an inert **imaging gas**, helium or neon, at about $10^{-5}$ Torr, and the specimen is held at 20 to 80 K and at a positive voltage below the evaporation threshold. Gas atoms are polarized by the field gradient and pulled toward the apex, where they lose energy by hopping across the cold surface until they are thermally accommodated. A gas atom sitting about 0.4 nm above a surface atom is then **field ionized**: the field tilts the vacuum level so far that an electron tunnels from the gas atom into an empty state in the metal above the Fermi level, and the resulting positive ion is repelled radially outward to a detector or phosphor screen. Ionization is exponentially sensitive to field, so it happens almost entirely over the atoms that protrude furthest, which are the atoms at the edges of the terraces.
+
+:::{figure} ../../assets/figures/fim-image.svg
+:alt: how a field ion image forms, and a simulated ring pattern from a tungsten tip
+:width: 100%
+
+Left: the imaging gas is drawn to the apex, ionizes in a thin zone about 0.4 nm above the atoms that protrude at the terrace edges, and the ion leaves along the radius. Right: a simulated image of a bcc tungsten tip along (011), with each atom placed by projecting the terrace-edge atoms of a hemispherical crystal. Each ring is one crystal plane.
+:::
+
+The field needed to ionize the gas is a property of the gas, called the **best image field**: about 44 V/nm for helium, 35 V/nm for neon, and 22 V/nm for hydrogen. Helium gives the highest resolution because it requires the highest field and so ionizes in the smallest volume, but the field it needs also puts the largest mechanical stress on the specimen. The electrostatic tensile stress at a surface carrying a field $F$ is
+
+$$
+\sigma = \frac{\varepsilon_0 F^2}{2},
+$$
+
+with $\sigma$ the stress in Pa, $\varepsilon_0$ the vacuum permittivity, and $F$ the field in V/m, which is 8.6 GPa at the helium imaging field and 5.4 GPa at the neon field. That number is why classical FIM was done on tungsten, iridium, rhenium, and other refractory metals: anything weaker is pulled apart before it images. Choosing neon, or hydrogen at 2.1 GPa, trades resolution for a specimen that survives.
+
+The image is a radial projection of the apex, magnified by the ratio of the flight distance to the tip radius,
+
+$$
+M = \frac{L}{\xi\,r},
+$$
+
+where $M$ is the magnification, $L$ is the tip-to-screen distance of 50 to 100 mm, $r$ is the apex radius of 10 to 100 nm, and $\xi \approx 1.6$ is the image compression factor, which accounts for the trajectories being less divergent than a true point projection because the tip is a shank and not an isolated sphere. A 50 nm tip at 60 mm therefore images at about $7 \times 10^5$ times, with a resolution of 0.2 to 0.3 nm set by the size of the ionization zone and by the tangential velocity the gas atom retains, which is why the specimen is cold.
+
+What the image shows follows from which atoms ionize. A crystal truncated by a roughly hemispherical surface exposes a set of terraces, and only the atoms at the terrace edges protrude enough to image, so each crystallographic plane appears as a ring of bright spots and each pole as the centre of a set of concentric rings. The ring pattern is a map of the crystallography of the tip, which is how the orientation of an atom probe specimen is determined before a run, and counting rings as they disappear during field evaporation counts the planes removed, which is the most direct depth calibration in the technique.
+
+FIM images point defects directly, as a missing or extra spot in an otherwise regular ring, and this is what made it the tool for the early studies of vacancies, of grain boundaries in ordered alloys, and of adsorbed atoms. Surface diffusion measurements made this way are the origin of the Ehrlich-Schwoebel barrier introduced in the [properties of surfaces](../surfaces/properties.md): Ehrlich and Hudda watched single tungsten adatoms hop on a FIM tip, imaging the same atom before and after a controlled anneal, and found that atoms approaching a descending step were reflected rather than crossing it.
+
+Its limits are the ones the method implies. The specimen must be a needle that survives several GPa of tensile stress, the field selects what is imaged so protruding atoms are over-represented and flat low-index terraces appear almost empty, the imaging gas restricts the accessible fields, and the technique gives crystallography and defect structure but no chemical identity. Adding a mass spectrometer behind a probe hole in the screen supplies exactly that missing identity, which is what Müller did in 1968 and what became the atom probe.
 
 ## The measurement
 
@@ -34,9 +69,16 @@ The animation below runs the whole idea. The needle contains a multilayer (gold-
 :::{anywidget} ../../widgets/apt-evaporate.js
 :::
 
-## What APT does for thin films
+:::{figure} ../../assets/figures/apt-local-magnification.svg
+:alt: local magnification in an atom probe reconstruction
+:width: 100%
 
-The measurements APT owns outright are three-dimensional and chemical at once: the segregation of dopants to a single grain boundary measured in atoms per unit area (the Gibbsian interfacial excess, measured directly by counting), the earliest stages of clustering and precipitation in an alloy, the true interfacial width and intermixing of a deposited multilayer, and the distribution of hydrogen or lithium, light elements invisible to most electron and X-ray spectroscopies, in battery electrodes and embrittled alloys. In semiconductor work it is the only measurement of the 3D dopant distribution in a single finFET fin. Because analysis requires a FIB-milled needle from a specific site, APT pairs naturally with [FIB sample preparation](../sem/ebsd-fib.md), and correlative workflows that image the same needle in STEM before running it in the atom probe tie the reconstruction to crystallography and calibrate its shape assumptions.
+Local magnification. A phase that evaporates at a lower field settles into a flatter facet, its ions leave nearly parallel, and the reconstruction compresses it into something smaller and denser than the real precipitate.
+:::
+
+## Strengths and limits
+
+The measurements no other technique makes are three-dimensional and chemical at once: the segregation of dopants to a single grain boundary measured in atoms per unit area (the Gibbsian interfacial excess, measured directly by counting), the earliest stages of clustering and precipitation in an alloy, the true interfacial width and intermixing of a deposited multilayer, and the distribution of hydrogen or lithium, light elements invisible to most electron and X-ray spectroscopies, in battery electrodes and embrittled alloys. In semiconductor work it is the only measurement of the 3D dopant distribution in a single finFET fin. Because analysis requires a FIB-milled needle from a specific site, APT pairs naturally with [FIB sample preparation](../sem/ebsd-fib.md), and correlative workflows that image the same needle in STEM before running it in the atom probe tie the reconstruction to crystallography and calibrate its shape assumptions.
 
 The counterweights: throughput is low (hours per needle, and needles fracture under the field stress, more often the harder the material), the analyzed volume is minuscule so statistics demand multiple tips, and quantification near interfaces carries the reconstruction caveats above. APT complements rather than replaces SIMS: SIMS profiles a millimeter-scale area with ppb sensitivity in one dimension, APT maps a hundred-nanometer volume with ppm sensitivity in three.
 

@@ -23,6 +23,13 @@ with $Y$ the number of atoms sputtered per incident ion, $S_n(E)$ the nuclear st
 
 Two cascade side effects set the resolution limits of everything sputter-based. On a multicomponent target, the species sputter at different rates until the surface composition adjusts itself so that removal becomes stoichiometric (**preferential sputtering**: the steady-state surface is enriched in the slow-sputtering species even as the removed flux matches the bulk). And the cascade relocates atoms without removing them, mixing interfaces over a depth comparable to the ion range (**ion beam mixing**). Together they guarantee that a measured interface is never sharper than the mixing depth, a few nanometers at standard conditions and reducible below one nanometer with low-energy or cluster ion beams.
 
+:::{figure} ../../assets/figures/cascade-regimes.svg
+:alt: the three sputtering regimes and the yield curve
+:width: 100%
+
+The three sputtering regimes and the yield they produce. The yield curve is computed from the Sigmund expression with ZBL nuclear stopping for Ar on Cu: a threshold near 20 to 40 eV, a broad maximum at 10 to 50 keV, and a fall once the ion buries its energy below the escape depth.
+:::
+
 ## Secondary ion mass spectrometry
 
 A small fraction of sputtered atoms leave the surface as ions. SIMS extracts these secondary ions electrostatically into a mass spectrometer and counts them by mass-to-charge ratio. Its extraordinary sensitivity comes from counting individual atoms of any element, hydrogen through uranium with isotopic resolution, against an almost zero background: ppb detection limits are routine for well-behaved impurities, orders of magnitude beyond any other technique in this course, which is why the semiconductor industry's dopant and contaminant metrology is built on SIMS.
@@ -40,6 +47,13 @@ Two operating regimes serve different questions:
 
 Instrument architectures pair an ion source with one of three analyzers, and the choice shapes the experiment. **Magnetic sector** instruments offer high mass resolution (separating, say, $^{31}$P from $^{30}$SiH, a classic interference in silicon work) and the highest useful yields for dynamic profiling. **Quadrupoles** filter one mass at a time at lower resolution but switch masses quickly and tolerate lower vacuum. **Time-of-flight (ToF)** analyzers pulse the primary beam and time the arrival of secondaries, collecting the *entire* mass spectrum at every pixel; paired with finely focused pulsed cluster sources (Bi$_n^+$ clusters for imaging, C$_{60}^+$ and large Ar gas-cluster beams for gentle organic sputtering), ToF-SIMS produces chemical images at better than 100 nm resolution and, with cluster erosion, molecular depth profiles of organic films that monatomic beams would destroy. Dual-beam ToF instruments separate the roles entirely: a low-energy beam erodes while the pulsed analytical beam samples the crater floor.
 
+:::{figure} ../../assets/figures/tof-spectrum.svg
+:alt: time-of-flight mass spectrum and a mass interference
+:width: 100%
+
+The Fe isotope pattern at unit mass resolution, and the interference between $^{56}$Fe$^+$ and $^{28}$Si$_2^+$ that needs a mass resolving power above 3000 to separate.
+:::
+
 All modes share practical artifacts worth checking before trusting a profile: the pre-equilibrium transient at the start, knock-in of surface species (a surface contaminant appears to extend into the film), crater-edge and memory effects, and mass interferences (resolved by high mass resolution or by choosing a different isotope of the same element, an advantage of detecting individual isotopes).
 
 % TODO: figures: (a) collision cascade with sputtered atoms and mixing zone;
@@ -47,11 +61,18 @@ All modes share practical artifacts worth checking before trusting a profile: th
 % decay length labeled; (c) a ToF-SIMS image. Mark's 2025 Lectures 7-8 have
 % several usable examples to redraw or replace.
 
+:::{figure} ../../assets/figures/sims-profile-artifacts.svg
+:alt: artifacts in a SIMS depth profile
+:width: 100%
+
+A delta layer as SIMS reports it. Everything except the peak position is an artifact: the surface transient, the leading edge broadened by atomic mixing, and the exponential trailing tail that sets the depth resolution.
+:::
+
 ## Low-energy ion scattering
 
 Drop the ion energy from MeV to a few keV and elastic scattering becomes a purely surface probe. In **LEIS** (also called ion scattering spectroscopy), noble-gas ions of 0.5 to 5 keV scatter from surface atoms, and an electrostatic analyzer measures the scattered ion energy; the [kinematic factor](ion-solid.md) then identifies the surface masses, exactly as in RBS but at a thousandth the energy. What makes LEIS unique is **neutralization**: a noble-gas ion approaching a surface is extremely likely to capture an electron (by Auger or resonant processes) and continue as a neutral, invisible to the electrostatic analyzer. Ions that penetrate to the second layer and back pass close to the surface twice and are neutralized with near certainty, so the *detected ion* signal comes overwhelmingly from single collisions with the outermost atomic layer. No other compositional technique has this strict single-layer selectivity.
 
-The natural applications are exactly the problems where the top layer is the whole story: which element terminates a catalyst particle, how many deposition cycles it takes an ALD film to close over its substrate, which component of an alloy segregates to the surface. Quantification uses reference samples because neutralization probabilities are element-specific, and although the analysis beam itself sputters gently, doses can be kept low enough (static conditions, like static SIMS) that the surface survives a measurement. The spectra also contain, at lower energies, a reionized background carrying subsurface information that modern instruments use as a bonus depth signal.
+The natural applications are exactly the problems decided by the top layer alone: which element terminates a catalyst particle, how many deposition cycles it takes an ALD film to close over its substrate, which component of an alloy segregates to the surface. Quantification uses reference samples because neutralization probabilities are element-specific, and although the analysis beam itself sputters gently, doses can be kept low enough (static conditions, like static SIMS) that the surface survives a measurement. The spectra also contain, at lower energies, a reionized background carrying subsurface information that modern instruments use as a bonus depth signal.
 
 ## References and further reading
 

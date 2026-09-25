@@ -92,6 +92,13 @@ A typical analysis system combines a load lock (so samples enter without venting
 
 The expensive stretch is $10^{-7}$ to $10^{-10}$, and most of what the money buys there is not pumping speed: it is metal seals, materials chosen for low outgassing, and a bakeout that takes the chamber out of service for a day or two every time it is opened. That is the real price of surface sensitivity, and it is why a technique that tolerates high vacuum costs so much less to run.
 
+:::{figure} ../../assets/figures/vacuum-ranges.svg
+:alt: working ranges of vacuum pumps and gauges
+:width: 100%
+
+The vacuum regimes with the working range of every common pump and gauge. No single pump or gauge spans the range, which is why systems are staged.
+:::
+
 ## Gauges and residual gas analysis
 
 Pressure measurement changes physics across fourteen decades. Near atmosphere, capacitance manometers measure the actual force on a diaphragm (gas-species independent, the metrology standard). In rough vacuum, Pirani gauges infer pressure from the thermal conductivity of the gas. From high vacuum down, **ionization gauges** take over: a hot filament emits electrons that ionize residual gas, and the collected ion current is proportional to density. The Bayard-Alpert design, with its fine-wire collector, reads reliably to below $10^{-10}$ Torr, with two caveats worth remembering: readings are species-dependent (calibrated for N$_2$), and the hot filament itself pumps and outgasses slightly.

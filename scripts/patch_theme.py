@@ -29,26 +29,31 @@ THEME = os.path.normpath(
 _RUNTIME = """
 ;(function(){
   /* ---------- flat top-bar search (replaces the theme's dialog) -------- */
-  var idx=null,loading=false,waiters=[];
-  function indexUrls(){
+  var idx=null,loading=false,waiters=[],base='';
+  /* Record URLs in the index are written from the site root ('/modules/...')
+     with no path prefix, so on a GitHub Pages project site they have to be
+     prefixed or every hit lands on the 404 page. The prefix that serves the
+     index is the prefix the pages live under, so probe for it and keep it. */
+  function basePrefixes(){
     var seg=window.location.pathname.split('/').filter(Boolean);
-    var urls=['/myst.search.json'];
-    if(seg.length)urls.unshift('/'+seg[0]+'/myst.search.json');
-    return urls;
+    return seg.length?['/'+seg[0],'']:[''];
+  }
+  function href(u){
+    return (u&&u.charAt(0)==='/')?base+u:u;
   }
   function load(cb){
     if(cb&&idx)return cb();
     if(cb)waiters.push(cb);
     if(idx||loading)return;
     loading=true;
-    var urls=indexUrls();
+    var pre=basePrefixes();
     function attempt(i){
-      if(i>=urls.length){loading=false;waiters=[];return;}
-      fetch(urls[i]).then(function(r){
+      if(i>=pre.length){loading=false;waiters=[];return;}
+      fetch(pre[i]+'/myst.search.json').then(function(r){
         if(!r.ok)throw new Error('http '+r.status);
         return r.json();
       }).then(function(d){
-        idx=d.records||[];loading=false;
+        idx=d.records||[];base=pre[i];loading=false;
         var w=waiters;waiters=[];w.forEach(function(f){f();});
       }).catch(function(){attempt(i+1);});
     }
@@ -113,7 +118,7 @@ _RUNTIME = """
       if(!hits.length){list.hidden=true;return;}
       hits.forEach(function(h,i){
         var a=document.createElement('a');
-        a.href=h.url;
+        a.href=href(h.url);
         a.className='msc-search-hit'+(i===active?' active':'');
         var t=document.createElement('div');
         t.className='msc-search-hit-title';
@@ -147,7 +152,7 @@ _RUNTIME = """
         render();
       }else if(ev.key==='Enter'){
         var h=hits[active<0?0:active];
-        if(h){ev.preventDefault();window.location.href=h.url;}
+        if(h){ev.preventDefault();window.location.href=href(h.url);}
       }else if(ev.key==='Escape'){
         input.value='';hits=[];render();input.blur();
       }
@@ -248,25 +253,37 @@ def main():
         print(f"patched build/index.js (search runtime, {n} site)")
     # rename the patched entry + manifest so browsers that cached the stock
     # bundles (1-year immutable) fetch the patched versions
-    rename = [("entry.client-PCJPW7TK", "entry.client-NBCRT1"),
-              ("manifest-C732C875", "manifest-NBCRT1")]
+    # Rename the patched entry + manifest so browsers that cached the stock
+    # bundles (1-year immutable) fetch the patched versions. The stock names
+    # carry the theme's own content hashes, so discover them instead of
+    # hardcoding: a theme update changes the hash, and a hardcoded name then
+    # fails the build.
+    import glob, shutil
     pub = os.path.join(THEME, "public", "build")
-    if not os.path.exists(os.path.join(pub, "entry.client-NBCRT1.js")):
-        import shutil
-        for old, new in rename:
-            shutil.copyfile(
-                os.path.join(pub, f"{old}.js"), os.path.join(pub, f"{new}.js")
-            )
-        for path in [os.path.join(THEME, "build", "index.js")] + [
-            os.path.join(pub, "manifest-NBCRT1.js")
-        ]:
-            with open(path) as f:
-                s = f.read()
+    new_entry, new_manifest = "entry.client-NBCRT1", "manifest-NBCRT1"
+    if not os.path.exists(os.path.join(pub, f"{new_entry}.js")):
+        rename = []
+        for stem, new in (("entry.client-", new_entry), ("manifest-", new_manifest)):
+            hits = [f for f in sorted(glob.glob(os.path.join(pub, stem + "*.js")))
+                    if os.path.basename(f)[:-3] != new]
+            if len(hits) == 1:
+                rename.append((os.path.basename(hits[0])[:-3], new))
+        if len(rename) == 2:
             for old, new in rename:
-                s = s.replace(old, new)
-            with open(path, "w") as f:
-                f.write(s)
-        print("renamed entry.client + manifest (cache bust)")
+                shutil.copyfile(
+                    os.path.join(pub, f"{old}.js"), os.path.join(pub, f"{new}.js")
+                )
+            for path in [os.path.join(THEME, "build", "index.js"),
+                         os.path.join(pub, f"{new_manifest}.js")]:
+                with open(path) as f:
+                    s = f.read()
+                for old, new in rename:
+                    s = s.replace(old, new)
+                with open(path, "w") as f:
+                    f.write(s)
+            print("renamed entry.client + manifest (cache bust)")
+        else:
+            print("skipped cache-bust rename: stock bundle names not found")
 
     print(f"done ({total} replacements)")
 

@@ -26,6 +26,13 @@ $$
 
 where $\Delta E$ is the energy deficit below the surface edge, $t$ is the depth at which the ion scattered, $K$ is the kinematic factor, $\theta_{\mathrm{out}}$ is the exit angle from the surface normal, $dE/dx$ is the stopping power on the inward and outward paths, and $[S]$ is the **energy loss factor**, evaluated in the simplest ("surface energy") approximation at $E_0$ on the way in and $KE_0$ on the way out. Typical values are a few hundred eV per nanometer, so a detector resolution of about 15 keV translates to a near-surface depth resolution of tens of nanometers, improvable by grazing exit geometries that stretch the outward path. A film of one element thus appears as a box whose width gives its thickness, or more precisely its **areal density** $Nt$ in atoms/cm$^2$, since stopping is what is actually measured; dividing by an assumed atomic density converts to nanometers, and this distinction is why RBS thickness values are honest in atoms/cm$^2$ and model-dependent in nm.
 
+:::{figure} ../../assets/figures/rbs-geometry.svg
+:alt: RBS scattering geometry and energy bookkeeping
+:width: 100%
+
+The energy bookkeeping along the ion path: loss on the way in, the kinematic factor at the collision, and loss on the way out. Holding the stopping powers fixed at $E_0$ and $KE_0$ is the surface energy approximation, and it makes depth linear in energy.
+:::
+
 **Yield measures concentration.** The count rate in a channel is proportional to the number of beam particles, the detector solid angle, the concentration of the scattering element, and the Rutherford cross section evaluated at the ion energy *at that depth*. Since the cross section is exact, relative concentrations follow with no standards at all, and with a measured beam dose (integrated current) absolute ones. The $Z^2$ weighting makes the technique lopsided: the signature strength is heavy-on-light, where a submonolayer of Hf on silicon stands isolated at high energy above a low background, measurable to $10^{13}$ atoms/cm$^2$, about a hundredth of a monolayer. The signature weakness is the reverse: carbon or oxygen on a heavy substrate sits as a small bump on a large background, and their cross sections at MeV energies can also deviate from Rutherford because the He ion begins to touch the nuclear force (for oxygen there is a well-known strong resonance near 3.04 MeV that ion beam analysts exploit deliberately to boost oxygen sensitivity). Simulation and fitting programs (SIMNRA, RUMP) handle all of these effects and make multilayer interpretation routine; see the [simulation appendix](../../appendix/simulation-tools.md).
 
 The simulator below applies all three rules to a stack you define. The kinematic factors and the $Z^2/E^2$ cross sections are exact; the stopping powers are approximate tabulated values, so treat depth scales as semi-quantitative. Reproduce the classic cases: a heavy marker layer (Au) standing isolated above a light substrate, the box width growing with film thickness, layer signals shifting down in energy as you bury them, and the hopeless overlap of two neighboring heavy elements.
@@ -35,6 +42,13 @@ The simulator below applies all three rules to a stack you define. The kinematic
 
 % TODO: homework tie-in: Colab notebook version of this simulator that asks
 % students to fit an unknown spectrum quantitatively.
+
+:::{figure} ../../assets/figures/rbs-depth-resolution.svg
+:alt: what limits RBS depth resolution
+:width: 100%
+
+Each contribution to the depth resolution against depth, in quadrature. Grazing exit stretches depth into energy and improves the near-surface figure from 11 nm to 4 nm, but straggling and geometric spread erase the advantage by 300 nm.
+:::
 
 ## Instrumentation
 
@@ -55,6 +69,13 @@ RBS cannot see hydrogen: nothing backscatters from a lighter target, and hydroge
 
 % TODO: figure still wanted: an annotated experimental spectrum, and the ERD
 % geometry with absorber foil.
+
+:::{figure} ../../assets/figures/erd-geometry.svg
+:alt: elastic recoil detection geometry
+:width: 100%
+
+Elastic recoil detection for hydrogen. The beam and the detector sit on the same side because a recoil can only go forward, and the stopper foil passes the light recoils while blocking the forward-scattered beam ions.
+:::
 
 ## References and further reading
 

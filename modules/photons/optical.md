@@ -46,6 +46,13 @@ The same interference physics that ellipsometry measures precisely is visible to
 :::{anywidget} ../../widgets/film-color.js
 :::
 
+:::{figure} ../../assets/figures/ellipsometry-psi-delta.svg
+:alt: what ellipsometry measures
+:width: 100%
+
+Reflection rescales the p component relative to the s component and retards it, turning linear polarization into elliptical. The amplitude ratio is $\tan\Psi$ and the phase shift is $\Delta$.
+:::
+
 ## Raman spectroscopy
 
 :::{anywidget} ../../widgets/technique-schematic.js
@@ -61,6 +68,13 @@ For thin film work its virtues are speed, spatial resolution, and sensitivity to
 - **Disorder and doping**, most famously in carbon materials, where the defect-activated D band near 1350 cm$^{-1}$ against the G band near 1580 cm$^{-1}$ quantifies disorder in everything from graphene to diamond-like coatings; in graphene the 2D band lineshape counts layers, and Raman shifts also track doping level.
 
 The limits are the flip side of the physics: cross sections are tiny (roughly one photon in $10^8$), metals give almost no signal (screened polarizability and nanometer optical penetration), fluorescence can swamp the spectrum (often cured by changing laser wavelength), and laser heating can modify a thin film mid-measurement, so power dependence should be checked before trusting peak positions.
+
+:::{figure} ../../assets/figures/raman-levels.svg
+:alt: Rayleigh, Stokes, and anti-Stokes scattering
+:width: 100%
+
+The three scattering paths and the spectrum they produce for the silicon 520.7 cm$^{-1}$ mode. The anti-Stokes line is weaker by the Boltzmann factor, which is what makes the ratio a thermometer.
+:::
 
 ## Photoluminescence and absorption
 

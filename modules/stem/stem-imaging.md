@@ -21,6 +21,13 @@ At 100 to 300 kV, electrons are relativistic and their wavelengths are picometer
 
 Two operating modes share the column. Conventional TEM illuminates the sample broadly and forms an image with post-specimen lenses; STEM focuses the beam to a fine probe, scans it, and records scattered intensity on detectors below, building the image pixel by pixel exactly as in the [SEM](../sem/sem.md). The two are related by reciprocity (a STEM detector plays the role of a TEM source, and vice versa), so their contrast mechanisms mirror each other; STEM's practical advantages, directly interpretable incoherent contrast and simultaneous multi-signal collection, have made it the default for materials work, and this course follows that usage.
 
+:::{figure} ../../assets/figures/probe-size-terms.svg
+:alt: probe diameter contributions against convergence angle
+:width: 100%
+
+Each contribution to the probe diameter against convergence semi-angle at 300 kV, with the quadrature sum and its optimum, for an uncorrected and an aberration-corrected instrument.
+:::
+
 ## Contrast: what makes an image
 
 The beam leaving a thin sample carries several distinguishable signals, and detector geometry selects among them:
@@ -31,6 +38,13 @@ The beam leaving a thin sample carries several distinguishable signals, and dete
 - **Pixelated detectors** record the full diffraction pattern at every probe position (4D-STEM), from which any of the above contrasts can be synthesized after the fact, and quantities like local strain, orientation, polarity, and electromagnetic field maps can be computed. We keep 4D-STEM to a mention here; its methods are good final-project topics.
 
 Underneath all crystalline-sample imaging sits **dynamical diffraction**: a fast electron in a crystal does not scatter once but channels and exchanges intensity among beams continuously, with a characteristic length (the extinction distance, tens of nanometers) over which intensity oscillates between the direct and diffracted beams. This is the origin of the thickness fringes above, the reason image intensities are not simply proportional to scattering power, and the reason quantitative comparisons lean on simulation (the multislice method; see the [simulation appendix](../../appendix/simulation-tools.md)). HAADF's popularity rests on being the *most forgiving* of these effects, incoherent enough that simple interpretation usually holds, but honest atomic-scale quantification still checks against simulation.
+
+:::{figure} ../../assets/figures/haadf-z-contrast.svg
+:alt: HAADF intensity against atomic number
+:width: 100%
+
+HAADF intensity against atomic number with the $Z^{1.7}$ line, and the second panel showing how the exponent runs from 4/3 to 2 as the detector inner angle moves out past the screening angle.
+:::
 
 ## Diffraction in the microscope
 
@@ -64,6 +78,13 @@ Three more items belong on the checklist. The FIB lamella carries amorphized sur
 
 % TODO: figures still wanted: (b) HAADF cross-section of a device stack,
 % annotated (in-house data); (d) SAED pattern with indexing.
+
+:::{figure} ../../assets/figures/dose-damage.svg
+:alt: knock-on threshold and critical dose
+:width: 100%
+
+What limits the dose. Knock-on displacement threatens light atoms at the voltages we use, radiolysis threatens insulators and organics, and the critical dose of the material has to be compared against the dose the measurement needs.
+:::
 
 ## References and further reading
 
