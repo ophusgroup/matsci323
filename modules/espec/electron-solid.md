@@ -18,6 +18,9 @@ $$
 
 where $I(z)$ is the signal that reaches the detector from depth $z$, $\lambda$ is the inelastic mean free path at that electron's kinetic energy, and $\theta$ is the emission angle from the surface normal. About 95% of detected signal originates within $3\lambda\cos\theta$ of the surface, a few nanometers at most. The angular factor is free depth resolution: tilting the detector toward grazing emission shrinks the sampled depth with no change to the instrument, the basis of angle-resolved XPS.
 
+(imfp-calculator)=
+### Inelastic mean free path and sampling depth
+
 The interactive figure below is the most important one in this module. The left panel is the universal curve with the working energy ranges of LEED and XPS marked; the right panel converts the selected energy and emission angle into the numbers an analyst actually uses: the IMFP, the 95% sampling depth, and the attenuation of a substrate signal by an overlayer. Note how tilting toward grazing emission shrinks the sampling depth with no change to the instrument at all, which is the entire basis of angle-resolved XPS.
 
 :::{anywidget} ../../widgets/imfp-escape.js

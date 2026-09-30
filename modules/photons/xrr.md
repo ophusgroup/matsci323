@@ -79,6 +79,9 @@ A rough interface and a graded interface of the same width give the same average
 
 Three practicalities dominate real XRR work. First, **footprint**: at 0.2° incidence the beam spills over any sample shorter than tens of millimeters, so low-angle intensities need a geometric correction and small samples give distorted critical-angle regions. Second, **dynamic range**: following the signal down seven decades requires automatic attenuators for the direct beam and low backgrounds; the accessible thickness ceiling (a few hundred nanometers) is set by how finely the instrument can resolve the closing fringe spacing. Third, **fitting**: parameters correlate, thickness is robust because it is a frequency, but density and roughness both act on amplitudes, and a good fit starts from a physically sensible model of the stack, including layers you did not intend to have (native oxides, surface contamination). When an XRR fit and an [ellipsometry](optical.md) fit of the same film agree on thickness, both models gain credibility; the two techniques share the interference physics but weight the interfaces entirely differently.
 
+(xrr-calculator)=
+### XRR calculator
+
 The calculator below computes the exact Parratt reflectivity of a film on silicon as you adjust the stack. Work through the fitting logic one parameter at a time: thickness sets the fringe period, density sets the critical angle and the fringe contrast against the substrate, surface roughness accelerates the overall decay, and interface roughness damps the fringes without changing their period. These four signatures are exactly what an XRR fitting program is disentangling, and seeing them separately is most of the skill of reading a reflectivity curve.
 
 :::{anywidget} ../../widgets/xrr-explorer.js

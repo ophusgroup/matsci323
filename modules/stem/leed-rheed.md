@@ -8,6 +8,9 @@ A surface is periodic in two dimensions only. Its lattice is one of just five tw
 
 Because the surface has no periodicity along its normal, its reciprocal "lattice" is a set of **rods** perpendicular to the surface rather than points: there is no third Laue condition to satisfy, and diffracted beams appear wherever the Ewald sphere crosses a rod, at every incident energy. This one geometric fact shapes everything on this page. Any periodicity larger than the substrate's produces additional, more closely spaced rods, so reconstructions and ordered adsorbates appear as extra (fractional-order) spots.
 
+(ewald-construction)=
+### Ewald construction for LEED and RHEED
+
 The construction below makes the geometry explicit. In LEED mode the Ewald circle crosses the rods steeply at every energy, so diffraction never turns off, and raising the energy shrinks the pattern by pulling more rods inside the circle. Switch to RHEED mode and the enormous circle grazes the rods at a shallow angle: the highlighted chords, where the circle passes through rods of finite width, stretch into the streaks of a real RHEED pattern. The rod width is set by the inverse of the ordered domain size, so sharper crystals give sharper features in both geometries. Finally, toggle to a 3D crystal and watch the beams vanish: with reciprocal points instead of rods, an arbitrary energy and angle intersects almost nothing, which is why bulk diffraction requires scanning the angle.
 
 :::{anywidget} ../../widgets/ewald.js
@@ -41,6 +44,9 @@ The grazing geometry leaves the space above the sample completely open, which is
 - **Pattern character**: streaks on Laue circles indicate a smooth two-dimensional surface; a spotty, transmission-like pattern means the beam is passing through three-dimensional islands, indicating roughening or island growth in real time; rings mean polycrystal; extra streak sets reveal surface reconstructions, whose appearance and disappearance calibrate temperature and flux conditions in MBE practice.
 - **Azimuthal information**: rotating the sample swings different in-plane directions through the beam, mapping in-plane symmetry and epitaxial alignment.
 - **Intensity oscillations**: in layer-by-layer growth the specular intensity oscillates with exactly one period per monolayer, as the surface cycles between smooth (complete layer, high reflectivity) and maximally stepped (half layer, low reflectivity). Counting oscillations counts monolayers, giving absolute growth-rate calibration to a fraction of a monolayer, the standard by which MBE shutters are timed. The oscillations damp as growth front roughness accumulates over multiple layers, recover during growth interruptions as the surface smooths, and vanish entirely in step-flow growth at high temperature, where atoms reach step edges before nucleating new islands, so the oscillation amplitude is itself a report on the growth mode and the surface diffusion behind it, connecting back to the [Ehrlich-Schwoebel discussion](../surfaces/properties.md) of Module 1.
+
+(rheed-simulation)=
+### RHEED oscillation simulation
 
 The simulation below grows a film one atom at a time while computing the kinematic specular intensity. With ample surface diffusion, the film completes each layer before starting the next and the intensity oscillates, one period per monolayer: this is the oscillation an MBE operator counts to calibrate growth. Drag the diffusion slider to zero and the same deposition flux produces a roughening surface and dying oscillations. The damping of real RHEED oscillations is exactly this physics, and reads as a live report on the growth mode.
 

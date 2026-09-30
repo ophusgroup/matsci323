@@ -50,10 +50,16 @@ where $I$ is the tunneling current, $d$ the tip-sample gap, $\kappa$ the decay c
 
 STM images are not topography. In the standard theoretical picture (Tersoff-Hamann), constant-current contours follow surfaces of constant *local density of states* at the tip position, evaluated at energies between the two Fermi levels, so the image entangles geometry with electronic structure: an electronegative adsorbate can image as a depression and a dangling bond as a protrusion, and the same surface can look qualitatively different at opposite bias polarities (which is itself information, famously separating the filled and empty states of semiconductor surfaces). **Scanning tunneling spectroscopy (STS)** makes the electronic content explicit: holding the tip fixed and sweeping the bias while recording $dI/dV$ with a lock-in yields a spectrum proportional to the local density of states, resolving band edges, superconducting gaps, defect states, and molecular orbitals atom by atom, and grid spectroscopy builds energy-resolved maps that underpin much of two-dimensional-materials and correlated-oxide physics.
 
+(stm-simulation)=
+### STM feedback simulation
+
 The demonstration below runs the feedback loop. The tip follows a contour of constant current, and the recorded trace is the image. Two sites make the central point: one atom with a high local density of states images taller than its neighbors, and an adsorbate with a low density of states images as a depression even though it physically sits above the surface. Raising the current setpoint moves the tip closer everywhere; lowering the work function softens the decay and washes out the corrugation.
 
 :::{anywidget} ../../widgets/stm-tunnel.js
 :::
+
+(stm-requirements)=
+### Practical requirements
 
 The requirements keep STM a research instrument rather than a routine metrology tool: conductive samples, atomically clean surfaces (hence UHV, and frequently cryogenic temperatures for drift stability and spectroscopic resolution), and vibration isolation good enough for picometer signals. In this course's decision framework, STM answers questions about the atomic and electronic structure of a conductive surface that nothing else can answer at all, and AFM handles everything else.
 

@@ -61,6 +61,9 @@ $$
 
 with $P$ the perimeter, shows the general result: a compact patch has $P \propto \sqrt{N}$, so the surface term falls only as $N^{-1/2}$ and stays significant to large sizes. Everything else on this page follows from atoms rearranging to reduce this term.
 
+(surface-energy-sandbox)=
+### Surface energy sandbox
+
 The simulation below simulates example surfaces in two dimensions. Atoms evolve by Langevin dynamics at a temperature you control with the slider, and are colored by their energy: interior atoms sit at the bottom of the scale and appear dark, while undercoordinated atoms at surfaces, edges, corners, and grain boundaries glow. The box is periodic, so nothing is lost off the edges.
 
 :::{anywidget} ../../widgets/surface-energy.js
@@ -218,6 +221,9 @@ Solid surface energies are measured only with difficulty (typically from high-te
 % The oxide rows and the added metals still need checking against a source.
 
 Because $\gamma$ depends on orientation, a crystal free to choose its shape minimizes total surface energy rather than total area, giving the faceted equilibrium shapes of the [Wulff construction](wiki:Wulff_construction), exactly the physics that turned the simulated disk into a hexagon. Surface energy balances also decide whether a deposited film wets its substrate or balls up into islands, set the driving forces for grain growth and sintering, and drive the segregation and adsorption phenomena below.
+
+(wulff-construction)=
+### Wulff construction
 
 The construction below computes both cases. On the left, the polar plot of $\gamma(\theta)$ and the equilibrium shape it generates: with no anisotropy the shape is a circle (a liquid drop), and as anisotropy grows, facets appear and sharpen. On the right, the Winterbottom extension puts the same crystal on a substrate: the balance of surface, interface, and substrate energies truncates the shape, and sweeping the wetting parameter moves the island continuously from a barely attached particle to a spread film. This is the equilibrium framework behind island growth, dewetting, and why deposited films ball up on substrates they do not wet.
 

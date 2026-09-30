@@ -41,16 +41,19 @@ Ellipsometry does not measure thickness directly. The measured $(\Psi, \Delta)$ 
 % TODO: figure: Psi/Delta spectra for oxide-on-Si at a few thicknesses, with the
 % fitted model overlaid. Easy to compute ourselves with a transfer-matrix code.
 
-The same interference physics that ellipsometry measures precisely is visible to the naked eye. The demonstration below computes the reflectance spectrum of an oxide or nitride film on silicon and converts it to the color you would see in the cleanroom: the famous oxide color chart. Judging thickness by eye against this chart, good to a few tens of nanometers once calibrated, is the oldest optical metrology in the semiconductor industry, and why the process history of a wafer can often be read from its color.
-
-:::{anywidget} ../../widgets/film-color.js
-:::
-
 :::{figure} ../../assets/figures/ellipsometry-psi-delta.svg
 :alt: what ellipsometry measures
 :width: 100%
 
 Reflection rescales the p component relative to the s component and retards it, turning linear polarization into elliptical. The amplitude ratio is $\tan\Psi$ and the phase shift is $\Delta$.
+:::
+
+(film-color-calculator)=
+### Thin film interference colors
+
+The same interference physics that ellipsometry measures precisely is visible to the naked eye. The demonstration below computes the reflectance spectrum of an oxide or nitride film on silicon and converts it to the color you would see in the cleanroom: the famous oxide color chart. Judging thickness by eye against this chart, good to a few tens of nanometers once calibrated, is the oldest optical metrology in the semiconductor industry, and why the process history of a wafer can often be read from its color.
+
+:::{anywidget} ../../widgets/film-color.js
 :::
 
 ## Raman spectroscopy

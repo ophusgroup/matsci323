@@ -49,6 +49,9 @@ $$ (eq-monolayer-time)
 
 with $t_{\mathrm{ML}}$ the time to accumulate one monolayer. At $10^{-6}$ Torr a monolayer forms in seconds; at $10^{-10}$ Torr it takes on the order of ten hours. Surface-sensitive spectroscopy (XPS, AES, LEIS) and atomically resolved surface imaging (STM, LEED) therefore live in UHV, and every discussion of a technique in this course will note how demanding its vacuum requirements really are. Real sticking coefficients are below one and depend on the gas and surface, so these are worst-case times; they are still the right planning numbers, because the residual gas in a UHV system is dominated by exactly the reactive species (water, CO, hydrogen) that stick well. The calculator below carries the full arithmetic across the pressure range; sliding from atmosphere to UHV, fourteen orders of magnitude, is the fastest way to internalize why vacuum hardware dominates surface analysis.
 
+(vacuum-calculator)=
+### Vacuum calculator
+
 :::{anywidget} ../../widgets/vacuum-calc.js
 :::
 

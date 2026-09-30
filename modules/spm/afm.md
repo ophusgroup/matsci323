@@ -50,10 +50,16 @@ One surface measured two ways. The scan size sets the longest wavelength include
 
 ## Artifacts
 
+(afm-tip-simulation)=
+### Tip shape simulation
+
 Every AFM image is the interaction of two shapes: the surface and the tip. The demonstration below scans a realistic tip, an apex sphere blended into a conical shank, across known test structures, drawn at true aspect ratio so the shapes are not exaggerated. The tip presets carry representative radii and sidewall angles: a standard Si probe, a very sharp Si$_3$N$_4$ probe, and a blunt diamond-coated probe for conductive or wear-heavy work. Sweep the radius on the particles preset and watch every feature broaden as roughly $2\sqrt{rR}$ while heights stay correct; try the trench, where the sidewall angle, not the radius, decides whether the floor is reachable; and enable the double tip for the characteristic ghost-image doubling artifact. The measured $R_q$ is always at or below the true value, because the tip is a low-pass filter.
 
 :::{anywidget} ../../widgets/afm-tip.js
 :::
+
+(afm-other-artifacts)=
+### Other artifacts
 
 Beyond tip shape, the standard artifact checklist: feedback ringing on steep edges (visible as overshoot on one side), thermal drift and piezo creep skewing slow scans, scanner bow adding false long-wavelength curvature, and the line-by-line leveling that every AFM image receives, which is necessary (each scan line has an arbitrary offset) but can erase real long-wavelength structure or create streaks from particles dragged by the tip. The working rules are simple: know the tip condition (image a known sharp standard when in doubt), image the same area twice with the scan rotated, and treat any feature at the resolution limit with suspicion.
 

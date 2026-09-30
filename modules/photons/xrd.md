@@ -29,6 +29,13 @@ Here $d_{hkl}$ is the spacing of the planes, $\theta$ the angle between the beam
 
 The equivalent and more powerful statement is made in **reciprocal space**. Define the scattering vector $\mathbf{q} = \mathbf{k}_{\mathrm{out}} - \mathbf{k}_{\mathrm{in}}$, with $|\mathbf{k}| = 2\pi/\lambda$ for elastic scattering; its magnitude is $q = (4\pi/\lambda)\sin\theta$. Diffraction occurs when $\mathbf{q}$ equals a reciprocal lattice vector $\mathbf{g}_{hkl}$, a condition identical to Bragg's law but which keeps track of directions as well as magnitudes. This picture, formalized as the Ewald sphere construction, is developed interactively in [Module 6](../stem/leed-rheed.md); for now the important habit is to think of every diffraction measurement as answering the question "which reciprocal lattice points does my scan pass through?"
 
+:::{figure} ../../assets/figures/bragg-geometry.svg
+:alt: Bragg's law geometry and the scattering vector
+:width: 100%
+
+**Bragg's law and the scattering vector.** Left: the ray scattered by the lower plane travels an extra $2d\sin\theta$, and the two rays add in phase when this equals a whole number of wavelengths. Right: the scattering vector $\mathbf{q} = \mathbf{k}_{\mathrm{out}} - \mathbf{k}_{\mathrm{in}}$ points along the normal of the diffracting planes, with length $q = (4\pi/\lambda)\sin\theta = 2\pi/d$ at the Bragg condition.
+:::
+
 Peak intensities carry as much information as positions. The scattering amplitude of one unit cell is the **structure factor**,
 
 $$
@@ -36,6 +43,9 @@ F_{hkl} = \sum_j f_j \, e^{2\pi i (h x_j + k y_j + l z_j)},
 $$
 
 summing over the atoms $j$ in the unit cell at fractional positions $(x_j, y_j, z_j)$, with $f_j$ the atomic form factor of atom $j$, the amplitude that atom scatters, and $(hkl)$ the Miller indices of the reflection. Interference between atoms within the cell can cancel entire reflections: for an FCC metal, $F$ vanishes unless $h,k,l$ are all even or all odd, which is why an FCC powder pattern shows 111, 200, 220, 311 and nothing between. Measured intensities also fold in the number of symmetry-equivalent planes (multiplicity), the polarization and geometry-dependent Lorentz factor, thermal vibration (the Debye-Waller factor, which damps high-angle peaks), and absorption. Quantitative phase analysis and Rietveld refinement fit all of these at once; for thin film work the qualitative rules are usually enough: intensities scale with $|F|^2$, and anomalies in relative intensities compared to the powder reference are the first sign of texture.
+
+(xrd-pattern-calculator)=
+### XRD pattern calculator
 
 The calculator below turns this machinery into patterns. Pick a material and the reflections appear where the structure factor allows them: FCC copper shows 111 and 200, BCC tungsten shows 110, and diamond-cubic silicon is missing 200 and 222 entirely. Then add the microstructure of a real film: the texture slider narrows the pattern toward the single family of planes parallel to the surface (compare the two microstructure sketches), the grain-size slider broadens peaks by the Scherrer relation, and the microstrain slider broadens them with the $\tan\theta$ signature that Williamson-Hall analysis exploits.
 
@@ -54,9 +64,23 @@ For polycrystalline films the standard fix is **grazing incidence XRD (GIXRD)**:
 
 ## Epitaxial films: rocking curves and reciprocal space maps
 
-For epitaxial films, high-resolution XRD is the standard tool of the semiconductor industry. A **rocking curve** holds the detector fixed at a Bragg peak and rocks the sample through $\omega$: this scans $\mathbf{q}$ *sideways* through the reciprocal lattice point, so its width measures the spread of lattice plane orientations, and hence the mosaic spread and dislocation content. Widths range from a few arcseconds for perfect homoepitaxy to degrees for heavily defected layers, and for many device materials the rocking-curve width is the accepted single-number quality metric.
+For epitaxial films, high-resolution XRD is the standard tool of the semiconductor industry. A **rocking curve** holds the detector fixed at a Bragg peak and rocks the sample through $\omega$: this scans $\mathbf{q}$ *sideways* through the reciprocal lattice point, so its width measures the spread of lattice plane orientations, and hence the mosaic spread and dislocation content. Widths range from about 0.001° for perfect homoepitaxy to 1° or more for heavily defected layers, and for many device materials the rocking-curve width is the accepted single-number quality metric.
+
+:::{figure} ../../assets/figures/xrd-scan-paths.svg
+:alt: omega-2theta scan and rocking curve through a reciprocal lattice point
+:width: 100%
+
+**Two scans through one reciprocal lattice point.** Left: at the Bragg condition, $\mathbf{q}$ reaches a reciprocal lattice point. Middle: the $\omega$-$2\theta$ scan moves $\mathbf{q}$ along its length, through a spot stretched by a spread in plane spacing from strain and composition gradients. Right: the rocking curve swings $\mathbf{q}$ at constant length, through a spot stretched by a spread in plane tilt from mosaic structure and dislocations.
+:::
 
 A **reciprocal space map (RSM)** scans both $\omega$ and $2\theta$ around an asymmetric reflection (one whose planes are inclined to the surface), resolving the in-plane and out-of-plane lattice parameters separately. This is the definitive measurement of coherent strain: a pseudomorphic film appears at the same in-plane reciprocal coordinate as the substrate, while a relaxed film moves toward its bulk lattice constant, and partial relaxation puts it in between, with the relaxed fraction read directly off the map. Around symmetric reflections of thin coherent films, **Laue thickness fringes** appear: subsidiary maxima spaced by $\Delta q = 2\pi/t$, the diffraction signature of a finite number of coherently scattering planes. Their presence certifies a flat, coherent film and gives its thickness; fitting the full profile with dynamical diffraction theory (which accounts for multiple scattering in thick perfect crystals, where the kinematic single-scattering picture used above breaks down) refines composition and strain in multilayer stacks to high precision.
+
+:::{figure} ../../assets/figures/rsm-relaxation.svg
+:alt: film spot positions in a reciprocal space map for different relaxation
+:width: 60%
+
+**Reading relaxation from a reciprocal space map.** A pseudomorphic film ($R = 0$) keeps the in-plane lattice parameter of the substrate, so its spot lies directly below the substrate spot. A fully relaxed film ($R = 1$) has its bulk lattice parameter in both directions, so its spot lies on the line through the origin and the substrate spot. A partly relaxed film lies between them. Drawn for a film with a larger lattice parameter than the substrate.
+:::
 
 ## Grain size and microstrain
 
@@ -72,7 +96,7 @@ estimates the coherently diffracting domain size $t$ from the peak width $\beta$
 :alt: Williamson-Hall plot
 :width: 100%
 
-The Williamson-Hall construction separates the two broadening mechanisms: size broadening is the same at every peak and sets the intercept, microstrain grows with $\sin\theta$ and sets the slope.
+Williamson-Hall plot for three simulated films, with one point per diffraction peak. Blue: 20 nm domains and no microstrain, so every peak has the same $\beta\cos\theta$ and the line is flat. Green: large grains with a microstrain $\varepsilon = 0.002$, so the line passes through the origin. Red: both effects together. The intercept $K\lambda/t$ gives the domain size $t$, and the slope $4\varepsilon$ gives the microstrain.
 :::
 
 ## Texture and stress

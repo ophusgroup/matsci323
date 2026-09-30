@@ -23,6 +23,9 @@ This closing chapter organizes the whole quarter around the problem posed in [th
 | AFM | Topography and roughness | Surface | 1 to 10 nm | sub-angstrom heights | No |
 | Functional SPM | Local properties: conduction, work function, domains | Surface | 10 to 50 nm | mode dependent | Usually no |
 
+(technique-map)=
+### Technique map
+
 The same landscape as a map: each technique plotted by its lateral resolution and the depth it samples per measurement, colored by probe family. Hover any point for the question that technique answers best. Note the empty upper-left corner: no technique offers atomic lateral resolution while sampling deep volumes, which is why buried-interface problems require sample preparation.
 
 :::{anywidget} ./widgets/technique-map.js

@@ -35,6 +35,9 @@ The energy bookkeeping along the ion path: loss on the way in, the kinematic fac
 
 **Yield measures concentration.** The count rate in a channel is proportional to the number of beam particles, the detector solid angle, the concentration of the scattering element, and the Rutherford cross section evaluated at the ion energy *at that depth*. Since the cross section is exact, relative concentrations follow with no standards at all, and with a measured beam dose (integrated current) absolute ones. The $Z^2$ weighting makes the technique lopsided: the signature strength is heavy-on-light, where a submonolayer of Hf on silicon stands isolated at high energy above a low background, measurable to $10^{13}$ atoms/cm$^2$, about a hundredth of a monolayer. The signature weakness is the reverse: carbon or oxygen on a heavy substrate sits as a small bump on a large background, and their cross sections at MeV energies can also deviate from Rutherford because the He ion begins to touch the nuclear force (for oxygen there is a well-known strong resonance near 3.04 MeV that ion beam analysts exploit deliberately to boost oxygen sensitivity). Simulation and fitting programs (SIMNRA, RUMP) handle all of these effects and make multilayer interpretation routine; see the [simulation appendix](../../appendix/simulation-tools.md).
 
+(rbs-simulation)=
+### RBS spectrum simulation
+
 The simulator below applies all three rules to a stack you define. The kinematic factors and the $Z^2/E^2$ cross sections are exact; the stopping powers are approximate tabulated values, so treat depth scales as semi-quantitative. Reproduce the classic cases: a heavy marker layer (Au) standing isolated above a light substrate, the box width growing with film thickness, layer signals shifting down in energy as you bury them, and the hopeless overlap of two neighboring heavy elements.
 
 :::{anywidget} ../../widgets/rbs-spectrum.js

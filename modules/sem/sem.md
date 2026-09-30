@@ -44,6 +44,9 @@ The **interaction volume** ties everything together. The beam spreads into a pea
 Three secondary populations reach the detector and only SE1 is probe sized, which is why an SE image is sharp in its detail and carries a blurred $Z$-weighted background underneath. The right panel is the tilt dependence that makes edges bright.
 :::
 
+(sem-monte-carlo)=
+### Electron trajectory simulation
+
 The simulation below computes real electron trajectories with the standard single-scattering Monte Carlo model (screened Rutherford elastic scattering plus Bethe energy loss). Backscattered trajectories are highlighted, and the backscatter yield $\eta$ accumulates live. Three experiments to run: sweep the beam energy on silicon and watch the interaction volume grow as roughly $E^{1.7}$; hold the energy fixed and step through the targets to watch the volume shrink and the backscatter fraction climb with atomic number; then set a finite sample thickness and sweep the energy again. With the view locked to the film, the deposited energy moves from fully contained to punching through as the range passes the thickness, which is the geometry of every thin film measured on a substrate and of every electron-transparent lamella. All three trends are the daily working intuition of SEM operation.
 
 :::{anywidget} ../../widgets/sem-mc.js
