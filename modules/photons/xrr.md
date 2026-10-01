@@ -2,6 +2,13 @@
 
 X-ray reflectivity (XRR) measures the specular reflection of X-rays from a film at angles of a fraction of a degree to a few degrees. It is one of the most precise thickness measurements available anywhere, routinely better than 1%, and it works on amorphous and crystalline films alike because it depends only on electron density, not on crystallinity. Together with its diffuse-scattering cousins GISAXS and GIWAXS, it forms the grazing-incidence family of measurements that probe film thickness, density, roughness, and nanoscale morphology. This page develops the physics from the refractive index up, because every feature of a reflectivity curve maps onto one term of that physics.
 
+:::{figure} ../../assets/figures/xrr-setup.svg
+:alt: XRR measurement geometry with source, slit, film on substrate, and detector
+:width: 100%
+
+**The XRR measurement.** The beam strikes the sample at a grazing angle $\theta$, and the detector records the beam reflected at the same angle, $2\theta$ from the incident beam. During the scan the incidence and exit angles stay equal: either the source and detector each tilt by $\theta$ above a fixed sample, or the sample turns by $\theta$ and the detector by $2\theta$. A film reflects twice, at its surface (red) and at the buried interface (blue), and the blue beam travels an extra $2t\sin\theta$. Angles are exaggerated.
+:::
+
 | At a glance | |
 | --- | --- |
 | Probe in / signal out | X-rays in at grazing incidence, reflected or scattered X-rays out |
@@ -28,6 +35,13 @@ $$
 $$
 
 typically 0.2° to 0.6°. Below $\theta_c$ the transmitted wave is evanescent, penetrating only a few nanometers, a fact exploited by grazing-incidence techniques to achieve surface sensitivity with a deeply penetrating probe. Above $\theta_c$ the reflectivity of an ideally sharp surface falls off steeply; from the Fresnel equations, the reflection amplitude between media with vertical wavevectors $k_{z,1}$ and $k_{z,2}$ is $r = (k_{z,1}-k_{z,2})/(k_{z,1}+k_{z,2})$, which for $\theta \gg \theta_c$ gives the workhorse asymptote
+
+:::{figure} ../../assets/figures/xrr-refraction.svg
+:alt: refraction toward the surface above the critical angle, and total external reflection below it
+:width: 100%
+
+**Refraction and total external reflection.** The dashed line marks the critical angle $\theta_c$. Left: a beam steeper than $\theta_c$ enters the solid and bends toward the surface, to a smaller angle $\theta'$, because $n < 1$, and only a small fraction reflects. Right: a beam shallower than $\theta_c$ is reflected completely, and an evanescent wave runs along the surface and decays within a few nanometers. Angles are exaggerated; real critical angles are below 1°.
+:::
 
 $$
 R(\theta) \approx \left( \frac{\theta_c}{2\theta} \right)^4 .
@@ -61,6 +75,13 @@ R(q) \approx R_F(q) \left| \frac{1}{\rho_\infty}\int \frac{d\rho_e}{dz} \, e^{i 
 $$
 
 where $q$ is the momentum transfer normal to the surface, $R_F(q)$ the Fresnel reflectivity of an ideally sharp surface, $\rho_e(z)$ the electron density at depth $z$, and $\rho_\infty$ its value deep in the substrate. The reflectivity is the Fresnel decay times the Fourier transform of the electron-density *gradient*. Everything about a reflectivity curve follows from this statement: sharp interfaces contribute strongly at all $q$ (hence $q^{-4}$ persists), a film of thickness $t$ has two gradient spikes separated by $t$ (hence fringes of period $2\pi/t$ in $q$), and any smearing of an interface kills the high-$q$ signal (hence the roughness damping next).
+
+:::{figure} ../../assets/figures/xrr-density-profile.svg
+:alt: electron density against depth for a film on a substrate
+:width: 80%
+
+**The electron density profile that XRR measures**, for a film denser than its substrate. The film density sets the critical angle, the thickness sets the fringe period, the density step at the buried interface sets the fringe contrast, and the interface widths $\sigma$ damp the curve.
+:::
 
 ## Roughness and diffuse scattering
 

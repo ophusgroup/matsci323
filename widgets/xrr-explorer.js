@@ -13,6 +13,7 @@ const K = 2 * Math.PI / LAM;
 const CDELTA = 1.0645e-35 * 6.022e29; // delta = CDELTA * rho[g/cc] * (Z/A)
 // name, nominal density g/cc, Z/A, beta = delta/betaRatio (approximate)
 const MATS = {
+  "Si":    { rho: 2.33, za: 0.4985, br: 45 },
   "SiO2":  { rho: 2.20, za: 0.499, br: 80 },
   "Si3N4": { rho: 3.17, za: 0.499, br: 60 },
   "Al2O3": { rho: 3.95, za: 0.490, br: 70 },
@@ -45,8 +46,10 @@ const cexp = (c) => {  // exp(re + i im)
 // layer 0 is vacuum (delta=beta=0), last layer semi-infinite
 function reflectivity(theta, layers) {
   const s2 = Math.sin(theta) ** 2;
+  // n = 1 - delta + i beta, so kz = k sqrt(sin^2 theta - 2 delta + 2 i beta) has a
+  // positive imaginary part and exp(i kz z) decays into an absorbing layer
   const kz = layers.map(l => {
-    const c = csqrt([s2 - 2 * l.delta, -2 * l.beta]);
+    const c = csqrt([s2 - 2 * l.delta, 2 * l.beta]);
     return [K * c[0], K * c[1]];
   });
   let X = [0, 0];
@@ -55,7 +58,11 @@ function reflectivity(theta, layers) {
     let r = cdiv([kz[j][0] - kz[j + 1][0], kz[j][1] - kz[j + 1][1]],
                  [kz[j][0] + kz[j + 1][0], kz[j][1] + kz[j + 1][1]]);
     const sg = layers[j + 1].sigmaTop || 0;
-    const nc = cexp([-2 * (kz[j][0] * kz[j + 1][0] - kz[j][1] * kz[j + 1][1]) * sg * sg,
+    // Nevot-Croce factor exp(-2 kz_j kz_j+1 sigma^2). Below the critical angle both kz
+    // are nearly imaginary, their product turns negative, and the factor would exceed 1;
+    // capping its magnitude at 1 keeps roughness from ever amplifying the reflection.
+    const pr = Math.max(0, kz[j][0] * kz[j + 1][0] - kz[j][1] * kz[j + 1][1]);
+    const nc = cexp([-2 * pr * sg * sg,
                      -2 * (kz[j][0] * kz[j + 1][1] + kz[j][1] * kz[j + 1][0]) * sg * sg]);
     r = cmul(r, nc);
     if (j + 1 < layers.length - 1) {
@@ -101,15 +108,16 @@ function render({ model, el }) {
 </div>
 <div class="w-bar">
   <label>film <select class="w-mat"></select></label>
-  <label>thickness <input class="w-t" type="range" min="3" max="120" step="0.5" value="10"><span class="w-val w-tv"></span></label>
+  <label>thickness <input class="w-t" type="range" min="0" max="120" step="0.5" value="10"><span class="w-val w-tv"></span></label>
   <label>density <input class="w-d" type="range" min="0.60" max="1.15" step="0.01" value="1.00"><span class="w-val w-dv"></span></label>
   <label>surface roughness <input class="w-r1" type="range" min="0" max="3" step="0.05" value="0.3"><span class="w-val w-r1v"></span></label>
   <label>interface roughness <input class="w-r2" type="range" min="0" max="3" step="0.05" value="0.2"><span class="w-val w-r2v"></span></label>
+  <label><input class="w-q4" type="checkbox"> R &times; &theta;&#8308;</label>
 </div>`;
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>X-ray reflectivity explorer.</b> Exact Parratt reflectivity; each slider maps to one feature of the curve.";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>X-ray reflectivity explorer.</b> Exact Parratt reflectivity; each slider maps to one feature of the curve. Choose Si as the film, or set the thickness to zero, for a bare Si surface. Tick R &times; &theta;&#8308; to remove the &theta;&#8315;&#8308; falloff and show the fringes on a flat background.";
   root.appendChild(cap);
 
   const sel = root.querySelector(".w-mat");
@@ -121,6 +129,7 @@ function render({ model, el }) {
   const sc = root.querySelector(".w-schem");
   const inT = root.querySelector(".w-t"), inD = root.querySelector(".w-d");
   const inR1 = root.querySelector(".w-r1"), inR2 = root.querySelector(".w-r2");
+  const inQ4 = root.querySelector(".w-q4");
 
   function dark() { return document.documentElement.classList.contains("dark"); }
   function syncTheme() { root.classList.toggle("w-dark", dark()); draw(); }
@@ -132,10 +141,14 @@ function render({ model, el }) {
     const t = +inT.value, ds = +inD.value, s1 = +inR1.value, s2 = +inR2.value;
     const dF = CDELTA * m.rho * ds * m.za, bF = dF / m.br;
     const dS = CDELTA * SI.rho * SI.za, bS = dS / SI.br;
-    const layers = [
+    // a film of zero thickness leaves the bare substrate, with the surface roughness
+    const layers = t > 0 ? [
       { delta: 0, beta: 0, d: 0, sigmaTop: 0 },
       { delta: dF, beta: bF, d: t, sigmaTop: s1 },
       { delta: dS, beta: bS, d: 0, sigmaTop: s2 },
+    ] : [
+      { delta: 0, beta: 0, d: 0, sigmaTop: 0 },
+      { delta: dS, beta: bS, d: 0, sigmaTop: s1 },
     ];
     const dpr = window.devicePixelRatio || 1;
     const w = cv.clientWidth || 360, h = 330;
@@ -143,19 +156,35 @@ function render({ model, el }) {
     const g = cv.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, w, h);
-    const mL = 46, mR = 10, mT = 12, mB = 34;
+    const mL = 60, mR = 10, mT = 12, mB = 34;
     const pw = w - mL - mR, ph = h - mT - mB;
-    const thMax = 4 * Math.PI / 180, rMin = -8, rMax = 0.3;
+    const thMax = 4 * Math.PI / 180;
+    // R x theta^4 removes the theta^-4 Fresnel decay above the critical angle, so the
+    // fringes ride on a flat line. Scaled by the Si critical angle, a bare Si surface
+    // levels off at 1/16.
+    const scaled = inQ4.checked, thRef = Math.sqrt(2 * dS);
+    const NPT = 700, vals = [];
+    for (let i = 1; i <= NPT; i++) {
+      const th = (i / NPT) * thMax;
+      const R = reflectivity(th, layers);
+      vals.push([th, scaled ? R * (th / thRef) ** 4 : R]);
+    }
+    let rMin = -8, rMax = 0.3;
+    if (scaled) {
+      const top = Math.max(...vals.map(v => Math.log10(Math.max(v[1], 1e-30))));
+      rMax = Math.ceil(top) + 0.3;
+      rMin = rMax - 5.3;
+    }
     const X = th => mL + (th / thMax) * pw;
     const Y = lr => mT + (rMax - lr) / (rMax - rMin) * ph;
     const isD = dark();
     // grid: decades and 1-degree lines
     g.strokeStyle = isD ? "#333" : "#eee"; g.lineWidth = 1;
     g.fillStyle = isD ? "#999" : "#777"; g.font = "12px system-ui";
-    for (let d = 0; d >= rMin; d--) {
+    for (let d = Math.floor(rMax); d >= Math.ceil(rMin); d--) {
       g.beginPath(); g.moveTo(mL, Y(d)); g.lineTo(w - mR, Y(d)); g.stroke();
-      g.fillText(d === 0 ? "1" : "10" + String.fromCharCode(0x207B) +
-        String(-d).split("").map(c => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+c]).join(""), 6, Y(d) + 3);
+      const sup = n => String(Math.abs(n)).split("").map(c => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+c]).join("");
+      g.fillText(d === 0 ? "1" : d === 1 ? "10" : "10" + (d < 0 ? String.fromCharCode(0x207B) : "") + sup(d), 22, Y(d) + 3);
     }
     for (let dg = 0; dg <= 4; dg++) {
       const xx = X(dg * Math.PI / 180);
@@ -164,15 +193,13 @@ function render({ model, el }) {
     }
     g.fillText("incidence angle θ", mL + pw / 2 - 40, h - 6);
     g.save(); g.translate(12, mT + ph / 2 + 30); g.rotate(-Math.PI / 2);
-    g.fillText("reflectivity", 0, 0); g.restore();
+    g.fillText(scaled ? "R × (θ/θc,Si)⁴" : "reflectivity", 0, 0); g.restore();
     // curve
     g.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
     g.lineWidth = 1.6; g.beginPath();
     let started = false;
-    for (let i = 1; i <= 700; i++) {
-      const th = (i / 700) * thMax;
-      const R = reflectivity(th, layers);
-      const lr = Math.log10(Math.max(R, 1e-12));
+    for (const [th, R] of vals) {
+      const lr = Math.log10(Math.max(R, 1e-30));
       if (lr < rMin) { started = false; continue; }
       const px = X(th), py = Y(Math.min(lr, rMax));
       started ? g.lineTo(px, py) : g.moveTo(px, py);
@@ -188,7 +215,7 @@ function render({ model, el }) {
       q.setTransform(dpr, 0, 0, dpr, 0, 0);
       q.fillStyle = isD ? "#221f1e" : "#ffffff";
       q.fillRect(0, 0, sw, sh);
-      const surfY = 130, filmPx = 14 + t * 0.55;
+      const surfY = 130, filmPx = t > 0 ? 14 + t * 0.55 : 0;
       const cx = sw * 0.5;
       const wig = (y, amp, ph) => {
         q.beginPath();
@@ -204,13 +231,13 @@ function render({ model, el }) {
       // rough interfaces
       q.strokeStyle = isD ? "#eee" : "#333"; q.lineWidth = 1.2;
       wig(surfY, Math.min(5, 0.6 + s1 * 2.2), 0);
-      wig(surfY + filmPx, Math.min(5, 0.6 + s2 * 2.2), 2);
+      if (t > 0) wig(surfY + filmPx, Math.min(5, 0.6 + s2 * 2.2), 2);
       // rays: surface reflection plus one internal bounce (the fringe pair)
       const rayA = 0.40, run = surfY - 26;
       q.strokeStyle = isD ? "rgb(255,63,63)" : "rgb(204,0,0)"; q.lineWidth = 1.6;
       q.beginPath(); q.moveTo(cx - run / Math.tan(rayA) * 0.55, 26);
       q.lineTo(cx, surfY); q.lineTo(cx + run / Math.tan(rayA) * 0.55, 26); q.stroke();
-      q.globalAlpha = 0.65;
+      q.globalAlpha = t > 0 ? 0.65 : 0;
       q.beginPath(); q.moveTo(cx, surfY); q.lineTo(cx + filmPx * 1.5, surfY + filmPx);
       q.lineTo(cx + filmPx * 3, surfY);
       q.lineTo(cx + filmPx * 3 + run / Math.tan(rayA) * 0.55, 26); q.stroke();
@@ -218,13 +245,17 @@ function render({ model, el }) {
       q.fillStyle = isD ? "#eee" : "#222"; q.font = "12.5px system-ui";
       q.fillText("X-rays", 12, 22);
       q.fillText("θ", cx - 34, surfY - 8);
-      q.fillText(sel.value + "   t, σ₁", 14, surfY + Math.max(14, Math.min(filmPx - 4, 24)));
-      q.fillText("Si   σ₂", 14, surfY + filmPx + 16);
+      if (t > 0) {
+        q.fillText(sel.value + "   t, σ₁", 14, surfY + Math.max(14, Math.min(filmPx - 4, 24)));
+        q.fillText("Si   σ₂", 14, surfY + filmPx + 16);
+      } else {
+        q.fillText("Si   σ₁ (no film)", 14, surfY + 16);
+      }
       // readouts inside the panel
       q.fillStyle = isD ? "#bbb" : "#555"; q.font = "12.5px system-ui";
-      const ro = [["critical angle (film)", tcF.toFixed(3) + "°"],
+      const ro = [["critical angle (film)", t > 0 ? tcF.toFixed(3) + "°" : "no film"],
                   ["critical angle (Si)", tcS.toFixed(3) + "°"],
-                  ["fringe period λ/2t", (LAM / (2 * t) * 180 / Math.PI).toFixed(3) + "°"]];
+                  ["fringe period λ/2t", t > 0 ? (LAM / (2 * t) * 180 / Math.PI).toFixed(3) + "°" : "no film"]];
       ro.forEach(([k, v], i) => {
         q.fillText(k, 12, 288 + i * 16);
         q.fillStyle = isD ? "#eee" : "#111";
@@ -238,7 +269,8 @@ function render({ model, el }) {
     root.querySelector(".w-r1v").textContent = s1.toFixed(2) + " nm";
     root.querySelector(".w-r2v").textContent = s2.toFixed(2) + " nm";
   }
-  for (const i of [sel, inT, inD, inR1, inR2]) i.addEventListener("input", draw);
+  for (const i of [sel, inT, inD, inR1, inR2, inQ4]) i.addEventListener("input", draw);
+  inQ4.addEventListener("change", draw);
   new ResizeObserver(draw).observe(cv);
   new ResizeObserver(draw).observe(sc);
   syncTheme();
