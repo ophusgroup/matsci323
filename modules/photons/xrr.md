@@ -51,13 +51,15 @@ where $R(\theta)$ is the fraction of the incident intensity reflected at inciden
 
 ## One film: Kiessig fringes
 
-Add a film and there are two reflecting interfaces. The two reflected amplitudes interfere with a phase difference set by the optical path through the film, producing thickness oscillations (**Kiessig fringes**). Including refraction, the fringe maxima sit at angles satisfying $\theta_m^2 \approx \theta_c^2 + (m\lambda/2t)^2$; well above the critical angle the period settles to
+Add a film and there are two reflecting interfaces. The two reflected amplitudes interfere with a phase difference set by the optical path through the film, producing thickness oscillations (**Kiessig fringes**). Including refraction, the fringes sit at angles satisfying $\theta_m^2 \approx \theta_{c,\mathrm{film}}^2 + (m\lambda/2t)^2$, with $m$ the fringe order and $\theta_{c,\mathrm{film}}$ the critical angle of the film; well above the critical angle the period settles to
 
 $$
 \Delta\theta \approx \frac{\lambda}{2t},
 $$
 
 with $\Delta\theta$ the angular spacing of successive fringes, $\lambda$ the X-ray wavelength, and $t$ the film thickness, so a 50 nm film measured with Cu K$\alpha$ shows fringes about 0.09° apart, and the refraction correction compresses the first few fringes just above $\theta_c$ (the effect is visible in the simulator below). Reading the period gives the thickness immediately, with a precision that comes from counting many fringes; this is why XRR thickness values carry sub-percent error bars. The fringe *amplitude* is set by the electron-density contrast between film and substrate: a dense film on a light substrate (or vice versa) gives deep fringes, while a density-matched film gives almost none, and a film denser than its substrate shows its own higher critical angle as a visible shoulder.
+
+Whether this condition marks the fringe maxima or the minima depends on the density step at the buried interface. Each reflected amplitude takes the sign of the change in electron density at its interface, and at the top surface the density always rises. If the substrate is denser than the film, as for SiO$_2$ on Si, the density also rises at the buried interface, both reflections have the same sign, and the condition gives the fringe maxima. If the film is denser than the substrate, as for W, TiN, or Cu on Si, the density falls at the buried interface, that reflection changes sign, and the condition gives the fringe minima; this is the same half-wave shift that sets the colors of a soap film. The fringe spacing is the same in both cases, so the thickness does not depend on the choice, but the intercept of a plot of $\theta_m^2$ against $m^2$ does: using the wrong set of extrema shifts the critical angle, and with it the density, by half a fringe order.
 
 :::{figure} ../../assets/figures/xrr-anatomy.svg
 :alt: anatomy of an X-ray reflectivity curve

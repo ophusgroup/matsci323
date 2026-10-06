@@ -4,7 +4,7 @@
 //   :::{anywidget} ../../widgets/technique-schematic.js
 //   { "name": "xps" }
 //   :::
-// Names: xps, sims, sem, stem, ellipsometer, raman, afm, ebsd, fib, leed.
+// Names: xps, sims, sem, stem, ellipsometer, raman, ftir, afm, ebsd, fib, leed.
 // Theme-aware, no controls; each drawing carries its own one-line caption.
 
 function helpers(g, C) {
@@ -244,6 +244,35 @@ const SCHEMS = {
       label("objective", cx + 26, oy + 14);
       box(cx - 46, sy, 92, 9); label("sample", cx - 44, sy + 22);
       label("focus", cx + 8, sy - 6);
+    } },
+  ftir: { cap: "<b>FTIR.</b> A Michelson interferometer: the moving mirror changes the path difference, the detector records intensity against mirror position, and a Fourier transform turns that interferogram into the infrared spectrum.",
+    draw(g, w, h, C) {
+      const { arrow, label, box } = helpers(g, C);
+      const cx = w * 0.40, cy = 96, mx = cx + 150;
+      // infrared source and the beam into the beamsplitter
+      box(14, cy - 10, 50, 20); label("IR source", 14, cy - 16);
+      arrow(66, cy, cx - 12, cy, C.acc, 1.8);
+      // beamsplitter at 45 degrees
+      g.save(); g.translate(cx, cy); g.rotate(-Math.PI / 4);
+      box(-20, -3, 40, 6); g.restore();
+      label("beamsplitter", cx - 112, cy + 30);
+      // fixed mirror above, beam up and back
+      box(cx - 26, 18, 52, 6);
+      label("fixed mirror", cx + 32, 26);
+      arrow(cx - 4, cy - 10, cx - 4, 28, C.acc, 1.6);
+      arrow(cx + 4, 28, cx + 4, cy - 10, C.acc, 1.6);
+      // moving mirror to the right, beam out and back
+      box(mx, cy - 26, 6, 52);
+      arrow(cx + 12, cy - 4, mx - 4, cy - 4, C.acc, 1.6);
+      arrow(mx - 4, cy + 4, cx + 12, cy + 4, C.acc, 1.6);
+      arrow(mx + 14, cy + 38, mx + 44, cy + 38, C.muted, 1.4);
+      arrow(mx + 44, cy + 38, mx + 14, cy + 38, C.muted, 1.4);
+      label("moving mirror", mx + 12, cy - 32);
+      // recombined beam down through the sample to the detector
+      arrow(cx, cy + 12, cx, 160, C.acc, 1.8);
+      box(cx - 40, 162, 80, 9); label("sample (film on IR-transparent Si)", cx + 48, 171);
+      arrow(cx, 173, cx, 204, C.acc, 1.8);
+      box(cx - 24, 206, 48, 18); label("detector", cx + 32, 220);
     } },
   afm: { cap: "<b>AFM beam deflection.</b> The laser reflects off the cantilever onto a quadrant photodiode; sub-angstrom bending is measurable.",
     draw(g, w, h, C) {

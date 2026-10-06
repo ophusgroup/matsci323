@@ -45,7 +45,7 @@ Ellipsometry does not measure thickness directly. The measured $(\Psi, \Delta)$ 
 :alt: what ellipsometry measures
 :width: 100%
 
-Reflection rescales the p component relative to the s component and retards it, turning linear polarization into elliptical. The amplitude ratio is $\tan\Psi$ and the phase shift is $\Delta$.
+**What $\Psi$ and $\Delta$ mean.** Left: light polarized at 45°, with equal p and s components, reflects from the film and comes back elliptically polarized. Middle: after reflection the p field has an amplitude $\tan\Psi$ relative to the s field and is shifted in phase by $\Delta$. Right: the same two components traced out in the plane of $E_s$ and $E_p$, a line before reflection and an ellipse after it.
 :::
 
 (film-color-calculator)=
@@ -63,6 +63,13 @@ The same interference physics that ellipsometry measures precisely is visible to
 :::
 
 Raman spectroscopy measures the inelastic scattering of laser light by lattice vibrations. In the classical picture, the polarizability of the material is modulated by each vibrational mode, so the driven dipole radiates not only at the laser frequency (Rayleigh scattering) but at sidebands shifted down (Stokes) and up (anti-Stokes) by the phonon frequency; only modes that modulate the polarizability are Raman active, a symmetry selection rule complementary to infrared absorption (which requires a changing dipole moment; in centrosymmetric crystals the two selection rules are mutually exclusive). The Stokes side is stronger because it does not require a phonon to be thermally present, and the Stokes to anti-Stokes intensity ratio follows the Bose-Einstein occupation, providing a built-in local thermometer. Instrumentally, a modern micro-Raman system is a laser, a microscope objective (spot size near the diffraction limit, about 0.5 µm), a steep edge filter to reject the elastically scattered laser line, and a spectrograph; shifts are quoted in cm$^{-1}$, with most phonons falling between 100 and 3000 cm$^{-1}$.
+
+:::{figure} ../../assets/figures/optical-processes.svg
+:alt: energy diagrams for infrared absorption, Raman scattering, and photoluminescence
+:width: 100%
+
+**Three ways light exchanges energy with a film.** Infrared absorption (FTIR): an infrared photon is absorbed by a vibration that changes the dipole moment. Raman: a laser photon scatters and leaves one vibration behind, so the scattered photon has less energy. Photoluminescence: a laser photon excites an electron across the band gap, the electron relaxes, and a photon is emitted at the gap energy.
+:::
 
 For thin film work its virtues are speed, spatial resolution, and sensitivity to exactly the properties diffraction misses:
 
