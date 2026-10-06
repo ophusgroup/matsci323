@@ -56,6 +56,13 @@ Its limits are the ones the method implies. The specimen must be a needle that s
 
 A modern local-electrode atom probe places a counter-electrode aperture close to the tip, lowering the required voltage and increasing the field of view; ions accelerate through the aperture and fly tens of centimeters to a microchannel-plate detector backed by crossed delay lines that record each impact's position and time. Two measurements result per ion. The flight time gives the **mass-to-charge ratio** $m/n$ from the energy balance $neV = \frac{1}{2}mv^2$; ions arrive in charge states of 1+ to 3+, so the spectrum is indexed in $m/n$ and one element appears at several positions. The impact position, together with the arrival order, encodes the atom's origin on the tip: the near-hemispherical apex acts as a point-projection microscope with magnification of order $10^6$, set by the flight length over the tip radius times an image-compression factor.
 
+:::{figure} ../../assets/figures/apt-setup.svg
+:alt: Atom probe layout with needle specimen, pulse, flight path, and position-sensitive detector
+:width: 90%
+
+**Atom probe layout, not to scale.** A needle specimen at a standing voltage $V$ loses one surface atom as an ion on each laser or voltage pulse. The ions fly a path $L$ to a position-sensitive detector, which records the flight time, giving the mass-to-charge ratio, and the hit position, giving the lateral position on the specimen.
+:::
+
 Reading the mass spectrum is a skill of its own. Isotope patterns confirm assignments; hydride adducts (from residual hydrogen), molecular ions, and multiple-hit events complicate them; and some overlaps are genuinely degenerate at the achievable resolution, so composition accuracy varies element pair by element pair. Detection efficiency, set mainly by the open area of the microchannel plates, is roughly 50 to 80% depending on instrument generation: APT counts a known fraction of all atoms, uniformly enough across elements that compositions are reliable, but it never sees every atom.
 
 ## Reconstruction and its artifacts

@@ -32,12 +32,19 @@ Two caveats define the technique's scope. It requires UHV and a conductive, orde
 :alt: LEED patterns of four surface structures
 :width: 100%
 
-Four surface structures in real space and the LEED patterns they give. Integer spots come from the substrate mesh; the smaller fractional spots are the signature of the superstructure and their order names it.
+Four surface structures in real space (top) and the LEED patterns they give (bottom). Large gray spots come from the substrate mesh, small red spots are the fractional-order spots of the superstructure, and green marks the (00) beam. A larger mesh in real space gives more closely spaced spots.
 :::
 
 ## RHEED
 
 RHEED sends 10 to 30 keV electrons at grazing incidence, one to three degrees, onto the surface. The high energy would probe deeply at normal incidence, but the grazing geometry restores surface sensitivity: at grazing angles the beam's path through the material stays within the top few atomic layers. The diffraction pattern appears on a phosphor screen across the chamber, and its geometry follows from the widget above: the Ewald sphere of a 30 keV electron ($\lambda \approx 0.07$ Å) is enormous compared to the rod spacing, so it grazes along the rods, and the intersections fall on a series of circles on the screen (the Laue zones), with the zeroth zone closest to the shadow edge of the sample itself. Streaks rather than points appear whenever the rods have finite width, from finite terraces, mosaic, or disorder, because the near-tangent sphere then intersects a long segment of each broadened rod. A perfectly flat surface gives *spots on the Laue circles*; the long streaks of most real RHEED patterns come from surface disorder, and their length carries information about it.
+
+:::{figure} ../../assets/figures/rheed-setup.svg
+:alt: RHEED geometry in a growth chamber with the streak pattern on the screen
+:width: 100%
+
+**RHEED in a growth chamber**, angles exaggerated. A 10 to 30 kV beam strikes the sample at a grazing angle, the reflected and diffracted beams (red and blue) reach a phosphor screen across the chamber, and the evaporation sources above the sample keep a clear path. Inset: a flat surface gives streaks along the zeroth Laue circle above the shadow edge of the sample.
+:::
 
 The grazing geometry leaves the space above the sample completely open, which is the point: RHEED coexists with deposition sources aimed at the surface, and monitors the film as it grows. Three readings make it the growth technique it is:
 

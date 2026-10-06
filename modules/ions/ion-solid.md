@@ -38,6 +38,13 @@ $$
 
 where $E_2$ is the recoil energy and $\phi$ the recoil angle measured from the beam direction. The transfer reaches the full $4M_1M_2/(M_1+M_2)^2$ fraction in a head-on collision, which for comparable masses approaches complete energy transfer. These energetic recoils drive the collision cascades responsible for sputtering, treated with [SIMS](sims.md), and for implantation damage below.
 
+:::{figure} ../../assets/figures/ion-collision.svg
+:alt: Binary collision of a projectile with a heavier and with a lighter target atom
+:width: 100%
+
+**One collision, two cases.** A projectile of mass $M_1$ and energy $E_0$ (red) strikes a target atom of mass $M_2$ at rest (gold). A heavier target (left) can send the projectile backward through the scattering angle $\theta$, keeping $KE_0$, and recoils with little energy. A lighter target (right) only deflects the projectile forward, and the recoil, leaving at angle $\phi$, carries much of the energy, which is the geometry of [ERD](rbs.md).
+:::
+
 :::{figure} ../../assets/figures/kinematic-factor.svg
 :alt: Kinematic factor versus target mass for a helium projectile at four scattering angles
 :width: 80%

@@ -37,6 +37,13 @@ The beam leaving a thin sample carries several distinguishable signals, and dete
 - **Annular bright field (ABF)**, the rim of the transmitted disk, renders light-element columns (oxygen, nitrogen, lithium) visible alongside heavy ones, recovering the light elements that Z-contrast misses.
 - **Pixelated detectors** record the full diffraction pattern at every probe position (4D-STEM), from which any of the above contrasts can be synthesized after the fact, and quantities like local strain, orientation, polarity, and electromagnetic field maps can be computed. We keep 4D-STEM to a mention here; its methods are good final-project topics.
 
+:::{figure} ../../assets/figures/stem-detector-angles.svg
+:alt: Angular ranges of the bright field, annular bright field, low-angle annular dark field, and high-angle annular dark field detectors below a thin sample
+:width: 85%
+
+**Detector geometry**, in side view and not to scale. Each detector is a ring below the sample that collects a range of scattering semi-angles (right labels, for a 30 mrad probe at 300 kV) and shows a different kind of contrast (left labels). Modern instruments record several at once.
+:::
+
 Underneath all crystalline-sample imaging sits **dynamical diffraction**: a fast electron in a crystal does not scatter once but channels and exchanges intensity among beams continuously, with a characteristic length (the extinction distance, tens of nanometers) over which intensity oscillates between the direct and diffracted beams. This is the origin of the thickness fringes above, the reason image intensities are not simply proportional to scattering power, and the reason quantitative comparisons lean on simulation (the multislice method; see the [simulation appendix](../../appendix/simulation-tools.md)). HAADF's popularity rests on being the *most forgiving* of these effects, incoherent enough that simple interpretation usually holds, but honest atomic-scale quantification still checks against simulation.
 
 :::{figure} ../../assets/figures/haadf-z-contrast.svg
@@ -71,13 +78,6 @@ The demonstration below makes the geometry explicit for the two standard specime
 ## Other things to keep straight
 
 Three more items belong on the checklist. The FIB lamella carries amorphized surface layers and implanted Ga on both faces, so the outer few nanometers of the sample are preparation, not material, and the thinner the lamella the larger the corrupted fraction. Beam damage (knock-on displacement at high voltage, radiolysis in insulators and organics) can modify a sensitive sample faster than it can be imaged; the controls are voltage, dose rate, total dose, and cryo. And dynamical diffraction means intensities are not proportional to scattering power, so quantitative claims about atomic-scale intensities need to be checked against simulation.
-
-:::{figure} ../../assets/figures/stem-detectors.svg
-:alt: Angular ranges of the bright field, annular bright field, low-angle annular dark field, and high-angle annular dark field detectors below a thin sample
-:width: 72%
-
-**Detector geometry.** Scattering angle selects the signal: the bright-field disk and its rim (phase contrast, light elements), the low-angle annulus (strain and diffraction contrast), and the high-angle annulus (Z-contrast). Modern instruments record several simultaneously.
-:::
 
 % TODO: figures still wanted: (b) HAADF cross-section of a device stack,
 % annotated (in-house data); (d) SAED pattern with indexing.

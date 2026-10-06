@@ -48,6 +48,13 @@ Ellipsometry does not measure thickness directly. The measured $(\Psi, \Delta)$ 
 **What $\Psi$ and $\Delta$ mean.** Left: light polarized at 45°, with equal p and s components, reflects from the film and comes back elliptically polarized. Middle: after reflection the p field has an amplitude $\tan\Psi$ relative to the s field and is shifted in phase by $\Delta$. Right: the same two components traced out in the plane of $E_s$ and $E_p$, a line before reflection and an ellipse after it.
 :::
 
+:::{figure} ../../assets/figures/ellipsometry-example.svg
+:alt: Ellipsometer layout and measured Psi and Delta spectra of 300 nm SiO2 on Si
+:width: 100%
+
+**An example measurement.** Left: ellipsometer layout, with source, polarizer, compensator, sample at about 70°, analyzer, and detector. Right: $\Psi$ and $\Delta$ spectra of 300 nm SiO$_2$ on Si (points) and the fitted optical model (line), whose thickness is the result.
+:::
+
 (film-color-calculator)=
 ### Thin film interference colors
 
@@ -86,6 +93,13 @@ The limits are the flip side of the physics: cross sections are tiny (roughly on
 The three scattering paths and the spectrum they produce for the silicon 520.7 cm$^{-1}$ mode. The anti-Stokes line is weaker by the Boltzmann factor, which is what makes the ratio a thermometer.
 :::
 
+:::{figure} ../../assets/figures/raman-example.svg
+:alt: Micro-Raman layout and Raman spectra of crystalline, mixed, and amorphous Si
+:width: 100%
+
+**An example measurement.** Left: micro-Raman layout, with laser, edge filter, objective, and spectrograph. Right: spectra of crystalline Si (sharp line at 520.7 cm$^{-1}$), a mixed film, and amorphous Si (broad band near 480 cm$^{-1}$).
+:::
+
 ## Photoluminescence and absorption
 
 For semiconducting films, photoluminescence (PL) and optical absorption close the loop on electronic quality. PL excites carriers with an above-gap laser and spectrally resolves their radiative recombination: the peak position tracks the band gap and its shifts with composition, strain, or quantum confinement, while the intensity and linewidth track defect density, since nonradiative recombination at defects competes with emission; time-resolved PL extends this to carrier lifetimes, the single most predictive quantity for photovoltaic material quality. Absorption or transmission spectra locate the gap directly, commonly through a Tauc analysis (plotting $(\alpha h\nu)^{1/2}$ or $(\alpha h\nu)^2$ for indirect and direct gaps respectively and extrapolating to zero), and reveal sub-gap defect absorption. Both are routine wafer-mapping tools for photovoltaic and optoelectronic films, where a PL image flags bad regions before any device is fabricated. Fourier-transform infrared spectroscopy (FTIR) rounds out the family: vibrational absorption identifies bonding configurations in dielectrics (Si-H, Si-OH, and B-O contents in deposited oxides are standard FTIR assays) through the infrared selection rule that complements Raman.
@@ -93,6 +107,20 @@ For semiconducting films, photoluminescence (PL) and optical absorption close th
 % TODO: this page needs example spectra: Si Raman (c-Si vs a-Si), graphene D/G/2D,
 % and a PL map of a perovskite or III-V film. Good candidates to source from
 % colleagues or measure in-house.
+
+:::{figure} ../../assets/figures/pl-example.svg
+:alt: Photoluminescence spectra of a good and a defective GaN film
+:width: 80%
+
+**Photoluminescence of GaN at room temperature.** The band-edge peak at 3.4 eV (365 nm) is strong in a good film (red) and weak in a defective one (blue), whose broad defect band near 2.2 eV is stronger.
+:::
+
+:::{figure} ../../assets/figures/ftir-example.svg
+:alt: FTIR spectrometer layout and absorbance spectrum of a hydrogenated silicon nitride film
+:width: 100%
+
+**An example FTIR measurement.** Left: Michelson interferometer, with source, beamsplitter, fixed and moving mirrors, sample, and detector. Right: absorbance of a hydrogenated silicon nitride film, with the Si-N, Si-H, and N-H bands that give its hydrogen content.
+:::
 
 ## References and further reading
 

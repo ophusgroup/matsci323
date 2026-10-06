@@ -14,6 +14,13 @@ Here $x_i$ is the atomic fraction of element $i$, $I_i$ is its measured peak are
 
 The same escape-depth physics measures overlayer thickness, one of the most-used quantitative results in surface analysis. For a uniform overlayer of thickness $t$ on a substrate, the substrate line is attenuated by $\exp(-t/\lambda\cos\theta)$ while the overlayer line grows with the complementary factor $1 - \exp(-t/\lambda\cos\theta)$; ratioing the two cancels the X-ray flux and most instrument factors, and inverting gives $t$ directly for films up to about $3\lambda$. This ratio method, and its angle-resolved extension in which spectra at several emission angles are inverted into a depth profile of the top few nanometers, is the workhorse measurement of gate oxides, ALD nucleation, self-assembled monolayers, and surface cleans: nondestructive, standardless, and accurate to a few percent for films under about 10 nm, provided the IMFP values and the assumed layer model (uniform, continuous) are accurate. Island growth misread as a thin uniform layer is the classic failure, and checking the angle dependence is how it is caught.
 
+:::{figure} ../../assets/figures/arxps-geometry.svg
+:alt: Path of a substrate photoelectron through an overlayer at normal emission and at 60 degrees
+:width: 85%
+
+**Why tilting makes XPS more surface sensitive.** A photoelectron from the substrate (blue) crosses an overlayer of thickness $t$. At normal emission its path through the overlayer is $t$; at 60° from the normal it is $t/\cos\theta = 2t$, so the substrate signal is attenuated more and the overlayer signal is relatively stronger.
+:::
+
 % TODO: homework tie-in: give students a real survey spectrum plus sensitivity
 % factor table and have them extract composition; second part uses the attenuation
 % equation for oxide thickness.
@@ -31,6 +38,13 @@ When a core hole is filled, the released energy can eject a second electron inst
 
 The [fluorescence-yield branching](electron-solid.md) makes the Auger channel dominant for light elements, exactly where EDS is weakest, and the detected electrons obey the same escape-depth physics as XPS, sampling a few nanometers. Because the Auger peaks ride on the large, sloping secondary-electron background, spectra were historically recorded in derivative mode, $dN(E)/dE$, and much of the literature and the standard sensitivity-factor sets are built on derivative peak-to-peak heights; modern instruments record direct spectra and integrate. Quantification with sensitivity factors is semiquantitative (10 to 20%) unless matrix-matched standards are used; chemical-state information exists (the carbon KLL lineshape famously distinguishes carbide, graphite, and diamond) but is less systematic than XPS shifts. The electron beam also brings limitations: charging restricts AES to reasonably conductive samples far more strictly than XPS, and the focused beam's current density can damage or modify sensitive surfaces during the measurement.
 
+:::{figure} ../../assets/figures/auger-derivative.svg
+:alt: An Auger peak on the secondary-electron background, as a direct and as a derivative spectrum
+:width: 100%
+
+**Direct and derivative Auger spectra.** Left: the C KLL Auger peak at 272 eV on the secondary-electron background (dashed). Right: the same spectrum differentiated, which suppresses the slowly varying background; the peak-to-peak height is the signal used by the classic sensitivity-factor tables.
+:::
+
 The applications that exploit these strengths involve identifying small features: particle and defect identification on wafers (the historical backbone of semiconductor failure analysis), grain-boundary chemistry on fracture surfaces exposed in situ (the classic measurements of temper embrittlement, where segregated phosphorus monolayers at boundaries were measured directly), and small-area depth profiles of metallization stacks.
 
 :::{figure} ../../assets/figures/auger-vs-photoemission.svg
@@ -44,16 +58,16 @@ Why the Auger lines move when you change the anode and the photoelectron lines d
 
 Both XPS and AES sample only a few nanometers; to profile deeper, both are combined with the [sputtering](../ions/sims.md) of an argon ion gun, alternating erosion and measurement to build composition versus depth through films hundreds of nanometers thick. Everything learned about sputtering applies as limitations here, and the measured profile is the true profile convolved with a resolution function whose three physical contributions are worth keeping separate: **atomic mixing** by the ion cascade (pushes species inward, producing exponential trailing edges), **surface roughening** that accumulates with sputtered depth, and the **information depth** of the spectroscopy itself (a few $\lambda$). Depth resolution of a few nanometers is standard; it improves with lower ion energy and grazing ion incidence (thinner mixing layer), with sample rotation during sputtering (suppresses roughening), and with cluster ion sources, whose gentler, shallower impacts profile polymers and organic films with minimal chemical damage. Preferential sputtering adds a chemistry artifact on top of the geometry: compounds whose components sputter unequally develop altered surface compositions, and reducible oxides are famously reduced by ion bombardment, so a "metallic" component appearing during a profile of an oxide must be interpreted with suspicion.
 
+:::{figure} ../../assets/figures/xps-depth-profile.svg
+:alt: XPS sputter depth profile of a 40 nm TiO2 film on Si
+:width: 80%
+
+**A sputter depth profile.** XPS composition against depth for a 40 nm TiO$_2$ film on Si (schematic). The adventitious carbon disappears in the first nanometer of sputtering, and the interface appears several nanometers wide even though the real interface is sharp, the combined effect of mixing, roughening, and the information depth.
+:::
+
 Interpreting any sputter profile means holding the measured curve and the artifact list in mind at once: a measured interface width is an upper bound, not a measurement, unless the sputtering conditions have been qualified on a known sharp interface. When the depth scale must be trusted, the crater is measured afterward with a profilometer; when the interface itself is the science, the nondestructive routes (angle-resolved XPS, [MEIS](../ions/rbs.md), [XRR](../photons/xrr.md)) or direct [STEM cross-sections](../stem/analytical-stem.md) are the cross-checks.
 
 Choosing among the depth-profiling methods now available: XPS profiling for chemistry versus depth, SIMS for trace sensitivity, angle-resolved XPS or MEIS for nondestructive ultra-shallow profiles, and STEM cross-sections when direct imaging of the actual interface is worth the sample preparation.
-
-:::{figure} ../../assets/figures/fluorescence-yield.svg
-:alt: K-shell fluorescence yield and its Auger complement versus atomic number
-:width: 78%
-
-**Fluorescence versus Auger yield.** The fate of a K-shell core hole versus atomic number: light elements decay almost exclusively by Auger emission, heavy elements by X-ray emission. This branching ratio is why AES and EELS work best for light elements while EDS works best for heavy ones.
-:::
 
 % TODO: figures still wanted: (a) Auger process level diagram; (b) an XPS sputter
 % depth profile of a multilayer with artifacts labeled; (c) overlayer attenuation

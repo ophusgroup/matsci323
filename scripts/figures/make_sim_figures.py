@@ -54,9 +54,9 @@ for el, t in stack:
     axs.barh(0, wdt, left=x0, color=colors[el], edgecolor="none", height=0.7)
     axs.text(x0 + wdt/2, 0, el, ha="center", va="center", color="white", fontsize=13, weight="bold")
     x0 += wdt
-axs.annotate("2 MeV He beam", xy=(0, 0), xytext=(-2.6, 0), fontsize=12,
+axs.annotate("2 MeV He beam", xy=(0, 0), xytext=(-5.4, 0), fontsize=12,
              va="center", arrowprops=dict(arrowstyle="->", color=st.ACCENT, lw=2))
-axs.set_xlim(-2.8, x0+0.2); axs.set_ylim(-0.8, 0.8)
+axs.set_xlim(-5.6, x0+0.2); axs.set_ylim(-0.8, 0.8)
 axs.axis("off"); axs.set_title("60 nm Au / 150 nm Cu / Si substrate", fontsize=12)
 # spectrum
 E = np.linspace(0, Emax, len(sp))
@@ -69,7 +69,7 @@ for el, (M, Zt, n, eps) in ELEM.items():
 axp.set_xlabel("detected energy (keV)")
 axp.set_ylabel("yield (arb.)")
 axp.set_xlim(300, 2000); axp.set_ylim(0, 1.15)
-axp.text(1925, 0.55, "Au\n(width =\n60 nm)", ha="center", fontsize=11)
+axp.text(1660, 0.55, "Au\n(width\n60 nm)", ha="center", fontsize=11)
 axp.text(1300, 0.75, "Cu\n(shifted below $K_{Cu}E_0$\nby the Au overlayer)", ha="center", fontsize=11)
 axp.text(700, 0.55, "Si substrate\n(continuum)", ha="center", fontsize=11)
 st.save(fig, "rbs-formation.svg"); plt.close(fig)
@@ -156,12 +156,12 @@ ax.axhline(0, color=st.GRAY, lw=0.8)
 ax.set_xlabel("cantilever base position (nm)  →  approaching")
 ax.set_ylabel("force on tip (nN)")
 ax.invert_xaxis()
-ax.legend(loc="lower left")
-ax.annotate("snap-in\n(gradient exceeds k)", xy=(2.0, -0.55), xytext=(6.5, -1.15),
+ax.legend(loc="upper left")
+ax.annotate("snap-in\n(gradient exceeds k)", xy=(1.7, -0.6), xytext=(11.5, -1.0),
             fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("pull-off = adhesion", xy=(4.4, -2.45), xytext=(7.6, -2.75),
+ax.annotate("pull-off = adhesion", xy=(4.4, -2.45), xytext=(11.5, -2.2),
             fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
-ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.75, 0.75), xytext=(9.5, 1.5),
+ax.annotate("repulsive contact\n(imaging setpoints live here)", xy=(-0.75, 0.75), xytext=(7.6, 1.6),
             fontsize=11, arrowprops=dict(arrowstyle="->", color=st.GRAY))
 ax.set_ylim(-3, 2.6)
 st.save(fig, "force-curve.svg"); plt.close(fig)

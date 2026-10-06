@@ -34,12 +34,12 @@ wK = Z**4 / (a + Z**4.0)
 fig, ax = plt.subplots(figsize=(6.2, 4.0))
 ax.plot(Z, wK, color=st.ACCENT, lw=2.2, label="X-ray emission  $\\omega_K$")
 ax.plot(Z, 1 - wK, color=st.BLUE, lw=2.2, label="Auger emission  $1-\\omega_K$")
-for el, z in [("C", 6), ("O", 8), ("Si", 14), ("Ti", 22), ("Cu", 29), ("Ge", 32), ("Zr", 40)]:
+for i, (el, z) in enumerate([("C", 6), ("O", 8), ("Si", 14), ("Ti", 22), ("Cu", 29), ("Ge", 32), ("Zr", 40)]):
     ax.axvline(z, color=st.GRAY, alpha=0.25, lw=0.8)
-    ax.text(z, 1.03, el, ha="center", fontsize=11)
+    ax.text(z, 1.03 if i % 2 == 0 else 1.10, el, ha="center", fontsize=10.5)
 ax.set_xlabel("atomic number $Z$")
 ax.set_ylabel("K-shell yield per core hole")
-ax.set_ylim(0, 1.1); ax.set_xlim(4, 79)
+ax.set_ylim(0, 1.17); ax.set_xlim(4, 79)
 ax.legend(loc="center right")
 st.save(fig, "fluorescence-yield.svg"); plt.close(fig)
 
@@ -51,17 +51,18 @@ def sn_zbl(eps):
     return np.where(eps < 30, lo, hi)
 
 eps = np.logspace(-3, 3, 400)
-fig, ax = plt.subplots(figsize=(6.4, 4.2))
+fig, ax = plt.subplots(figsize=(8.8, 4.2))
 ax.loglog(eps, sn_zbl(eps), color=st.ACCENT, lw=2.2, label="nuclear (ZBL universal)")
 for k, ls in [(0.15, "-"), (0.4, "--")]:
     ax.loglog(eps, k*np.sqrt(eps), color=st.BLUE, lw=2, ls=ls,
               label=f"electronic, $k$ = {k} (LSS)")
 ax.axvspan(1e-3, 0.3, color=st.GOLD, alpha=0.08)
-ax.text(2.2e-3, 0.62, "sputtering,\nimplantation,\nFIB", fontsize=11)
-ax.text(70, 0.62, "RBS regime\n(electronic\ndominates)", fontsize=11)
+ax.text(1.5e-3, 4.0, "sputtering,\nimplantation, FIB:\nnuclear dominates", fontsize=10.5)
+ax.annotate("RBS regime:\nelectronic dominates", xy=(300, 2.4), xytext=(2.0, 6.0), fontsize=10.5,
+            arrowprops=dict(arrowstyle="->", color=st.GRAY, lw=1.0))
 ax.set_xlabel("reduced energy  $\\varepsilon$")
 ax.set_ylabel("reduced stopping  $S(\\varepsilon)$")
-ax.set_ylim(3e-3, 3); ax.legend(loc="lower left", fontsize=11)
+ax.set_ylim(3e-3, 30); ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=10.5)
 ax.set_title("one universal curve for every ion-target pair")
 st.save(fig, "reduced-stopping.svg"); plt.close(fig)
 
