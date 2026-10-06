@@ -54,16 +54,33 @@ _RUNTIME = """
         return r.json();
       }).then(function(d){
         idx=d.records||[];base=pre[i];loading=false;
+        prepare(idx);
         var w=waiters;waiters=[];w.forEach(function(f){f();});
       }).catch(function(){attempt(i+1);});
     }
     attempt(0);
   }
-  function titleOf(h){
-    return [h.lvl3,h.lvl2,h.lvl1].filter(Boolean)[0]||'';
-  }
-  function crumbOf(h){
-    return [h.lvl1,h.lvl2,h.lvl3].filter(Boolean).join(' > ');
+  /* Pages in different sections often share a title, so prefix every hit
+     with its ancestor pages, read off the URL path (folders: true nests each
+     page URL under its parent's). */
+  function prepare(recs){
+    var titles={};
+    recs.forEach(function(r){
+      if(r.type==='lvl1')titles[r.url]=r.hierarchy.lvl1;
+    });
+    recs.forEach(function(r){
+      var h=r.hierarchy||{},up=[];
+      var seg=r.url.split('#')[0].split('/').filter(Boolean);
+      for(var i=1;i<seg.length;i++){
+        var t=titles['/'+seg.slice(0,i).join('/')];
+        if(t)up.push(t);
+      }
+      var own=[h.lvl1,h.lvl2,h.lvl3].filter(Boolean);
+      r.crumb=up.concat(own).join(' \\u203a ');
+      r.ownHay=own.join(' ').toLowerCase();
+      r.upHay=up.join(' ').toLowerCase();
+      r.hay=(r.crumb+' '+(r.content||'')).toLowerCase();
+    });
   }
   function search(q){
     if(!idx)return [];
@@ -71,26 +88,23 @@ _RUNTIME = """
     if(!terms.length)return [];
     var seen={},out=[];
     idx.forEach(function(rec){
-      var h=rec.hierarchy||{};
-      var title=titleOf(h),crumb=crumbOf(h);
-      var hay=(crumb+' '+(rec.content||'')).toLowerCase();
-      var titleHay=crumb.toLowerCase();
       var score=0;
       for(var i=0;i<terms.length;i++){
-        if(hay.indexOf(terms[i])<0)return;
-        if(titleHay.indexOf(terms[i])>=0)score+=3;
+        if(rec.hay.indexOf(terms[i])<0)return;
+        if(rec.ownHay.indexOf(terms[i])>=0)score+=3;
+        else if(rec.upHay.indexOf(terms[i])>=0)score+=2;
         score+=1;
       }
       if(rec.type!=='content')score+=2;
-      var key=rec.url;
+      var key=rec.url.split('#')[0];   // one hit per page, its best section
       if(seen[key]!==undefined){
         if(out[seen[key]].score>=score)return;
-        out[seen[key]]={score:score,url:rec.url,title:title,crumb:crumb,
+        out[seen[key]]={score:score,url:rec.url,crumb:rec.crumb,
                         content:rec.content||''};
         return;
       }
       seen[key]=out.length;
-      out.push({score:score,url:rec.url,title:title,crumb:crumb,
+      out.push({score:score,url:rec.url,crumb:rec.crumb,
                 content:rec.content||''});
     });
     out.sort(function(a,b){return b.score-a.score;});
@@ -122,7 +136,7 @@ _RUNTIME = """
         a.className='msc-search-hit'+(i===active?' active':'');
         var t=document.createElement('div');
         t.className='msc-search-hit-title';
-        t.textContent=h.crumb||h.title;
+        t.textContent=h.crumb;
         a.appendChild(t);
         if(h.content){
           var c=document.createElement('div');
@@ -251,39 +265,38 @@ def main():
             f.write(new_bsrc)
         total += n
         print(f"patched build/index.js (search runtime, {n} site)")
-    # rename the patched entry + manifest so browsers that cached the stock
-    # bundles (1-year immutable) fetch the patched versions
     # Rename the patched entry + manifest so browsers that cached the stock
-    # bundles (1-year immutable) fetch the patched versions. The stock names
-    # carry the theme's own content hashes, so discover them instead of
-    # hardcoding: a theme update changes the hash, and a hardcoded name then
-    # fails the build.
+    # bundles (1-year immutable) fetch the patched versions. The new name is
+    # the stock name plus a suffix: the stock names carry the theme's content
+    # hash, so each theme release gets its own patched name too, and a
+    # browser never pairs a cached entry from an older theme with new chunks.
     import glob, shutil
     pub = os.path.join(THEME, "public", "build")
-    new_entry, new_manifest = "entry.client-NBCRT1", "manifest-NBCRT1"
-    if not os.path.exists(os.path.join(pub, f"{new_entry}.js")):
-        rename = []
-        for stem, new in (("entry.client-", new_entry), ("manifest-", new_manifest)):
-            hits = [f for f in sorted(glob.glob(os.path.join(pub, stem + "*.js")))
-                    if os.path.basename(f)[:-3] != new]
-            if len(hits) == 1:
-                rename.append((os.path.basename(hits[0])[:-3], new))
-        if len(rename) == 2:
+    rename = []
+    for stem in ("entry.client-", "manifest-"):
+        hits = [os.path.basename(f)[:-3]
+                for f in sorted(glob.glob(os.path.join(pub, stem + "*.js")))
+                if not f.endswith("-msc.js")]
+        if len(hits) == 1:
+            rename.append((hits[0], hits[0] + "-msc"))
+    if len(rename) != 2:
+        print("skipped cache-bust rename: stock bundle names not found")
+    elif os.path.exists(os.path.join(pub, rename[0][1] + ".js")):
+        print("already renamed: entry.client + manifest")
+    else:
+        for old, new in rename:
+            shutil.copyfile(
+                os.path.join(pub, f"{old}.js"), os.path.join(pub, f"{new}.js")
+            )
+        for path in [os.path.join(THEME, "build", "index.js"),
+                     os.path.join(pub, rename[1][1] + ".js")]:
+            with open(path) as f:
+                s = f.read()
             for old, new in rename:
-                shutil.copyfile(
-                    os.path.join(pub, f"{old}.js"), os.path.join(pub, f"{new}.js")
-                )
-            for path in [os.path.join(THEME, "build", "index.js"),
-                         os.path.join(pub, f"{new_manifest}.js")]:
-                with open(path) as f:
-                    s = f.read()
-                for old, new in rename:
-                    s = s.replace(old, new)
-                with open(path, "w") as f:
-                    f.write(s)
-            print("renamed entry.client + manifest (cache bust)")
-        else:
-            print("skipped cache-bust rename: stock bundle names not found")
+                s = s.replace(old, new)
+            with open(path, "w") as f:
+                f.write(s)
+        print("renamed entry.client + manifest (cache bust)")
 
     print(f"done ({total} replacements)")
 

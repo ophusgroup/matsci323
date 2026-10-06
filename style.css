@@ -185,12 +185,12 @@ header.myst-fm-authors-affiliations {
   position: relative;
   display: flex;
   align-items: center;
+  width: 12rem;
   min-width: 0;          /* allow the input to shrink inside the flex nav */
 }
 .msc-search input {
   height: 2.5rem;
   width: 100%;
-  max-width: 12rem;
   padding: 0 0.75rem;
   font-size: 0.875rem;
   color: inherit;
@@ -212,7 +212,7 @@ html.dark .msc-search input {
   box-shadow: 0 0 0 1px var(--msc-accent);
 }
 @media (min-width: 640px) {
-  .msc-search input { max-width: 20rem; }
+  .msc-search { width: 16rem; }   /* the stock search button's sm:w-64 */
 }
 .msc-search-results {
   position: absolute;
@@ -223,12 +223,14 @@ html.dark .msc-search input {
   max-height: 70vh;
   overflow-y: auto;
   padding: 0.25rem;
+  color: rgb(28, 25, 23);   /* the top bar's text color is black in both themes */
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.5rem;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
 }
 html.dark .msc-search-results {
+  color: rgb(231, 229, 228);
   background: rgb(28, 25, 23);
   border-color: rgba(255, 255, 255, 0.18);
 }
