@@ -100,6 +100,8 @@ The three scattering paths and the spectrum they produce for the silicon 520.7 c
 **An example measurement.** Left: micro-Raman layout, with laser, edge filter, objective, and spectrograph. Right: spectra of crystalline Si (sharp line at 520.7 cm$^{-1}$), a mixed film, and amorphous Si (broad band near 480 cm$^{-1}$).
 :::
 
+The atomic motions behind Raman and infrared lines can be complex: see the [phonon modes of ZnPS$_3$](znps3-phonons.md), animated in 3D.
+
 ## Photoluminescence and absorption
 
 For semiconducting films, photoluminescence (PL) and optical absorption close the loop on electronic quality. PL excites carriers with an above-gap laser and spectrally resolves their radiative recombination: the peak position tracks the band gap and its shifts with composition, strain, or quantum confinement, while the intensity and linewidth track defect density, since nonradiative recombination at defects competes with emission; time-resolved PL extends this to carrier lifetimes, the single most predictive quantity for photovoltaic material quality. Absorption or transmission spectra locate the gap directly, commonly through a Tauc analysis (plotting $(\alpha h\nu)^{1/2}$ or $(\alpha h\nu)^2$ for indirect and direct gaps respectively and extrapolating to zero), and reveal sub-gap defect absorption. Both are routine wafer-mapping tools for photovoltaic and optoelectronic films, where a PL image flags bad regions before any device is fabricated. Fourier-transform infrared spectroscopy (FTIR) rounds out the family: vibrational absorption identifies bonding configurations in dielectrics (Si-H, Si-OH, and B-O contents in deposited oxides are standard FTIR assays) through the infrared selection rule that complements Raman.

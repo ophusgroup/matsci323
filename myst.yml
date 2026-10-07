@@ -98,6 +98,8 @@ project:
         - file: modules/photons/xrd.md
         - file: modules/photons/xrr.md
         - file: modules/photons/optical.md
+          children:
+            - file: modules/photons/znps3-phonons.md
     - title: 3. Ion Beams and Mass Spectrometry
       children:
         - file: modules/ions/ion-solid.md
