@@ -3,6 +3,9 @@ title: "Phonon modes of ZnPS3"
 short_title: "ZnPS3 phonons"
 ---
 
+:::{anywidget} ../../widgets/znps3-phonons.js
+:::
+
 ZnPS$_3$ is a layered thiophosphate studied as a solid-state Zn$^{2+}$ ion conductor.
 
 Its phonons near 3.7 and 5.5 THz are of interest for how lattice vibrations couple to Zn hopping, and this page shows what those vibrations look like.
@@ -25,9 +28,6 @@ The modes are computed at the Γ point, the center of the Brillouin zone, which 
 - MACE-MP-0 frequencies are typically within about 10% of experiment, so the mode near a measured frequency is a candidate, not an assignment.
 
 ## Modes
-
-:::{anywidget} ../../widgets/znps3-phonons.js
-:::
 
 Optical modes below 6 THz, with the share of the vibrational kinetic energy carried by each element. Ag and Bg modes are Raman active, Au and Bu infrared active.
 

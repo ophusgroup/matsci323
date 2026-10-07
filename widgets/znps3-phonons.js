@@ -254,8 +254,39 @@ function render({ model, el }) {
 
   const BG = { light: [255, 255, 255], dark: [0, 0, 0] };
   function mix(c, bg, f) { return c.map((v, k) => Math.round(v * (1 - f) + bg[k] * f)); }
+  // Fog is quantized to NFOG levels so colours and atom sprites can be cached
+  // instead of rebuilt (and a radial gradient created) for every atom every frame.
+  const NFOG = 16, cache = new Map();
+  function cached(key, make) {
+    let v = cache.get(key);
+    if (v === undefined) { v = make(); cache.set(key, v); }
+    return v;
+  }
+  const SPR = 64;                                     // sprite radius in device pixels
+  function sprite(el, lvl, isD, fmax) {
+    return cached(`s${el}|${lvl}|${isD}`, () => {
+      const bg = isD ? BG.dark : BG.light;
+      const c = mix(COLORS[el], bg, fmax * lvl / (NFOG - 1));
+      const hi = mix(c, [255, 255, 255], 0.65), lo = mix(c, [0, 0, 0], 0.45);
+      const n = 2 * SPR + 4, o = n / 2, r = SPR;
+      const sc = document.createElement("canvas"); sc.width = sc.height = n;
+      const sg = sc.getContext("2d");
+      const grd = sg.createRadialGradient(o - r * 0.38, o - r * 0.42, r * 0.05, o, o, r * 1.02);
+      grd.addColorStop(0, `rgb(${hi})`); grd.addColorStop(0.45, `rgb(${c})`); grd.addColorStop(1, `rgb(${lo})`);
+      sg.fillStyle = grd; sg.beginPath(); sg.arc(o, o, r - 1.5, 0, 2 * Math.PI); sg.fill();
+      sg.strokeStyle = isD ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)"; sg.lineWidth = 3.5; sg.stroke();
+      return sc;
+    });
+  }
+  // text under the canvas is only touched when it changes, so a frame never forces a page layout
+  function setText(node, str, html) {
+    if (node._t === str) return;
+    node._t = str;
+    if (html) node.innerHTML = str; else node.textContent = str;
+  }
+  const spv = root.querySelector(".w-spv"), amv = root.querySelector(".w-amv"), info = root.querySelector(".w-info");
   function draw() {
-    const W = cv.clientWidth, H = cv.clientHeight, dpr = window.devicePixelRatio || 1;
+    const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
     if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const isD = dark(), bg = isD ? BG.dark : BG.light;
@@ -275,7 +306,8 @@ function render({ model, el }) {
     }
     const sc = zoom * Math.min(0.48 * W / (ex + 0.8), 0.43 * H / (ey + 0.8));
     const X = p => W / 2 + p[0] * sc, Y = p => H / 2 + 8 - p[1] * sc;
-    const fog = z => (isD ? 0.35 : 0.42) * (1 - (z - zmin) / Math.max(zmax - zmin, 1e-6));   // far = more fog
+    const fmax = isD ? 0.35 : 0.42;
+    const lvlOf = z => Math.round((NFOG - 1) * (1 - (z - zmin) / Math.max(zmax - zmin, 1e-6)));   // far = more fog
     const items = [];
     if (chkPoly.checked) for (const P of scene.polys) for (const f of P.faces) {
       const z = (pts[f[0]][2] + pts[f[1]][2] + pts[f[2]][2]) / 3;
@@ -288,33 +320,35 @@ function render({ model, el }) {
     for (const it of items) {
       if (it.kind === "face") {
         const [p, q, r] = it.f.map(k => pts[k]);
-        const base = it.poly === "Zn" ? (isD ? [110, 150, 245] : [80, 115, 205]) : (isD ? [245, 180, 60] : [215, 145, 30]);
-        const c = mix(base, bg, fog(it.z));
+        const lvl = lvlOf(it.z);
+        const c = cached(`f${it.poly}|${lvl}|${isD}`, () => {
+          const base = it.poly === "Zn" ? (isD ? [110, 150, 245] : [80, 115, 205]) : (isD ? [245, 180, 60] : [215, 145, 30]);
+          return mix(base, bg, fmax * lvl / (NFOG - 1)).join(",");
+        });
         // faces seen face-on (large projected area, in A^2) are a little more opaque
         const area = 0.5 * Math.abs((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]));
         const alpha = (isD ? 0.24 : 0.15) + 0.06 * Math.min(1, area / 6);
         g.beginPath(); g.moveTo(X(p), Y(p)); g.lineTo(X(q), Y(q)); g.lineTo(X(r), Y(r)); g.closePath();
-        g.fillStyle = `rgba(${c},${alpha})`; g.fill();
+        g.fillStyle = `rgba(${c},${alpha.toFixed(2)})`; g.fill();
         g.strokeStyle = `rgba(${c},${isD ? 0.8 : 0.65})`; g.lineWidth = 1; g.lineJoin = "round"; g.stroke();
       } else if (it.kind === "bond") {
         const [i0, i1] = it.b, p = pts[i0], q = pts[i1];
         const mxp = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+        const lvl = lvlOf(it.z);
         for (const [a, e] of [[p, scene.atoms[i0].el], [q, scene.atoms[i1].el]]) {
-          const c = mix(COLORS[e], bg, fog(it.z));
-          g.strokeStyle = `rgb(${mix(c, [0, 0, 0], 0.35)})`; g.lineWidth = 0.26 * sc;
+          const [cOut, cIn] = cached(`b${e}|${lvl}|${isD}`, () => {
+            const c = mix(COLORS[e], bg, fmax * lvl / (NFOG - 1));
+            return [`rgb(${mix(c, [0, 0, 0], 0.35)})`, `rgb(${c})`];
+          });
+          g.strokeStyle = cOut; g.lineWidth = 0.26 * sc;
           g.beginPath(); g.moveTo(X(a), Y(a)); g.lineTo(W / 2 + mxp[0] * sc, H / 2 + 8 - mxp[1] * sc); g.stroke();
-          g.strokeStyle = `rgb(${c})`; g.lineWidth = 0.17 * sc;
+          g.strokeStyle = cIn; g.lineWidth = 0.17 * sc;
           g.beginPath(); g.moveTo(X(a), Y(a)); g.lineTo(W / 2 + mxp[0] * sc, H / 2 + 8 - mxp[1] * sc); g.stroke();
         }
       } else {
         const a = scene.atoms[it.i], p = pts[it.i], r = RADII[a.el] * sc * 0.72;
-        const c = mix(COLORS[a.el], bg, fog(it.z));
-        const hi = mix(c, [255, 255, 255], 0.65), lo = mix(c, [0, 0, 0], 0.45);
-        const grd = g.createRadialGradient(X(p) - r * 0.38, Y(p) - r * 0.42, r * 0.05, X(p), Y(p), r * 1.02);
-        grd.addColorStop(0, `rgb(${hi})`); grd.addColorStop(0.45, `rgb(${c})`); grd.addColorStop(1, `rgb(${lo})`);
-        g.fillStyle = grd;
-        g.beginPath(); g.arc(X(p), Y(p), r, 0, 2 * Math.PI); g.fill();
-        g.strokeStyle = isD ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)"; g.lineWidth = 0.8; g.stroke();
+        const R2 = r * (SPR + 2) / (SPR - 1.5);      // sprite half-size that maps its disc onto radius r
+        g.drawImage(sprite(a.el, lvlOf(it.z), isD, fmax), X(p) - R2, Y(p) - R2, 2 * R2, 2 * R2);
       }
     }
     // animated displacement vectors, drawn over everything: each arrow is the
@@ -363,17 +397,26 @@ function render({ model, el }) {
       g.beginPath(); g.moveTo(lx + 6, ly - 7); g.lineTo(lx + 13, ly); g.lineTo(lx + 6, ly + 7); g.lineTo(lx - 1, ly); g.closePath(); g.fill(); g.stroke();
       g.fillStyle = txt; g.fillText(lab, lx + 18, ly + 4.5); lx += 18 + g.measureText(lab).width + 14;
     }
-    root.querySelector(".w-spv").textContent = `${(+inSp.value).toFixed(1)} s (real period ${(1000 / Math.abs(m.thz)).toFixed(0)} fs)`;
-    root.querySelector(".w-amv").textContent = `${A.toFixed(2)} Å`;
-    root.querySelector(".w-info").innerHTML = `Kinetic energy carried by each element: ${share(m)}.`;
+    setText(spv, `${(+inSp.value).toFixed(1)} s (real period ${(1000 / Math.abs(m.thz)).toFixed(0)} fs)`);
+    setText(amv, `${A.toFixed(2)} Å`);
+    setText(info, `Kinetic energy carried by each element: ${cached("k" + mi, () => share(m))}.`, true);
   }
 
+  // Redraw only when something moves or changes, and never while off screen.
+  let dirty = true, visible = true;
+  const kick = () => { dirty = true; };
   function tick(now) {
-    if (playing) phase += 2 * Math.PI * (now - t0) / 1000 / +inSp.value;
+    const moving = playing && (chkMot.checked || chkArr.checked);
+    if (moving) phase += 2 * Math.PI * (now - t0) / 1000 / +inSp.value;
     t0 = now;
-    draw();
+    if (visible && (moving || dirty)) { draw(); dirty = false; }
     raf = requestAnimationFrame(tick);
   }
+  root.addEventListener("input", kick); root.addEventListener("change", kick); root.addEventListener("click", kick);
+  const io = new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) dirty = true; });
+  io.observe(cv);
+  const ro = new ResizeObserver(kick);
+  ro.observe(cv);
   btnPlay.addEventListener("click", () => { playing = !playing; btnPlay.textContent = playing ? "Pause" : "Play"; });
   sel.addEventListener("change", () => { mi = +sel.value; });
   root.querySelector(".w-top-view").addEventListener("click", () => { R = basisFor(nrm, unit(cell[1])); zoom = 1; });
@@ -422,6 +465,7 @@ function render({ model, el }) {
       R = reortho(rotateZ(R, -(st.ang - pinch.ang)));
       pinch.ang = st.ang;
     }
+    dirty = true;
     e.preventDefault();
   });
   const end = e => {
@@ -432,14 +476,15 @@ function render({ model, el }) {
   cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
   cv.addEventListener("wheel", e => {
     zoom = Math.min(4, Math.max(0.4, zoom * Math.exp(-e.deltaY * 0.0015)));
+    dirty = true;
     e.preventDefault();
   }, { passive: false });
-  function syncTheme() { root.classList.toggle("w-dark", dark()); }
+  function syncTheme() { root.classList.toggle("w-dark", dark()); dirty = true; }
   const obs = new MutationObserver(syncTheme);
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   syncTheme();
   raf = requestAnimationFrame(tick);
-  return () => { cancelAnimationFrame(raf); obs.disconnect(); };
+  return () => { cancelAnimationFrame(raf); obs.disconnect(); io.disconnect(); ro.disconnect(); };
 }
 
 export default { render, buildScene };
