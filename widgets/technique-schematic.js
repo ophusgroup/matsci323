@@ -86,7 +86,7 @@ const SCHEMS = {
         g.strokeStyle = C.muted; g.lineWidth = 2;
         g.beginPath(); g.moveTo(0, -11); g.lineTo(0, 11); g.stroke(); g.restore();
       }
-      label("transfer lens", P[0] + 4, P[1] - 44);
+      g.textAlign = "right"; label("transfer lens", P[0] + (E[0] - P[0]) * 0.5 - 26, P[1] + (E[1] - P[1]) * 0.5 + 4); g.textAlign = "left";
       g.strokeStyle = C.muted; g.lineWidth = 2.5;
       for (const r of [r1, r2]) {
         g.beginPath(); g.arc(H[0], H[1], r, Math.PI, 2 * Math.PI); g.stroke();
@@ -102,27 +102,43 @@ const SCHEMS = {
       label("analyzer", H[0] - 27, H[1] - 10);
       label("photoelectrons", P[0] + 46, P[1] - 14, C.el);
     } },
-  sims: { cap: "<b>SIMS.</b> A keV primary ion beam sputters the surface; secondary ions are extracted into a mass spectrometer.",
+  sims: { cap: "<b>SIMS.</b> A keV primary ion beam sputters the surface. Most sputtered atoms leave as neutrals and are lost; the ion optics collect only the small ionized fraction, and the mass analyzer sorts it by mass-to-charge ratio.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
-      const sx = w * 0.45, sy = h * 0.78;
-      box(sx - 60, sy, 120, 10);
-      label("sample", sx - 20, sy + 24);
-      box(30, 24, 72, 24);
-      label("primary ion gun", 22, 18);
-      arrow(96, 50, sx - 8, sy - 2, C.acc, 2);
-      label("O₂⁺ or Cs⁺", 96, h * 0.42);
-      // secondary ions up into extraction + analyzer
-      for (const dx of [-6, 4, 14]) arrow(sx + dx, sy - 4, sx + dx + 8, sy - 40, C.el, 1.3);
-      box(sx - 10, sy - 78, 60, 24);
-      label("extraction", sx - 6, sy - 84);
-      box(sx + 62, sy - 130, 96, 30);
-      label("mass analyzer", sx + 64, sy - 136);
-      label("(quadrupole / sector / ToF)", sx + 40, sy - 96);
-      arrow(sx + 40, sy - 66, sx + 70, sy - 112, C.el, 1.6);
-      box(w - 62, 30, 34, 14);
-      label("detector", w - 70, 24);
-      arrow(sx + 152, sy - 118, w - 50, 48, C.el, 1.6);
+      const small = (t, x, y, col) => { g.fillStyle = col || C.muted; g.font = "11.5px system-ui"; g.fillText(t, x, y); };
+      const P = [Math.round(w * 0.3), h - 48];          // impact point on the sample
+      // sample
+      box(P[0] - 70, P[1] + 4, 140, 10);
+      label("sample", P[0] - 20, P[1] + 32);
+      // primary ion gun and beam
+      box(24, 22, 80, 22);
+      label("primary ion gun", 24, 16);
+      arrow(104, 44, P[0] - 3, P[1] - 1, C.acc, 2);
+      label("O₂⁺ or Cs⁺, keV", 16, 118, C.acc);
+      // sputtered atoms: most leave neutral (gray), lost
+      for (const deg of [-18, -34, -50]) {
+        const t = deg * Math.PI / 180;
+        arrow(P[0] + 4, P[1], P[0] + 4 + 40 * Math.cos(t), P[1] + 40 * Math.sin(t), C.muted, 1.3);
+      }
+      small("neutral atoms: most of what is sputtered", P[0] + 52, P[1] - 4);
+      // the ionized fraction is pulled up into the ion optics
+      const top = P[1] - 112;
+      for (const dx of [-5, 5]) arrow(P[0] + dx, P[1] - 4, P[0] + dx, top + 24, C.el, 1.5);
+      label("ions: 10⁻⁵ to 10⁻¹ of them", P[0] + 12, P[1] - 58, C.el);
+      box(P[0] - 30, top, 60, 20);
+      label("ion optics collect only the ions", P[0] + 38, top + 15);
+      // into the mass analyzer and on to the detector
+      const ax = Math.round(w * 0.58), aw = Math.round(w * 0.2), ay = 30, ah = 34;
+      g.strokeStyle = C.el; g.lineWidth = 1.6;
+      g.beginPath(); g.moveTo(P[0], top - 1); g.lineTo(P[0], ay + ah / 2); g.lineTo(ax - 10, ay + ah / 2); g.stroke();
+      arrow(ax - 12, ay + ah / 2, ax - 3, ay + ah / 2, C.el, 1.6);
+      box(ax, ay, aw, ah);
+      label("mass analyzer", ax, ay - 6);
+      small("quadrupole, magnetic sector, or time of flight", ax, ay + ah + 16);
+      const dw = 44, dxp = w - dw - 26;
+      arrow(ax + aw + 2, ay + ah / 2, dxp - 3, ay + ah / 2, C.el, 1.6);
+      box(dxp, ay + 4, dw, ah - 8);
+      label("detector", dxp - 4, ay - 6);
     } },
   sem: { cap: "<b>SEM.</b> Two condenser lenses demagnify the source through successive crossovers, the objective focuses the probe, and the scan coils raster it over the sample.",
     draw(g, w, h, C) {

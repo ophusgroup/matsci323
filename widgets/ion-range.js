@@ -222,7 +222,7 @@ function render({ model, el }) {
   el.appendChild(style); el.appendChild(root);
   const cap = document.createElement("div");
   cap.style.cssText = "margin:10px 2px 0 2px; font-size:13.5px; line-height:1.5; color:var(--w-muted);";
-  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> ZBL binary-collision Monte Carlo: cascades (left), the stopped-ion map and its aligned depth profile (right).";
+  cap.innerHTML = "<b style='color:var(--w-fg)'>Ion implantation, TRIM-style.</b> ZBL binary-collision Monte Carlo: cascades (left); where each ion stops, and the depth profile on the same depth axis (right).";
   root.appendChild(cap);
 
   const cvT = root.querySelector(".w-traj"), cvH = root.querySelector(".w-hist");
@@ -250,9 +250,10 @@ function render({ model, el }) {
       const r = primaryStop(ion, tgt, energy());
       if (r.stopX) m = Math.max(m, r.stopX);
     }
-    // bulk: zoom to the range. Finite film: lock the view to the film so the
-    // boundary stays put while the energy sweeps, for a direct comparison
-    viewX = tFilm === Infinity ? Math.max(5, m * 1.35) : 2.2 * tFilm;
+    // zoom to the range; a film thinner than that sets the view instead, with a
+    // narrow strip behind its back surface for the transmitted ions
+    const vBulk = Math.max(5, m * 1.35);
+    viewX = tFilm === Infinity ? vBulk : Math.min(vBulk, 1.25 * tFilm);
     root.querySelector(".w-thv").textContent = tFilm === Infinity ? "bulk"
       : tFilm >= 1000 ? (tFilm / 1000).toFixed(1) + " µm" : Math.round(tFilm) + " nm";
     root.querySelector(".w-ev").textContent =
@@ -322,8 +323,9 @@ function render({ model, el }) {
     const isD = dark();
     g.fillStyle = isD ? "#0b0a0a" : "#ffffff"; g.fillRect(0, 0, w, h);
     const mL = 10, plotW = w - 20;
-    const mapTop = 26, mapH = 170;
-    const profTop = mapTop + mapH + 12, profBot = h - 34;
+    const mapTop = 26, mapH = 160;
+    const profTop = mapTop + mapH + 22, profBot = h - 36;
+    const muted = isD ? "#999" : "#777", ink = isD ? "#ccc" : "#333";
     const Xp = xx => mL + xx / viewX * plotW;
     // sample band in the map region, cut at the film boundary
     const xF = tFilm === Infinity ? mL + plotW : Math.min(mL + plotW, Xp(tFilm));
@@ -331,8 +333,18 @@ function render({ model, el }) {
     g.fillRect(mL, mapTop, xF - mL, mapH);
     g.strokeStyle = isD ? "#444" : "#bbb"; g.lineWidth = 1;
     g.strokeRect(mL, mapTop, plotW, mapH);
-    g.fillStyle = isD ? "#999" : "#777"; g.font = "12px system-ui";
-    g.fillText("stopped ions (beam axis at center)", mL, 16);
+    g.fillStyle = muted; g.font = "12px system-ui";
+    g.fillText("where the ions stop, side view", mL, 16);
+    // the beam enters along the middle of the map
+    const yAx = mapTop + mapH / 2;
+    g.strokeStyle = isD ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)"; g.lineWidth = 1;
+    g.setLineDash([6, 4]);
+    g.beginPath(); g.moveTo(mL, yAx); g.lineTo(xF, yAx); g.stroke();
+    g.setLineDash([]);
+    const bl = "beam axis \u2192", bw = g.measureText(bl).width;
+    g.fillStyle = isD ? "rgba(11,10,10,0.8)" : "rgba(255,255,255,0.85)";
+    g.fillRect(mL + 1, yAx - 18, bw + 8, 15);
+    g.fillStyle = ink; g.fillText(bl, mL + 5, yAx - 6);
     if (stops.length >= 5) {
       // isotropic bins: the map's nm-per-pixel matches the depth axis
       const NB = 60;
@@ -368,31 +380,45 @@ function render({ model, el }) {
         g.fillStyle = isD ? "rgba(255,63,63,0.75)" : "rgba(204,0,0,0.6)";
         g.fillRect(mL + i * cw, profBot - bh, cw - 1, bh);
       }
-      // mean and straggle, marked through both plots
+      // mean depth, marked through both plots and labeled in the gap between them
       const mean = stops.reduce((a, b) => a + b[0], 0) / stops.length;
       const sd = Math.sqrt(stops.reduce((a, b) => a + (b[0] - mean) ** 2, 0) / stops.length);
+      const fmt = v => v >= 1000 ? (v / 1000).toFixed(2) + " µm" : v.toFixed(0) + " nm";
       g.strokeStyle = isD ? "#fff" : "#000"; g.setLineDash([4, 3]);
       g.beginPath(); g.moveTo(Xp(mean), mapTop); g.lineTo(Xp(mean), profBot); g.stroke();
       g.setLineDash([]);
-      g.fillStyle = isD ? "#ccc" : "#333";
-      g.fillText("Rp", Xp(mean) + 4, mapTop + 12);
-      const fmt = v => v >= 1000 ? (v / 1000).toFixed(2) + " µm" : v.toFixed(0) + " nm";
+      g.fillStyle = ink;
+      const lab = "mean depth R\u209A = " + fmt(mean);
+      const lw = g.measureText(lab).width;
+      const right = Xp(mean) + 5 + lw < mL + plotW;
+      g.textAlign = right ? "left" : "right";
+      g.fillText(lab, Xp(mean) + (right ? 5 : -5), profTop - 7);
+      g.textAlign = "left";
       root.querySelector(".w-rp").textContent = fmt(mean);
       root.querySelector(".w-dr").textContent = fmt(sd);
     }
-    // film boundary through both plots
+    // film back surface through both plots, and the ions that left through it
     if (xF < mL + plotW) {
-      g.strokeStyle = isD ? "#444" : "#bbb";
+      g.strokeStyle = isD ? "#666" : "#999";
       g.beginPath(); g.moveTo(xF, mapTop); g.lineTo(xF, profBot); g.stroke();
+      const cx = (xF + mL + plotW) / 2;
+      g.textAlign = "center";
+      g.fillStyle = isD ? "rgb(224,168,50)" : "rgb(170,115,15)";
+      g.fillText("transmitted", cx, mapTop + mapH / 2 - 8);
+      g.font = "600 13px system-ui";
+      g.fillText(nRun ? (100 * nTr / nRun).toFixed(0) + "%" : "", cx, mapTop + mapH / 2 + 9);
+      g.font = "12px system-ui";
+      g.textAlign = "left";
     }
-    g.fillStyle = isD ? "#999" : "#777";
-    g.fillText("depth profile", mL, profTop - 3);
-    for (const f of [0, 0.5, 1]) {
-      const xv = f * viewX;
-      g.fillText(xv >= 1000 ? (xv / 1000).toFixed(1) + " µm" : Math.round(xv) + " nm",
-        Xp(xv) - (f === 1 ? 44 : 0), profBot + 16);
-    }
-    g.fillText("depth", w / 2 - 15, h - 4);
+    g.fillStyle = muted;
+    g.fillText("depth profile", mL + 2, profTop + 10);
+    g.strokeStyle = isD ? "#444" : "#bbb";
+    g.beginPath(); g.moveTo(mL, profBot + 0.5); g.lineTo(mL + plotW, profBot + 0.5); g.stroke();
+    const tick = xv => xv >= 1000 ? (xv / 1000).toFixed(1) + " µm" : Math.round(xv) + " nm";
+    g.textAlign = "left"; g.fillText("0", mL, profBot + 15);
+    g.textAlign = "right"; g.fillText(tick(viewX), mL + plotW, profBot + 15);
+    g.textAlign = "center"; g.fillText("depth below the surface", mL + plotW / 2, profBot + 15);
+    g.textAlign = "left";
     root.querySelector(".w-n").textContent = nRun;
     root.querySelector(".w-trn").textContent = nRun ? (100 * nTr / nRun).toFixed(1) + "%" : "–";
     root.querySelector(".w-fn").textContent = (100 * eN / Math.max(1, eN + eE)).toFixed(0) + "%";

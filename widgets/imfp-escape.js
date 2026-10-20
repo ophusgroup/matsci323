@@ -84,7 +84,7 @@ function render({ model, el }) {
       const g = cvC.getContext("2d");
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.clearRect(0, 0, w, h);
-      const mL = 46, mR = 10, mT = 12, mB = 42;
+      const mL = 52, mR = 14, mT = 12, mB = 42;
       const lx0 = Math.log10(1), lx1 = 4, ly0 = Math.log10(0.3), ly1 = Math.log10(30);
       const X = e => mL + (Math.log10(e) - lx0) / (lx1 - lx0) * (w - mL - mR);
       const Y = l => mT + (ly1 - Math.log10(l)) / (ly1 - ly0) * (h - mT - mB);
@@ -92,22 +92,27 @@ function render({ model, el }) {
       g.font = "13px system-ui";
       for (const e of [1, 10, 100, 1000, 10000]) {
         g.beginPath(); g.moveTo(X(e), mT); g.lineTo(X(e), h - mB); g.stroke();
-        g.fillText(e >= 1000 ? e / 1000 + "k" : e, X(e) - 6, h - mB + 13);
+        g.textAlign = e === 10000 ? "right" : e === 1 ? "left" : "center";
+        g.fillText(e >= 1000 ? e / 1000 + "k" : e, X(e), h - mB + 15);
       }
+      g.textAlign = "right";
       for (const l of [0.3, 1, 3, 10, 30]) {
         g.beginPath(); g.moveTo(mL, Y(l)); g.lineTo(w - mR, Y(l)); g.stroke();
-        g.fillText(l, 10, Y(l) + 3);
+        g.fillText(l, mL - 6, Y(l) + 4);
       }
-      g.fillText("kinetic energy (eV)", mL + 70, h - 8);
-      g.save(); g.translate(10, mT + 130); g.rotate(-Math.PI / 2);
-      g.fillText("IMFP (nm)", 0, 0); g.restore();
-      // technique bands
+      g.textAlign = "center";
+      g.fillText("kinetic energy (eV)", (mL + w - mR) / 2, h - 6);
+      g.save(); g.translate(13, (mT + h - mB) / 2); g.rotate(-Math.PI / 2);
+      g.fillText("mean free path (nm)", 0, 0); g.restore();
+      // technique bands: LEED beams, and XPS and AES electrons
       g.fillStyle = isD ? "rgba(255,63,63,0.10)" : "rgba(204,0,0,0.06)";
-      g.fillRect(X(20), mT, X(300) - X(20), h - mT - mB);   // LEED / AES low
-      g.fillRect(X(950), mT, X(1500) - X(950), h - mT - mB); // XPS with Al Ka
+      g.fillRect(X(20), mT, X(200) - X(20), h - mT - mB);
+      g.fillStyle = isD ? "rgba(122,162,232,0.14)" : "rgba(58,98,184,0.08)";
+      g.fillRect(X(200), mT, X(1500) - X(200), h - mT - mB);
       g.fillStyle = isD ? "#bbb" : "#555";
-      g.fillText("LEED", X(40), mT + 12);
-      g.fillText("XPS", X(1000), mT + 12);
+      g.fillText("LEED", (X(20) + X(200)) / 2, mT + 14);
+      g.fillText("XPS, AES", (X(200) + X(1500)) / 2, mT + 14);
+      g.textAlign = "left";
       // curve
       g.strokeStyle = acc; g.lineWidth = 1.8; g.beginPath();
       for (let i = 0; i <= 300; i++) {
@@ -122,12 +127,12 @@ function render({ model, el }) {
     // ---- escape-depth cartoon ----
     {
       const dpr = window.devicePixelRatio || 1;
-      const w = cvD.clientWidth || 250, h = 120;
+      const w = cvD.clientWidth || 250, h = 140;
       cvD.width = w * dpr; cvD.height = h * dpr;
       const g = cvD.getContext("2d");
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.clearRect(0, 0, w, h);
-      const surf = 18, zScale = (h - surf - 6) / 12;  // 12 nm shown
+      const surf = 32, zScale = (h - surf - 6) / 12;  // 12 nm shown
       g.fillStyle = isD ? "#1c1a19" : "#efedea";
       g.fillRect(0, surf, w, h - surf);
       // overlayer
@@ -140,11 +145,16 @@ function render({ model, el }) {
         g.fillStyle = isD ? `rgba(255,63,63,${0.5 * a})` : `rgba(204,0,0,${0.4 * a})`;
         g.fillRect(w * 0.62, surf + i, w * 0.3, 1);
       }
-      // emission arrow at angle theta
-      g.strokeStyle = isD ? "#eee" : "#222"; g.lineWidth = 1.5;
-      const ax = w * 0.77, ay = surf;
-      g.beginPath(); g.moveTo(ax, ay);
-      g.lineTo(ax + Math.sin(th) * 40, ay - Math.cos(th) * 40); g.stroke();
+      // emission direction, at angle theta from the normal
+      g.strokeStyle = isD ? "#eee" : "#222"; g.fillStyle = g.strokeStyle; g.lineWidth = 1.5;
+      const ax = w * 0.77, ay = surf, L = 24;
+      const tx = ax + Math.sin(th) * L, ty = ay - Math.cos(th) * L;
+      g.beginPath(); g.moveTo(ax, ay); g.lineTo(tx, ty); g.stroke();
+      g.beginPath(); g.moveTo(tx, ty);
+      g.lineTo(tx - 6 * Math.sin(th - 0.45), ty + 6 * Math.cos(th - 0.45));
+      g.lineTo(tx - 6 * Math.sin(th + 0.45), ty + 6 * Math.cos(th + 0.45)); g.fill();
+      g.font = "12px system-ui"; g.textAlign = "right";
+      g.fillText("to the analyzer", ax - 6, 14); g.textAlign = "left";
       g.strokeStyle = isD ? "#666" : "#999";
       g.beginPath(); g.moveTo(0, surf); g.lineTo(w, surf); g.stroke();
       // escape depth line
@@ -153,7 +163,7 @@ function render({ model, el }) {
       g.lineTo(w * 0.98, surf + esc * zScale); g.stroke(); g.setLineDash([]);
       g.fillStyle = isD ? "#ccc" : "#444"; g.font = "13px system-ui";
       g.fillText("3λcosθ", w * 0.55, surf + esc * zScale - 3);
-      g.fillText("signal", w * 0.62, h - 4);
+      g.textAlign = "right"; g.fillText("signal from each depth", w * 0.6, h - 6); g.textAlign = "left";
       if (t > 0) g.fillText("overlayer", 4, surf + Math.max(10, t * zScale - 2));
     }
     root.querySelector(".w-ev").textContent = E >= 1000 ? (E / 1000).toFixed(2) + " keV" : E.toFixed(0) + " eV";
