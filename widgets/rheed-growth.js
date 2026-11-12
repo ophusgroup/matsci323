@@ -90,14 +90,19 @@ function render({ model, el }) {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, w, hh);
     const isD = dark();
-    const hmin = Math.min(...h);
     const cw = w / W, ch = cw * 0.92;
-    // substrate band
-    g.fillStyle = isD ? "#3a3735" : "#d8d5d0";
-    g.fillRect(0, hh - 12, w, 12);
+    // keep the growth front near the top, with the film it sits on below it;
+    // the substrate shows until the film fills the panel
+    const rows = Math.floor((hh - 20) / ch);
+    const base = Math.max(0, Math.max(...h) - rows + 3);
+    const floor = base === 0 ? hh - 12 : hh;
+    if (base === 0) {
+      g.fillStyle = isD ? "#3a3735" : "#d8d5d0";
+      g.fillRect(0, hh - 12, w, 12);
+    }
     for (let i = 0; i < W; i++) {
-      for (let l = hmin; l < h[i]; l++) {
-        const y = hh - 12 - (l - hmin + 1) * ch + ch / 2;
+      for (let l = base; l < h[i]; l++) {
+        const y = floor - (l - base + 1) * ch + ch / 2;
         if (y < -ch) continue;
         // atoms as circles, every other layer offset half a site
         const cx = i * cw + cw / 2 + (l % 2) * cw / 2;

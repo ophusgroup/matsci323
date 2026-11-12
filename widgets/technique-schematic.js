@@ -39,7 +39,7 @@ function helpers(g, C) {
   };
   // mirrored marginal rays: pts = [[halfWidth, y], ...] along the axis
   const ray = (cx, pts) => {
-    g.strokeStyle = C.el; g.lineWidth = 1.4;
+    g.strokeStyle = C.ebeam; g.lineWidth = 1.4;
     for (const s of [-1, 1]) {
       g.beginPath();
       pts.forEach(([hw, y], i) =>
@@ -159,7 +159,7 @@ const SCHEMS = {
       // Everhart-Thornley SE detector, with curved SE trajectories
       box(w * 0.10, 168, 30, 17);
       label("SE detector", w * 0.07, 162);
-      g.strokeStyle = C.el; g.lineWidth = 1.2;
+      g.strokeStyle = C.ebeam; g.lineWidth = 1.2;
       for (const d of [0, 7]) {
         g.beginPath(); g.moveTo(cx - 4 - d, 206);
         g.quadraticCurveTo(cx - 60 - d, 170 + d, w * 0.10 + 32, 177); g.stroke();
@@ -187,7 +187,7 @@ const SCHEMS = {
       box(cx - 50, 152, 100, 5, C.metal);
       label("thin sample", cx + 56, 158);
       // transmitted cones: direct beam plus scattering to the annular detector
-      g.strokeStyle = C.el; g.lineWidth = 1.3;
+      g.strokeStyle = C.ebeam; g.lineWidth = 1.3;
       for (const s of [-1, 1]) {
         g.beginPath(); g.moveTo(cx, 152); g.lineTo(cx + s * 11, 196); g.stroke();
         g.globalAlpha = 0.55;
@@ -196,9 +196,9 @@ const SCHEMS = {
       }
       box(cx - 40, 196, 18, 8); box(cx + 22, 196, 18, 8);
       label("ADF (annular)", cx + 46, 203);
-      label("BF cone", cx - 78, 188, C.el);
+      label("BF cone", cx - 78, 188, C.ebeam);
       // axial beam into the magnetic prism, bent to the EELS camera
-      g.strokeStyle = C.el; g.lineWidth = 1.3;
+      g.strokeStyle = C.ebeam; g.lineWidth = 1.3;
       g.beginPath(); g.moveTo(cx, 196); g.lineTo(cx, 218);
       g.quadraticCurveTo(cx, 234, cx + 26, 234); g.lineTo(w * 0.74, 234); g.stroke();
       g.save(); g.translate(cx + 2, 219); g.rotate(0.5);
@@ -319,29 +319,49 @@ const SCHEMS = {
       g.moveTo(qx, qy + 15); g.lineTo(qx + 30, qy + 15); g.stroke();
       label("quadrant photodiode", qx - 66, qy - 8);
     } },
-  ebsd: { cap: "<b>EBSD.</b> The sample is tilted to 70 degrees and backscattered electrons form Kikuchi bands on the phosphor screen.",
+  ebsd: { cap: "<b>EBSD.</b> The sample is tilted to 70 degrees, so the beam arrives 70 degrees from the surface normal. The backscattered electrons leave at the same angle on the other side of the normal, 140 degrees from the beam, and form Kikuchi bands on the phosphor screen.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
-      const cx = w * 0.36, cy = h * 0.55;
+      const cx = Math.max(106, Math.min(w * 0.42, w - 233)), cy = 72;
+      const rad = Math.PI / 180;
+      // canvas angles at the impact point: toward the gun, surface normal, takeoff
+      const up = -90, nrm = -20, out = 50, L = 128;
+      const at = (a, r) => [cx + r * Math.cos(a * rad), cy + r * Math.sin(a * rad)];
       // beam
-      arrow(cx, 16, cx, cy - 12, C.el, 1.8);
-      label("electron beam", cx + 10, 26);
-      // tilted sample
-      g.save(); g.translate(cx, cy); g.rotate(-70 * Math.PI / 180);
+      arrow(cx, 10, cx, cy - 3, C.ebeam, 1.8);
+      label("electron beam", cx - 90, 24);
+      // tilted sample, surface facing up and to the right
+      g.save(); g.translate(cx, cy); g.rotate(70 * rad);
       box(-46, 0, 92, 9); g.restore();
-      label("sample, 70° tilt", cx - 100, cy + 30);
-      // pattern rays to screen
-      for (const dy of [-30, 0, 30])
-        arrow(cx + 6, cy - 6, w * 0.72, cy - 10 + dy, C.el, 1.1);
-      // phosphor screen with bands
-      box(w * 0.72, cy - 62, 12, 116, C.panel);
-      g.strokeStyle = C.acc; g.lineWidth = 3;
-      for (const dy of [-34, -6, 26]) {
-        g.beginPath(); g.moveTo(w * 0.72, cy + dy); g.lineTo(w * 0.72 + 12, cy + dy - 10); g.stroke();
+      label("sample, 70° tilt", cx - 100, cy + 36);
+      // surface normal
+      g.strokeStyle = C.muted; g.lineWidth = 1; g.setLineDash([4, 3]);
+      g.beginPath(); g.moveTo(cx, cy); g.lineTo(...at(nrm, 92)); g.stroke();
+      g.setLineDash([]);
+      label("surface normal", ...at(nrm, 97));
+      // equal incoming and takeoff angles, 140 degrees in all
+      for (const [a0, a1, r] of [[up, nrm, 30], [nrm, out, 30], [up, out, 54]]) {
+        g.beginPath(); g.arc(cx, cy, r, a0 * rad, a1 * rad); g.stroke();
       }
-      label("phosphor screen", w * 0.66, cy - 72);
-      box(w * 0.86, cy - 20, 30, 40, C.metal);
-      label("camera", w * 0.86, cy - 28);
+      g.save(); g.textAlign = "center"; g.textBaseline = "middle";
+      label("70°", ...at(-55, 41));
+      label("70°", ...at(15, 41));
+      label("140°", ...at(15, 70));
+      g.restore();
+      // pattern rays leave from the surface side
+      for (const da of [-12, 0, 12])
+        arrow(...at(out + da, 4), ...at(out + da, L / Math.cos(da * rad)), C.ebeam, 1.1);
+      // phosphor screen square to the takeoff direction, camera behind it
+      g.save(); g.translate(...at(out, L)); g.rotate((out - 90) * rad);
+      box(-55, 0, 110, 12, C.panel);
+      g.strokeStyle = C.acc; g.lineWidth = 3;
+      for (const x of [-34, -6, 26]) {
+        g.beginPath(); g.moveTo(x, 0); g.lineTo(x - 8, 12); g.stroke();
+      }
+      box(-16, 30, 32, 34, C.metal);
+      g.restore();
+      label("phosphor screen", cx + 132, cy + 66);
+      label("camera", cx + 142, cy + 140);
     } },
   fib: { cap: "<b>Dual-beam FIB.</b> The electron column images while the ion column mills; the gas injector writes protective deposits.",
     draw(g, w, h, C) {
@@ -352,13 +372,13 @@ const SCHEMS = {
       // electron column, vertical
       box(sx - 14, 12, 28, 30);
       label("e⁻ column", sx - 74, 30);
-      arrow(sx, 44, sx, sy - 4, C.el, 1.6);
+      arrow(sx, 44, sx, sy - 4, C.ebeam, 1.6);
       // ion column at 52 degrees
       g.save(); g.translate(sx + Math.sin(0.91) * 150, sy - Math.cos(0.91) * 150);
       g.rotate(0.91);
       box(-14, -30, 28, 30); g.restore();
       label("Ga⁺ column (52°)", w * 0.72, 60);
-      arrow(sx + Math.sin(0.91) * 140, sy - Math.cos(0.91) * 140, sx + 4, sy - 4, C.acc, 1.8);
+      arrow(sx + Math.sin(0.91) * 140, sy - Math.cos(0.91) * 140, sx + 4, sy - 4, C.ion, 1.8);
       // GIS needle
       g.strokeStyle = C.muted; g.lineWidth = 3;
       g.beginPath(); g.moveTo(w * 0.12, sy - 60); g.lineTo(sx - 30, sy - 12); g.stroke();
@@ -368,29 +388,37 @@ const SCHEMS = {
       g.fillRect(sx - 6, sy, 22, 6);
       label("milled cross-section", sx + 20, sy - 12);
     } },
-  leed: { cap: "<b>LEED.</b> Low-energy electrons backscatter through retarding grids; elastic beams form the spot pattern on the screen.",
+  leed: { cap: "<b>LEED.</b> Low-energy electrons backscatter from the sample. The retarding grids pass only the elastic ones, which light up spots on the phosphor screen.",
     draw(g, w, h, C) {
       const { arrow, label, box } = helpers(g, C);
-      const sx = w * 0.78, sy = h * 0.52;
+      const R = Math.min(h * 0.62, w * 0.36), half = 0.7;
+      const sx = w / 2 + (R - 36) / 2, sy = h * 0.5;
+      const at = (a, r) => [sx - r * Math.cos(a), sy - r * Math.sin(a)];
       g.save(); g.translate(sx, sy); g.rotate(Math.PI / 2);
       box(-46, 0, 92, 9); g.restore();
-      label("sample", sx + 12, sy + 4);
-      // gun through the center
-      box(w * 0.30, sy - 10, 60, 20, C.metal);
-      label("electron gun", w * 0.28, sy - 18);
-      arrow(w * 0.30 + 60, sy, sx - 8, sy, C.el, 1.6);
-      // hemispherical grids + screen (arcs centered on sample)
-      for (const [r, lw] of [[w * 0.30, 1.5], [w * 0.33, 1.5], [w * 0.36, 1.5]]) {
-        g.strokeStyle = C.muted; g.lineWidth = lw;
-        g.beginPath(); g.arc(sx, sy, r, Math.PI * 0.62, Math.PI * 1.38); g.stroke();
+      label("sample", sx + 14, sy + 4);
+      // grids and screen: arcs centred on the sample, opening toward it
+      g.strokeStyle = C.muted; g.lineWidth = 1.5;
+      for (const f of [0.74, 0.80, 0.86]) {
+        g.beginPath(); g.arc(sx, sy, R * f, Math.PI - half, Math.PI + half); g.stroke();
       }
-      g.strokeStyle = C.acc; g.lineWidth = 3;
-      g.beginPath(); g.arc(sx, sy, w * 0.40, Math.PI * 0.66, Math.PI * 1.34); g.stroke();
-      label("retarding grids", w * 0.20, sy - w * 0.30);
-      label("phosphor screen", w * 0.12, sy + w * 0.36);
-      // diffracted beams
-      for (const a of [-0.5, -0.2, 0.2, 0.5])
-        arrow(sx - 10, sy, sx - Math.cos(a) * w * 0.38, sy - Math.sin(a) * w * 0.38, C.el, 1.1);
+      g.strokeStyle = C.gold; g.lineWidth = 4;
+      g.beginPath(); g.arc(sx, sy, R, Math.PI - half, Math.PI + half); g.stroke();
+      // diffracted beams, ending in spots on the screen
+      for (const a of [-0.62, -0.36, 0.36, 0.62]) {
+        arrow(sx - 10, sy, ...at(a, R - 5), C.ebeam, 1.2);
+        g.fillStyle = C.gold; g.beginPath(); g.arc(...at(a, R), 4, 0, 6.3); g.fill();
+      }
+      // the gun passes through the centre of the screen
+      box(sx - R - 34, sy - 9, 54, 18, C.metal);
+      arrow(sx - R + 20, sy, sx - 10, sy, C.ebeam, 1.8);
+      if (sx - R - 40 > 84) {
+        g.save(); g.textAlign = "right"; label("electron gun", sx - R - 40, sy + 4); g.restore();
+      } else label("electron gun", 4, sy + 30);
+      const [tx, ty] = at(half, R);
+      label("phosphor screen", tx - 104, ty - 4);
+      const [gx, gy] = at(-half, R * 0.74);
+      label("retarding grids", gx + 6, gy + 12);
     } },
 };
 
@@ -419,7 +447,8 @@ function render({ model, el }) {
     const C = {
       bg: isD ? "#221f1e" : "#ffffff", fg: isD ? "#e8e6e3" : "#222",
       muted: isD ? "#8a8784" : "#888", acc: isD ? "rgb(255,63,63)" : "rgb(204,0,0)",
-      el: isD ? "#7aa2e8" : "#3a62b8", metal: isD ? "#3d3a38" : "#cfcbc5",
+      el: isD ? "#7aa2e8" : "#3a62b8", ebeam: isD ? "#5fc48a" : "#3f8f5f",
+      ion: isD ? "#b08cf0" : "#8450cc", gold: isD ? "#e0b040" : "#c98f00", metal: isD ? "#3d3a38" : "#cfcbc5",
       panel: isD ? "#2c2927" : "#f2efe9",
     };
     root.style.setProperty("--ts-border", isD ? "#3a3735" : "#d8d5d0");

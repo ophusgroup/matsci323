@@ -53,6 +53,25 @@ Underneath all crystalline-sample imaging sits **dynamical diffraction**: a fast
 HAADF intensity against atomic number with the $Z^{1.7}$ line, and the second panel showing how the exponent runs from 4/3 to 2 as the detector inner angle moves out past the screening angle.
 :::
 
+## Atomic resolution
+
+With an aberration-corrected probe below 1 Å and the crystal tilted onto a zone axis, a crystal direction parallel to the beam, every bright spot in a HAADF image is one atomic column seen end-on. For thin films this is the main use of STEM. The interface must also lie parallel to the beam, and the lamella should be thinner than about 30 nm. One cross-section image then gives the film thickness by counting atomic planes, which plane terminates the substrate and which starts the film, intermixing as planes of intermediate brightness, and the steps and dislocations at the interface. Fitting each column position to a few picometers maps the local lattice parameter and strain.
+
+A film whose lattice parameter is larger than the substrate's relaxes by forming misfit dislocations at the interface. To relieve the whole misfit they must be spaced by
+
+$$
+S = \frac{b}{f},\qquad f = \frac{a_f - a_s}{a_s},
+$$
+
+where $a_f$ and $a_s$ are the film and substrate lattice parameters, $f$ is the misfit, and $b$ is the Burgers vector, the lattice translation each dislocation adds, about one substrate lattice parameter for the edge dislocations at a cubic interface. BaTiO$_3$ on SrTiO$_3$ has $f = 2.4\%$, so a fully relaxed film has a dislocation every 16 nm. [XRD](../photons/xrd.md) measures the average relaxation of the whole film; an atomic-resolution image shows where each dislocation sits.
+
+:::{figure} ../../assets/figures/haadf-interface.svg
+:alt: simulated atomic-resolution HAADF image of a film on a substrate
+:width: 100%
+
+Left: a simulated HAADF image of a heavier film on a substrate, with the interface edge-on. The film lattice parameter is 11% larger, exaggerated so three misfit dislocations (gold) fit in the image. Between them the planes stay in register, and at each one the substrate has an extra plane. Center: the column intensity of each atomic plane, substrate in blue and film in gold, with one intermixed plane at the interface. Right: the in-plane column spacing of each plane, which steps from the substrate value to the relaxed film value.
+:::
+
 ## Diffraction in the microscope
 
 The same instrument is a diffraction camera with a selectable probe size, and the diffraction modes are organized by convergence angle:

@@ -98,6 +98,7 @@ function render({ model, el }) {
   <label>target <select class="w-mat">${Object.keys(MATS).map(k => `<option${k === "Si" ? " selected" : ""}>${k}</option>`).join("")}</select></label>
   <label>beam energy <input class="w-E" type="range" min="1" max="30" step="0.5" value="15"><b class="w-ev"></b></label>
   <label>thickness <input class="w-th" type="range" min="-2" max="1.05" step="0.05" value="1.05"><b class="w-thv"></b></label>
+  <label>view depth <select class="w-fov">${[0.1, 0.3, 1, 3, 10].map(v => `<option value="${v}"${v === 3 ? " selected" : ""}>${v >= 1 ? v + " µm" : v * 1000 + " nm"}</option>`).join("")}</select></label>
   <label>trajectories <input class="w-N" type="range" min="2" max="4.3" step="0.05" value="3"><b class="w-nv"></b></label>
   <button class="w-go">Restart</button>
 </div>
@@ -122,7 +123,7 @@ function render({ model, el }) {
   const inE = root.querySelector(".w-E"), sel = root.querySelector(".w-mat");
   const inTh = root.querySelector(".w-th");
   let trajs = [], nBse = 0, nTr = 0, nDone = 0, maxDepth = 0, raf = 0, visible = true, scale = 1;
-  let tFilm = Infinity;                                    // um
+  let tFilm = Infinity, koR = 0;                           // um
   const HG = 110;
   let hist = new Float32Array(HG * HG);
   const inN = () => Math.round(Math.pow(10, +root.querySelector(".w-N").value));
@@ -139,9 +140,10 @@ function render({ model, el }) {
     const m = MATS[sel.value], E0 = +inE.value;
     const R = koRange(m, E0);
     tFilm = +inTh.value >= 1.049 ? Infinity : Math.pow(10, +inTh.value);
-    // bulk: zoom to the pear. Finite film: lock the view to the film so the
-    // boundary stays put while the energy sweeps, for a direct comparison
-    scale = tFilm === Infinity ? 1.1 * R : 2.2 * tFilm;
+    // fixed field of view, set only by the view-depth menu, so the interaction
+    // volume visibly grows and shrinks as the energy or material changes
+    scale = +root.querySelector(".w-fov").value;
+    koR = R;
     root.querySelector(".w-thv").textContent = tFilm === Infinity ? "bulk"
       : tFilm >= 1 ? tFilm.toFixed(1) + " µm" : (tFilm * 1000).toFixed(0) + " nm";
     root.querySelector(".w-ev").textContent = E0.toFixed(1) + " keV";
@@ -169,11 +171,12 @@ function render({ model, el }) {
     g.strokeStyle = isD ? "#444" : "#bbb";
     g.beginPath(); g.moveTo(0, zTop); g.lineTo(w, zTop); g.stroke();
     if (yF < h) { g.beginPath(); g.moveTo(0, yF); g.lineTo(w, yF); g.stroke(); }
+    koMark(g, w, Y(koR), isD);
     // beam arrow
     g.strokeStyle = isD ? "#eee" : "#222"; g.lineWidth = 1.6;
     g.beginPath(); g.moveTo(w / 2, 6); g.lineTo(w / 2, zTop - 2); g.stroke();
     // scale bar
-    const sb = scale > 2 ? 1 : scale > 0.4 ? 0.2 : scale > 0.1 ? 0.05 : 0.01; // um
+    const sb = scale > 5 ? 2 : scale > 2 ? 1 : scale > 0.4 ? 0.2 : scale > 0.1 ? 0.05 : 0.01; // um
     const sbPx = (sb / scale) * (w / 2.2);
     g.lineWidth = 2.5;
     g.beginPath(); g.moveTo(w - 20 - sbPx, h - 14); g.lineTo(w - 20, h - 14); g.stroke();
@@ -221,8 +224,25 @@ function render({ model, el }) {
     g.strokeStyle = isD ? "#444" : "#bbb";
     g.beginPath(); g.moveTo(0, zTop); g.lineTo(w, zTop); g.stroke();
     if (yF < h) { g.beginPath(); g.moveTo(0, yF); g.lineTo(w, yF); g.stroke(); }
+    koMark(g, w, zTop + (koR / scale) * (h * 0.82), isD);
     g.fillStyle = isD ? "#ccc" : "#333"; g.font = "12px system-ui";
     g.fillText("deposited energy (log color scale)", 10, 16);
+  }
+  // dashed line at the Kanaya-Okayama depth, or a note when it is off the bottom
+  function koMark(g, w, y, isD) {
+    const h = 360;
+    g.save();
+    g.strokeStyle = isD ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)"; g.lineWidth = 1;
+    g.fillStyle = isD ? "#ddd" : "#222"; g.font = "12px system-ui";
+    if (y <= h - 4) {
+      g.setLineDash([5, 4]);
+      g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
+      g.setLineDash([]);
+      g.fillText("K-O range", 6, y - 4);
+    } else {
+      g.fillText("K-O range is below the view \u2193", 6, h - 8);
+    }
+    g.restore();
   }
   function drawTraj(g, t, X, Y) {
     g.strokeStyle = t.bse ? (dark() ? "rgba(255,63,63,0.85)" : "rgba(204,0,0,0.8)")
@@ -265,7 +285,7 @@ function render({ model, el }) {
   const io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; },
     { rootMargin: "100px" });
   io.observe(root);
-  for (const i of [inE, sel, inTh, root.querySelector(".w-N")]) i.addEventListener("input", setup);
+  for (const i of [inE, sel, inTh, root.querySelector(".w-N"), root.querySelector(".w-fov")]) i.addEventListener("input", setup);
   root.querySelector(".w-go").addEventListener("click", setup);
   new ResizeObserver(() => { redrawAll(); drawHist(); }).observe(cv);
   syncTheme(); setup(); tick();

@@ -43,7 +43,7 @@ RHEED sends 10 to 30 keV electrons at grazing incidence, one to three degrees, o
 :alt: RHEED geometry in a growth chamber with the streak pattern on the screen
 :width: 100%
 
-**RHEED in a growth chamber**, angles exaggerated. A 10 to 30 kV beam strikes the sample at a grazing angle, the reflected and diffracted beams (red and blue) reach a phosphor screen across the chamber, and the evaporation sources above the sample keep a clear path. Inset: a flat surface gives streaks along the zeroth Laue circle above the shadow edge of the sample.
+**RHEED in a growth chamber**, angles exaggerated. A 10 to 30 kV beam strikes the sample at a grazing angle, the specular and diffracted beams (green) reach a phosphor screen across the chamber, and the evaporation sources above the sample keep a clear path. Inset: a flat surface gives streaks along the zeroth Laue circle above the shadow edge of the sample.
 :::
 
 The grazing geometry leaves the space above the sample completely open, which is the point: RHEED coexists with deposition sources aimed at the surface, and monitors the film as it grows. Three readings make it the growth technique it is:

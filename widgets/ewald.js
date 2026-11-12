@@ -84,7 +84,7 @@ function render({ model, el }) {
 
   function draw() {
     const isD = dark();
-    const acc = isD ? "rgb(255,63,63)" : "rgb(204,0,0)";
+    const acc = isD ? "#5fc48a" : "#3f8f5f";   // electron beams are green
     const dpr = window.devicePixelRatio || 1;
     const t = +inE.value;
     const eV = mode === "LEED" ? 20 * Math.pow(500 / 20, t) : 5000 * Math.pow(30000 / 5000, t);
@@ -104,14 +104,17 @@ function render({ model, el }) {
       const gr = cv.getContext("2d");
       gr.setTransform(dpr, 0, 0, dpr, 0, 0);
       gr.clearRect(0, 0, w, h);
-      const x0 = -3.6 * g, x1 = 3.6 * g;
-      const S = (x1 - x0) / w;                 // q per px, SAME in x and y
+      // q per px, SAME in x and y; in LEED zoom out so the whole sphere,
+      // where the reflected beams are, stays in view at every energy
+      const S = Math.max(7.2 * g / w, mode === "LEED" ? (2 * k + 1.0 * g) / h : 0);
+      const x0 = -w * S / 2, x1 = w * S / 2;
       const y0 = -0.8 * g, y1 = y0 + h * S;
       const X = q => (q - x0) / S;
       const Y = q => h - (q - y0) / S;
       // rods / segments
       let beams = 0;
-      for (let n = -3; n <= 3; n++) {
+      const nMax = Math.ceil(x1 / g);
+      for (let n = -nMax; n <= nMax; n++) {
         const px = X(n * g), pw = Math.max(1.5, rodW / S);
         gr.fillStyle = isD ? "rgba(160,160,160,0.25)" : "rgba(0,0,0,0.10)";
         if (N === 1) {
@@ -127,16 +130,20 @@ function render({ model, el }) {
         const C = [-k * Math.cos(thI), k * Math.sin(thI)];
         const dxr = n * g - C[0];
         if (Math.abs(dxr) < k) {
+          // a reflected beam leaves the surface, so k_out = P - C points up:
+          // take the upper crossing, searching down from the top of the view
           let yLo = null, yHi = null;
-          for (let yy = Math.max(y0, 0); yy < y1; yy += (y1 - y0) / 1400) {
+          for (let yy = y1; yy > Math.max(y0, 0); yy -= (y1 - y0) / 1400) {
             const d = Math.abs(Math.hypot(dxr, yy - C[1]) - k);
-            if (d < rodW / 2 && inSeg(yy)) { if (yLo === null) yLo = yy; yHi = yy; }
-            else if (yLo !== null && yy > yHi + 0.3 * g) break;
+            if (d < rodW / 2 && inSeg(yy) && yy >= C[1]) { if (yHi === null) yHi = yy; yLo = yy; }
+            else if (yHi !== null && yy < yLo - 0.3 * g) break;
           }
           if (yLo !== null) {
             beams++;
             gr.strokeStyle = acc; gr.lineWidth = Math.max(3, pw);
             gr.beginPath(); gr.moveTo(px, Y(yLo)); gr.lineTo(px, Y(Math.max(yHi, yLo + 0.05 * g))); gr.stroke();
+            gr.fillStyle = acc;   // a dot marks each diffracted beam
+            gr.beginPath(); gr.arc(px, Y((yLo + yHi) / 2), 4.5, 0, 6.3); gr.fill();
           }
         }
       }
