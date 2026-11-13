@@ -52,10 +52,10 @@ The fraction of ionization events each technique actually records, against atomi
 Diffraction-based STEM mapping completes the analytical picture. Scanning nanobeam diffraction tracks the positions of Bragg disks across the scan and converts their shifts to local lattice parameters, mapping the full two-dimensional strain tensor at a few nanometers resolution with about 0.1% precision, directly on the device feature of interest rather than averaged over a beam footprint as in [X-ray methods](../photons/xrd.md). Geometric phase analysis extracts equivalent information from the lattice fringes of a single atomic-resolution image by Fourier filtering, fast and convenient where a good zone-axis image exists. For thin film development these maps answer whether the intended strain state survived patterning and processing, a question no ensemble technique can localize; their systematic errors (reference-region choice, projection through the foil, relaxation of the thin lamella itself, which partially releases the very strain being measured) are the caveats to carry into any quantitative claim.
 
 :::{figure} ../../assets/figures/eels-anatomy.svg
-:alt: Schematic electron energy loss spectrum on a log scale showing the zero loss peak, plasmon multiples, power-law background, and a core-loss edge with fine structure
+:alt: Schematic electron energy loss spectrum on a log scale showing the zero loss peak, plasmon peaks, power-law background, and the Si L and O K core-loss edges
 :width: 85%
 
-**Anatomy of a loss spectrum.** Phonon losses at the meV scale (accessible with a monochromator), the plasmon and its Poisson-distributed multiples, the falling background, and a core-loss edge carrying ELNES fine structure; the axis breaks step the energy scale from meV to eV. The plasmon-multiple statistics give the standard $t/\lambda$ thickness measurement.
+**Anatomy of a loss spectrum**, for Si with a thin surface oxide on a logarithmic intensity scale (red). The zero-loss peak, the plasmon peak and its multiple, the Si L edge at 99 eV, and the O K edge at 532 eV with its near-edge fine structure (ELNES). Each edge sits on a background that falls as a power law, $AE^{-r}$, extrapolated under the edge as the gray dashed line; the edge area above it gives the composition, and the plasmon intensity against the zero-loss peak gives the standard $t/\lambda$ thickness measurement.
 :::
 
 % TODO: figures still wanted: (a) an experimental EELS line profile across an
