@@ -32,7 +32,7 @@ A **force-distance curve**, deflection versus tip approach, is the technique's c
 :alt: AFM modes on the force curve
 :width: 100%
 
-Module 7 in one figure. Every scanning probe mode is a choice of what to hold constant on this curve, or of what second quantity to record alongside the height.
+Force on the tip against tip-sample separation (gray curve), with the separations each imaging mode covers. Contact mode (red) stays on the repulsive wall (gray band), tapping mode (blue) swings through both regions each cycle, and non-contact mode (green) stays in the attractive region.
 :::
 
 ## Quantitative roughness metrology
@@ -45,7 +45,7 @@ Step-height measurement is the other precision use: an AFM profile across a mask
 :alt: roughness against measurement bandwidth
 :width: 100%
 
-One surface measured two ways. The scan size sets the longest wavelength included and the pixel size the shortest, so $R_q$ without both numbers is not a measurement.
+One surface measured with a 10 µm scan (blue) and a 0.5 µm scan (red). Left: the two height profiles. Right: the power spectral density $C(q)$, the height variance at each spatial frequency $q$, with the band each scan covers (shaded); $R_q^2$ is the integral of $C(q)$ over that band, from $2\pi/L$ to $\pi/\Delta x$ for scan length $L$ and pixel size $\Delta x$. The scan size sets the longest wavelength included and the pixel size the shortest, so $R_q$ without both numbers is not a measurement.
 :::
 
 ## Artifacts
@@ -53,7 +53,7 @@ One surface measured two ways. The scan size sets the longest wavelength include
 (afm-tip-simulation)=
 ### Tip shape simulation
 
-Every AFM image is the interaction of two shapes: the surface and the tip. The demonstration below scans a realistic tip, an apex sphere blended into a conical shank, across known test structures, drawn at true aspect ratio so the shapes are not exaggerated. The tip presets carry representative radii and sidewall angles: a standard Si probe, a very sharp Si$_3$N$_4$ probe, and a blunt diamond-coated probe for conductive or wear-heavy work. Sweep the radius on the particles preset and watch every feature broaden as roughly $2\sqrt{rR}$ while heights stay correct; try the trench, where the sidewall angle, not the radius, decides whether the floor is reachable; and enable the double tip for the characteristic ghost-image doubling artifact. The measured $R_q$ is always at or below the true value, because the tip is a low-pass filter.
+Every AFM image is the interaction of two shapes: the surface and the tip. The demonstration below scans a realistic tip, an apex sphere blended into a conical shank, across known test structures, drawn at true aspect ratio so the shapes are not exaggerated. The tip presets carry representative radii and sidewall angles: a standard Si probe, a very sharp Si$_3$N$_4$ probe, and a blunt diamond-coated probe for conductive or wear-heavy work. Sweep the radius on the particles preset and watch a particle of radius $r$ widen to about $4\sqrt{rR}$ under a tip of apex radius $R$, while heights stay correct; try the trench, where the sidewall angle, not the radius, decides whether the floor is reachable; and enable the double tip for the characteristic ghost-image doubling artifact. The measured $R_q$ is always at or below the true value, because the tip is a low-pass filter.
 
 :::{anywidget} ../../widgets/afm-tip.js
 :::

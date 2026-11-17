@@ -300,11 +300,11 @@ const SCHEMS = {
       g.fillStyle = C.fg;
       g.beginPath(); g.moveTo(w * 0.55, cy + 8); g.lineTo(w * 0.53, cy + 24); g.lineTo(w * 0.57, cy + 8);
       g.closePath(); g.fill();
-      box(w * 0.24, cy - 8, 24, 16);
+      box(w * 0.30 - 24, cy - 8, 24, 16);
       label("cantilever", w * 0.30, cy - 14);
       // sample on piezo
       box(w * 0.30, cy + 30, w * 0.40, 9);
-      label("sample", w * 0.46, cy + 54);
+      label("sample", w * 0.71, cy + 39);
       box(w * 0.34, cy + 39, w * 0.32, 14, C.metal);
       label("xyz piezo scanner", w * 0.34, cy + 68);
       // laser and photodiode
